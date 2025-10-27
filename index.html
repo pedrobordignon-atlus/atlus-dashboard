@@ -96,7 +96,6 @@ header{
     <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
   </section>
 
-  <!-- Charts -->
   <section class="grid-2">
     <div class="panel">
       <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
@@ -128,9 +127,7 @@ function toNumber(x){
   if (x==null || x==='') return 0;
   if (typeof x==='number' && isFinite(x)) return x;
   var s = String(x).trim();
-  // remove tudo que não for dígito, ponto ou sinal
-  s = s.replace(/[^0-9.\-]/g,'');
-  // se houver mais de um ponto, mantém só o último
+  s = s.replace(/[^0-9.\-]/g,''); // keep only digits/.- 
   if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
   var n = parseFloat(s);
   return isFinite(n)?n:0;
@@ -161,13 +158,12 @@ function parseCSVText(text){
   for(var i=1;i<rows.length;i++){
     var r=rows[i]; if(!r||!r.length)continue;
     function get(idx){return (idx>=0&&idx<r.length)?r[idx]:'';}
-    out.push({
-      Platform:String(get(col.platform)).trim(),
-      Location:String(get(col.location)).trim(),
-      Metric:String(get(col.metric)).trim(),
-      Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
-      ValueRaw:get(col.value)
-    });
+    var platform = String(get(col.platform)).trim();
+    var location = String(get(col.location)).trim();
+    var metric   = String(get(col.metric)).trim();
+    var month    = String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim();
+    if(!location) location = 'All locations'; // <- garante Thumbtack
+    out.push({ Platform:platform, Location:location, Metric:metric, Month:month, ValueRaw:get(col.value) });
   }
   return {headers:headers,rows:out};
 }
@@ -175,11 +171,9 @@ function parseCSVText(text){
 /* ---------- reshape long->wide, cleaning ---------- */
 function pivotLong(rows){
   var map={}, out=[];
-  function key(r){return [r.Month,r.Location,r.Platform].join('||');}
+  function key(r){return [r.Month,(r.Location||'All locations'),r.Platform].join('||');}
   rows.forEach(function(r){
-    // limpa lixo
-    if(!r || !r.Month || !r.Location || !r.Platform) return;
-    if(r.Month==='#DIV/0!'||r.Location==='#DIV/0!'||r.Platform==='#DIV/0!') return;
+    if(!r || !r.Month || !r.Platform) return;
     var k=key(r);
     (map[k]||(map[k]=[])).push(r);
   });
@@ -195,10 +189,7 @@ function pivotLong(rows){
       var raw=row.ValueRaw==null?'':String(row.ValueRaw);
       var v=toNumber(raw);
       if((m.indexOf('spend')>-1&&m.indexOf('daily')==-1)||m.indexOf('monthly spend')>-1) rec.Spend+=v;
-      else if(
-  (m.indexOf('lead')>-1 && m.indexOf('% good')==-1) ||
-  m.indexOf('real service inquiry')>-1
-) rec.Leads+=v;
+      else if((m.indexOf('lead')>-1 && m.indexOf('% good')==-1) || m.indexOf('real service inquiry')>-1) rec.Leads+=v;
       else if(m.indexOf('closed job')>-1) rec.JobsClosed+=v;
       else if(m.indexOf('contract total')>-1) rec.ContractTotal+=v;
       else if(m.indexOf('profit')>-1) rec.Profit+=v;
@@ -207,14 +198,11 @@ function pivotLong(rows){
         if(t>1.5)t/=100; rec.ROI=t;
       }
     }
-    // derivados
     if(!rec.Profit) rec.Profit = rec.ContractTotal - rec.Spend;
     if(rec.ROI==null) rec.ROI = rec.Spend>0 ? rec.Profit/rec.Spend : 0;
     rec.CPJ = rec.JobsClosed>0 ? rec.Spend/rec.JobsClosed : 0;
-    // arredondar inteiros
     rec.Leads = Math.round(rec.Leads);
     rec.JobsClosed = Math.round(rec.JobsClosed);
-    // 2 casas nos monetários
     rec.Spend = +rec.Spend.toFixed(2);
     rec.ContractTotal = +rec.ContractTotal.toFixed(2);
     rec.Profit = +rec.Profit.toFixed(2);
@@ -223,7 +211,14 @@ function pivotLong(rows){
   return out;
 }
 
-function uniqSorted(arr){ return onlyGood([...new Set(arr)]).sort(); }
+function uniqClean(arr){
+  const s = new Set();
+  arr.forEach(function(v){
+    const t = (v==null?'':String(v)).trim();
+    if(t) s.add(t);
+  });
+  return Array.from(s).sort();
+}
 function sum(arr,k){var t=0;for(var i=0;i<arr.length;i++){t+= (+arr[i][k]||0);} return t;}
 
 /* ---------- state ---------- */
@@ -236,9 +231,9 @@ function fillFilters(data){
     var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
-  var months=uniqSorted(data.map(function(r){return r.Month;}));
-  var locs  =uniqSorted(data.map(function(r){return r.Location;}));
-  var plats =uniqSorted(data.map(function(r){return r.Platform;}));
+  var months=uniqClean(data.map(function(r){return r.Month;}));
+  var locs  =uniqClean(data.map(function(r){return r.Location;}));
+  var plats =uniqClean(data.map(function(r){return r.Platform;}));
   fill('monthFilter',months,'months');
   fill('locationFilter',locs,'locations');
   fill('platformFilter',plats,'platforms');
@@ -275,7 +270,7 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  /* ROI by Location (bar horizontal, 1 casa) */
+  /* ROI by Location */
   var mapLoc={}, l2=[], d2=[];
   for(var i2=0;i2<filtered.length;i2++){
     var r=filtered[i2], o=mapLoc[r.Location]||{s:0,p:0};
@@ -298,7 +293,7 @@ function updateCharts(){
     }
   });
 
-  /* Profit by Location (bar, non-zero, sorted desc) */
+  /* Profit by Location */
   var agg={}, pairs=[];
   filtered.forEach(function(r){ agg[r.Location]=(agg[r.Location]||0)+r.Profit; });
   pairs = Object.keys(agg).map(function(k){ return {l:k,v:agg[k]}; })
@@ -328,18 +323,29 @@ function normalizeUrl(u){
   if(m)return'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
   return u;
 }
-function withBust(url){ var s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()); }
+
+// cache-bust robusto
+function cacheBust(u){
+  try{
+    const url = new URL(u);
+    url.searchParams.set('_cb', Date.now().toString());
+    return url.toString();
+  }catch(e){
+    return u + (u.includes('?')?'&':'?') + '_cb=' + Date.now();
+  }
+}
 
 function fetchCsvText(url){
-  url = withBust(url);
-  return fetch(url,{mode:'cors'}).then(function(r){
+  const u1 = cacheBust(url);
+  return fetch(u1,{mode:'cors'}).then(function(r){
     if(r.ok)return r.text();
     throw new Error('HTTP '+r.status);
   }).catch(function(){
-    var prox=(url.indexOf('https://')===0?'https://r.jina.ai/http://':'https://r.jina.ai/https://')+url.replace(/^https?:\/\//,'');
-    return fetch(prox).then(function(r2){
+    const add = (base, u) => base + u.replace(/^https?:\/\//,'') + (u.includes('?')?'&':'?') + '_cb=' + Date.now();
+    const prox = (url.indexOf('https://')===0 ? 'https://r.jina.ai/http://' : 'https://r.jina.ai/https://');
+    return fetch(add(prox, url)).then(function(r2){
       if(r2.ok)return r2.text();
-      return fetch('https://cors.isomorphic-git.org/'+url).then(function(r3){
+      return fetch(add('https://cors.isomorphic-git.org/', url)).then(function(r3){
         if(r3.ok)return r3.text();
         throw new Error('All proxies failed');
       });
