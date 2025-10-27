@@ -65,7 +65,6 @@ header{
 </header>
 
 <main class="container">
-  <!-- Data source -->
   <section class="panel">
     <div class="row">
       <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
@@ -76,7 +75,6 @@ header{
     <div id="statusChips" class="chips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
   </section>
 
-  <!-- Filters -->
   <section class="panel">
     <div class="row">
       <div><label>Month / Year</label><select id="monthFilter" class="input"></select></div>
@@ -86,7 +84,6 @@ header{
     </div>
   </section>
 
-  <!-- KPIs -->
   <section class="kpis">
     <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
     <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
@@ -114,20 +111,20 @@ header{
 </main>
 
 <script>
-/* ---------- helpers UI / format ---------- */
+/* ---------- helpers ---------- */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}); }
-function addChip(t){var c=$('statusChips');var s=document.createElement('span');s.className='chip';s.style.border='1px solid var(--border)';s.style.background='#09192a';s.style.color='var(--text-dim)';s.style.padding='6px 10px';s.style.borderRadius='999px';s.style.fontSize='12px';s.textContent=t;c.appendChild(s);}
-function chips(msgs){var c=$('statusChips');c.innerHTML='';for(var i=0;i<msgs.length;i++)addChip(msgs[i]);}
+function addChip(t){var c=$('statusChips');var s=document.createElement('span');s.style.border='1px solid var(--border)';s.style.background='#09192a';s.style.color='var(--text-dim)';s.style.padding='6px 10px';s.style.borderRadius='999px';s.style.fontSize='12px';s.textContent=t;c.appendChild(s);}
+function chips(msgs){var c=$('statusChips');c.innerHTML='';msgs.forEach(addChip);}
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—';}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—';}
+function norm(s){return String(s||'').trim().toLowerCase();}
 
 /* ---------- number & sanitize ---------- */
 function toNumber(x){
   if (x==null || x==='') return 0;
   if (typeof x==='number' && isFinite(x)) return x;
-  var s = String(x).trim();
-  s = s.replace(/[^0-9.\-]/g,''); // keep only digits/.- 
+  var s = String(x).trim().replace(/[^0-9.\-]/g,'');
   if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
   var n = parseFloat(s);
   return isFinite(n)?n:0;
@@ -158,12 +155,13 @@ function parseCSVText(text){
   for(var i=1;i<rows.length;i++){
     var r=rows[i]; if(!r||!r.length)continue;
     function get(idx){return (idx>=0&&idx<r.length)?r[idx]:'';}
-    var platform = String(get(col.platform)).trim();
-    var location = String(get(col.location)).trim();
-    var metric   = String(get(col.metric)).trim();
-    var month    = String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim();
-    if(!location) location = 'All locations'; // <- garante Thumbtack
-    out.push({ Platform:platform, Location:location, Metric:metric, Month:month, ValueRaw:get(col.value) });
+    out.push({
+      Platform:String(get(col.platform)).trim(),
+      Location:String(get(col.location)).trim(),
+      Metric:String(get(col.metric)).trim(),
+      Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
+      ValueRaw:get(col.value)
+    });
   }
   return {headers:headers,rows:out};
 }
@@ -171,9 +169,15 @@ function parseCSVText(text){
 /* ---------- reshape long->wide, cleaning ---------- */
 function pivotLong(rows){
   var map={}, out=[];
-  function key(r){return [r.Month,(r.Location||'All locations'),r.Platform].join('||');}
+  function key(r){return [r.Month,r.Location,r.Platform].join('||');}
+
   rows.forEach(function(r){
-    if(!r || !r.Month || !r.Platform) return;
+    if(!r || !r.Month || !r.Location || !r.Platform) return;
+    if(r.Month==='#DIV/0!'||r.Location==='#DIV/0!'||r.Platform==='#DIV/0!') return;
+
+    // ❌ não usar linhas-resumo
+    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
+
     var k=key(r);
     (map[k]||(map[k]=[])).push(r);
   });
@@ -183,24 +187,39 @@ function pivotLong(rows){
     var Month=parts[0],Location=parts[1],Platform=parts[2];
     var rec={Month:Month,Location:Location,Platform:Platform,Leads:0,Spend:0,JobsClosed:0,ContractTotal:0,Profit:0,ROI:null,CPJ:0};
     var list=map[k];
+
     for(var i=0;i<list.length;i++){
       var row=list[i];
-      var m=String(row.Metric||'').toLowerCase();
-      var raw=row.ValueRaw==null?'':String(row.ValueRaw);
+      var m=norm(row.Metric);
+      var raw=(row.ValueRaw==null?'':String(row.ValueRaw));
       var v=toNumber(raw);
-      if((m.indexOf('spend')>-1&&m.indexOf('daily')==-1)||m.indexOf('monthly spend')>-1) rec.Spend+=v;
-      else if((m.indexOf('lead')>-1 && m.indexOf('% good')==-1) || m.indexOf('real service inquiry')>-1) rec.Leads+=v;
-      else if(m.indexOf('closed job')>-1) rec.JobsClosed+=v;
-      else if(m.indexOf('contract total')>-1) rec.ContractTotal+=v;
-      else if(m.indexOf('profit')>-1) rec.Profit+=v;
-      else if(m==='roi'||m==='roi (%)'){
+
+      if((m.indexOf('spend')>-1 && m.indexOf('daily')===-1) || m.indexOf('monthly spend')>-1){
+        rec.Spend += v;
+      }
+      else if (/^number of leads$/.test(m) || m.indexOf('number of leads')>-1){
+        // ✅ somente “Number of Leads”
+        rec.Leads += v;
+      }
+      else if (m.indexOf('closed job')>-1){
+        rec.JobsClosed += v;
+      }
+      else if (m.indexOf('contract total')>-1){
+        rec.ContractTotal += v;
+      }
+      else if (m.indexOf('profit')>-1){
+        rec.Profit += v;
+      }
+      else if (m==='roi' || m==='roi (%)'){
         var t=v; if(raw.indexOf('%')>-1) t=toNumber(raw.replace('%',''))/100;
         if(t>1.5)t/=100; rec.ROI=t;
       }
     }
+
     if(!rec.Profit) rec.Profit = rec.ContractTotal - rec.Spend;
     if(rec.ROI==null) rec.ROI = rec.Spend>0 ? rec.Profit/rec.Spend : 0;
     rec.CPJ = rec.JobsClosed>0 ? rec.Spend/rec.JobsClosed : 0;
+
     rec.Leads = Math.round(rec.Leads);
     rec.JobsClosed = Math.round(rec.JobsClosed);
     rec.Spend = +rec.Spend.toFixed(2);
@@ -211,13 +230,15 @@ function pivotLong(rows){
   return out;
 }
 
-function uniqClean(arr){
-  const s = new Set();
-  arr.forEach(function(v){
-    const t = (v==null?'':String(v)).trim();
-    if(t) s.add(t);
+function uniqSortedClean(arr, excludeAllLocations){
+  var seen={}, out=[];
+  arr.forEach(function(s){
+    var t=String(s||'').trim();
+    var n=t.toLowerCase();
+    if(excludeAllLocations && (n==='all locations' || n==='all location')) return;
+    if(!seen[n]){ seen[n]=true; out.push(t); }
   });
-  return Array.from(s).sort();
+  return out.sort();
 }
 function sum(arr,k){var t=0;for(var i=0;i<arr.length;i++){t+= (+arr[i][k]||0);} return t;}
 
@@ -231,9 +252,10 @@ function fillFilters(data){
     var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
-  var months=uniqClean(data.map(function(r){return r.Month;}));
-  var locs  =uniqClean(data.map(function(r){return r.Location;}));
-  var plats =uniqClean(data.map(function(r){return r.Platform;}));
+  var months=uniqSortedClean(data.map(function(r){return r.Month;}), false);
+  var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);   // remove “All locations”
+  var plats =uniqSortedClean(data.map(function(r){return r.Platform;}), false);
+
   fill('monthFilter',months,'months');
   fill('locationFilter',locs,'locations');
   fill('platformFilter',plats,'platforms');
@@ -259,7 +281,7 @@ function updateKPIs(){
 
 /* ---------- charts ---------- */
 function updateCharts(){
-  /* Leads by Platform */
+  // Leads por Plataforma
   var mp={}, k;
   for(var i=0;i<filtered.length;i++){k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);}
   var l1=Object.keys(mp), d1=l1.map(function(x){return mp[x];});
@@ -270,10 +292,12 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  /* ROI by Location */
+  // ROI por Location — ignora “All locations”
   var mapLoc={}, l2=[], d2=[];
   for(var i2=0;i2<filtered.length;i2++){
-    var r=filtered[i2], o=mapLoc[r.Location]||{s:0,p:0};
+    var r=filtered[i2];
+    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') continue;
+    var o=mapLoc[r.Location]||{s:0,p:0};
     o.s+=r.Spend||0; o.p+=r.Profit||0; mapLoc[r.Location]=o;
   }
   l2=Object.keys(mapLoc);
@@ -293,9 +317,12 @@ function updateCharts(){
     }
   });
 
-  /* Profit by Location */
+  // Profit por Location — ignora zero
   var agg={}, pairs=[];
-  filtered.forEach(function(r){ agg[r.Location]=(agg[r.Location]||0)+r.Profit; });
+  filtered.forEach(function(r){
+    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
+    agg[r.Location]=(agg[r.Location]||0)+r.Profit;
+  });
   pairs = Object.keys(agg).map(function(k){ return {l:k,v:agg[k]}; })
           .filter(function(p){ return p.v!==0; })
           .sort(function(a,b){ return b.v-a.v; });
@@ -323,29 +350,18 @@ function normalizeUrl(u){
   if(m)return'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
   return u;
 }
-
-// cache-bust robusto
-function cacheBust(u){
-  try{
-    const url = new URL(u);
-    url.searchParams.set('_cb', Date.now().toString());
-    return url.toString();
-  }catch(e){
-    return u + (u.includes('?')?'&':'?') + '_cb=' + Date.now();
-  }
-}
+function withBust(url){ var s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()); }
 
 function fetchCsvText(url){
-  const u1 = cacheBust(url);
-  return fetch(u1,{mode:'cors'}).then(function(r){
+  url = withBust(url);
+  return fetch(url,{mode:'cors'}).then(function(r){
     if(r.ok)return r.text();
     throw new Error('HTTP '+r.status);
   }).catch(function(){
-    const add = (base, u) => base + u.replace(/^https?:\/\//,'') + (u.includes('?')?'&':'?') + '_cb=' + Date.now();
-    const prox = (url.indexOf('https://')===0 ? 'https://r.jina.ai/http://' : 'https://r.jina.ai/https://');
-    return fetch(add(prox, url)).then(function(r2){
+    var prox=(url.indexOf('https://')===0?'https://r.jina.ai/http://':'https://r.jina.ai/https://')+url.replace(/^https?:\/\//,'');
+    return fetch(prox).then(function(r2){
       if(r2.ok)return r2.text();
-      return fetch(add('https://cors.isomorphic-git.org/', url)).then(function(r3){
+      return fetch('https://cors.isomorphic-git.org/'+url).then(function(r3){
         if(r3.ok)return r3.text();
         throw new Error('All proxies failed');
       });
@@ -355,10 +371,10 @@ function fetchCsvText(url){
 
 /* ---------- load & wire ---------- */
 function loadFromUrl(url){
-  var norm=normalizeUrl(url.trim());
-  if(!norm){chips(['Paste a valid CSV link']); return;}
+  var normUrl=normalizeUrl(url.trim());
+  if(!normUrl){chips(['Paste a valid CSV link']); return;}
   chips(['Loading…']);
-  fetchCsvText(norm).then(function(text){
+  fetchCsvText(normUrl).then(function(text){
     var parsed=parseCSVText(text);
     if(!parsed.rows||parsed.rows.length===0){chips(['Empty CSV or headers not recognized']); return;}
     original=pivotLong(parsed.rows);
