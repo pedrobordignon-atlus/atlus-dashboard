@@ -173,11 +173,16 @@ function pivotLong(rows){
   var map={}, out=[];
   function key(r){return [r.Month,(r.Location||'All locations'),r.Platform].join('||');}
   rows.forEach(function(r){
-    if(!r || !r.Month || !r.Platform) return;
-    var k=key(r);
-    (map[k]||(map[k]=[])).push(r);
-  });
+  // limpa lixo
+  if(!r || !r.Month || !r.Location || !r.Platform) return;
+  if (r.Month==='#DIV/0!' || r.Location==='#DIV/0!' || r.Platform==='#DIV/0!') return;
 
+  // 🔴 NÃO usar linhas-resumo
+  if (/^(all locations?)$/i.test(String(r.Location).trim())) return;
+
+  var k=key(r);
+  (map[k]||(map[k]=[])).push(r);
+});
   Object.keys(map).forEach(function(k){
     var parts=k.split('||');
     var Month=parts[0],Location=parts[1],Platform=parts[2];
@@ -189,7 +194,9 @@ function pivotLong(rows){
       var raw=row.ValueRaw==null?'':String(row.ValueRaw);
       var v=toNumber(raw);
       if((m.indexOf('spend')>-1&&m.indexOf('daily')==-1)||m.indexOf('monthly spend')>-1) rec.Spend+=v;
-      else if((m.indexOf('lead')>-1 && m.indexOf('% good')==-1) || m.indexOf('real service inquiry')>-1) rec.Leads+=v;
+      else if (
+  /^number of leads$/i.test(m) ||                   // “Number of Leads”
+  (m.indexOf('number of leads')>-1)                 // tolera variação rec.Leads += v;
       else if(m.indexOf('closed job')>-1) rec.JobsClosed+=v;
       else if(m.indexOf('contract total')>-1) rec.ContractTotal+=v;
       else if(m.indexOf('profit')>-1) rec.Profit+=v;
