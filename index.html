@@ -172,47 +172,59 @@ function pivotLong(rows){
   function key(r){return [r.Month,r.Location,r.Platform].join('||');}
 
   rows.forEach(function(r){
-    if(!r || !r.Month || !r.Location || !r.Platform) return;
-    if(r.Month==='#DIV/0!'||r.Location==='#DIV/0!'||r.Platform==='#DIV/0!') return;
+    if(!r || !r.Month || !r.Platform) return;
+    if(r.Month==='#DIV/0!'||r.Platform==='#DIV/0!') return;
 
-    // ❌ não usar linhas-resumo
-    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
+    var plat = String(r.Platform||'').trim();
+    var platN = plat.toLowerCase();
+    var locRaw = String(r.Location||'').trim();
+    var locN = locRaw.toLowerCase();
 
-    var k=key(r);
-    (map[k]||(map[k]=[])).push(r);
+    // Se vier vazio → vira “All locations” (Thumbtack)
+    var loc = locRaw || 'All locations';
+
+    // Remove “All locations” apenas se NÃO for Thumbtack
+    if ((locN === 'all locations' || locN === 'all location') && platN !== 'thumbtack') return;
+
+    var k = [r.Month, loc, plat].join('||');
+    (map[k]||(map[k]=[])).push({
+      Month: r.Month,
+      Location: loc,
+      Platform: plat,
+      Metric: r.Metric,
+      ValueRaw: r.ValueRaw
+    });
   });
 
   Object.keys(map).forEach(function(k){
-    var parts=k.split('||');
-    var Month=parts[0],Location=parts[1],Platform=parts[2];
-    var rec={Month:Month,Location:Location,Platform:Platform,Leads:0,Spend:0,JobsClosed:0,ContractTotal:0,Profit:0,ROI:null,CPJ:0};
-    var list=map[k];
+    var parts = k.split('||');
+    var Month = parts[0], Location = parts[1], Platform = parts[2];
+    var rec = {Month, Location, Platform, Leads:0, Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0};
+    var list = map[k];
 
     for(var i=0;i<list.length;i++){
       var row=list[i];
-      var m=norm(row.Metric);
+      var m=String(row.Metric||'').toLowerCase();
       var raw=(row.ValueRaw==null?'':String(row.ValueRaw));
-      var v=toNumber(raw);
+
+      var s = raw.trim().replace(/[^0-9.\-]/g,'');
+      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+      var v = parseFloat(s); v = isFinite(v)?v:0;
 
       if((m.indexOf('spend')>-1 && m.indexOf('daily')===-1) || m.indexOf('monthly spend')>-1){
         rec.Spend += v;
-      }
-      else if (/^number of leads$/.test(m) || m.indexOf('number of leads')>-1){
-        // ✅ somente “Number of Leads”
-        rec.Leads += v;
-      }
-      else if (m.indexOf('closed job')>-1){
+      } else if (m.indexOf('number of leads')>-1){
+        rec.Leads += v; // <-- SOMA EXATA
+      } else if (m.indexOf('closed job')>-1){
         rec.JobsClosed += v;
-      }
-      else if (m.indexOf('contract total')>-1){
+      } else if (m.indexOf('contract total')>-1){
         rec.ContractTotal += v;
-      }
-      else if (m.indexOf('profit')>-1){
+      } else if (m.indexOf('profit')>-1){
         rec.Profit += v;
-      }
-      else if (m==='roi' || m==='roi (%)'){
-        var t=v; if(raw.indexOf('%')>-1) t=toNumber(raw.replace('%',''))/100;
-        if(t>1.5)t/=100; rec.ROI=t;
+      } else if (m==='roi' || m==='roi (%)'){
+        var t=v; if(raw.indexOf('%')>-1) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+        if(t>1.5)t/=100;
+        rec.ROI=t;
       }
     }
 
@@ -225,11 +237,12 @@ function pivotLong(rows){
     rec.Spend = +rec.Spend.toFixed(2);
     rec.ContractTotal = +rec.ContractTotal.toFixed(2);
     rec.Profit = +rec.Profit.toFixed(2);
+
     out.push(rec);
   });
+
   return out;
 }
-
 function uniqSortedClean(arr, excludeAllLocations){
   var seen={}, out=[];
   arr.forEach(function(s){
