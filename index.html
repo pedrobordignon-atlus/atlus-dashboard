@@ -195,7 +195,10 @@ function pivotLong(rows){
       var raw=row.ValueRaw==null?'':String(row.ValueRaw);
       var v=toNumber(raw);
       if((m.indexOf('spend')>-1&&m.indexOf('daily')==-1)||m.indexOf('monthly spend')>-1) rec.Spend+=v;
-      else if(m.indexOf('lead')>-1&&m.indexOf('% good')==-1) rec.Leads+=v;
+      else if(
+  (m.indexOf('lead')>-1 && m.indexOf('% good')==-1) ||
+  m.indexOf('real service inquiry')>-1
+) rec.Leads+=v;
       else if(m.indexOf('closed job')>-1) rec.JobsClosed+=v;
       else if(m.indexOf('contract total')>-1) rec.ContractTotal+=v;
       else if(m.indexOf('profit')>-1) rec.Profit+=v;
