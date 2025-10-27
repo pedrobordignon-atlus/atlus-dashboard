@@ -265,7 +265,9 @@ function fillFilters(data){
     var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
-  var months=uniqSortedClean(data.map(function(r){return r.Month;}), false);
+  var months = [...new Set(data.map(r => r.Month))].sort((a, b) => {
+  return new Date(a) - new Date(b);
+});
   var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);   // remove “All locations”
   var plats =uniqSortedClean(data.map(function(r){return r.Platform;}), false);
 
