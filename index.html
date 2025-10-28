@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Atlus Dashboards</title>
 
-  <!-- FAVICON (caminho que já funcionava) -->
-  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=7">
+  <!-- FAVICON (mesmo caminho que já funcionou) -->
+  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -16,6 +16,12 @@
     :root{
       --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
       --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+      --shadow: 0 20px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --gap: 18px;
+      --gap-lg: 22px;
+      --pad: 20px;
+      --pad-lg: 24px;
     }
 
     *{box-sizing:border-box}
@@ -30,22 +36,24 @@
       font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* ================= Marca-d’água ================= */
-    /* 1º tenta atlus-bg.png; se não existir, usa o favicon mesmo */
+    /* ========= Marca d’água (logo completo no fundo) ========= */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
+      /* Tenta 3 arquivos (o 1º que existir aparece) */
       background:
-        url("./Atlus_logo_files/atlus-bg.png?v=7") center 22vh / min(70vw, 920px) auto no-repeat,
-        url("./Atlus_logo_files/favicon.png?v=7")   center 22vh / 170px auto no-repeat;
-      opacity:.085;         /* levemente mais visível */
-      filter:saturate(.9);
+        url("./Atlus_logo_files/atlus-bg.png")        center 22vh / min(70vw, 920px) auto no-repeat,
+        url("./Atlus_logo_files/Atlus%20Logo%20-%20Transparent%20(2).png") center 22vh / min(70vw, 920px) auto no-repeat,
+        url("./Atlus_logo_files/favicon.png")         center 22vh / 160px auto no-repeat;
+      opacity:.06;             /* bem discreto */
+      filter:saturate(70%);
       z-index:0;
     }
+    /* garante conteúdo acima da marca d’água */
     header, main { position:relative; z-index:1; }
 
-    /* ================= Header ================= */
+    /* Header */
     header{
       position:sticky; top:0; z-index:50;
       display:flex; align-items:center; justify-content:space-between;
@@ -55,32 +63,32 @@
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
     .logo{
       width:40px;height:40px;border-radius:12px;overflow:hidden;padding:0;
-      display:grid;place-items:center;background:transparent;border:1px solid rgba(255,255,255,.05)
+      display:grid;place-items:center;background:transparent;box-shadow:none;
+      border:1px solid rgba(255,255,255,.05)
     }
     .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
     .title{font-weight:700}
 
-    /* ================= Layout base ================= */
-    .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
-    .panel{background:#0e2234;border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .stack{display:grid;gap:12px}
-
-    /* Home */
-    .hero{
-      padding:32px;
-      text-align:center;
-      display:grid;justify-items:center;gap:12px;
-      background:rgba(255,255,255,0.01);
-      border:1px solid var(--border);border-radius:16px;
+    /* Contêiner principal */
+    .container{
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 22px;
     }
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    @media(max-width:1100px){.cards{grid-template-columns:1fr}}
 
-    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
-    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
+    /* Painéis/cartões */
+    .panel{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
 
-    /* KPIs / filtros (mesmo layout de antes) */
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+
+    /* Cards de KPI */
     .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
     @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
     .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
@@ -91,15 +99,38 @@
 
     .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
     @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
-    select,.input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
+    select, .input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
 
     .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
     @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
 
     .noteTitle{font-weight:700;margin-bottom:6px}
     .note{border-left:3px solid var(--blue);padding-left:12px}
+    .stack{display:grid;gap:12px}
 
-    /* Botões (iguais aos seus) */
+    .backRow{display:flex;align-items:center;gap:8px}
+
+    /* ======== HOME ======== */
+    .hero{
+      padding: 32px;                 /* respiro */
+      text-align: center;            /* centraliza textos */
+      display: grid;
+      justify-items: center;         /* centraliza botão */
+      gap: 12px;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:22px;
+    }
+    @media (max-width: 1100px){ .cards{ grid-template-columns:1fr; } }
+    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
+
+    /* Botões (iguais aos que você já usava) */
     .btn{cursor:pointer;border:1px solid var(--border);background:#0a2236;color:var(--text);padding:10px 12px;border-radius:12px}
     .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
     .btn.link{background:transparent;color:var(--text-dim)}
@@ -111,8 +142,7 @@
 <header>
   <div class="brand">
     <div class="logo">
-      <!-- caminho que funcionou -->
-      <img src="./Atlus_logo_files/favicon.png?v=7" alt="Atlus">
+      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
@@ -160,6 +190,7 @@
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
 
+    <!-- Intro / Heads-up -->
     <div class="panel">
       <div class="noteTitle">👋 Hello, Atlus coworker, glad to see you here!</div>
       <div class="note">
@@ -170,13 +201,26 @@
       </div>
     </div>
 
+    <!-- Filters -->
     <div class="panel filters">
-      <div><label class="muted">Month / Year</label><select id="monthFilter"></select></div>
-      <div><label class="muted">Location</label><select id="locationFilter"></select></div>
-      <div><label class="muted">Platform</label><select id="platformFilter"></select></div>
-      <div style="display:grid;align-content:end"><button class="btn" id="clearFilters">Clear</button></div>
+      <div>
+        <label class="muted">Month / Year</label>
+        <select id="monthFilter"></select>
+      </div>
+      <div>
+        <label class="muted">Location</label>
+        <select id="locationFilter"></select>
+      </div>
+      <div>
+        <label class="muted">Platform</label>
+        <select id="platformFilter"></select>
+      </div>
+      <div style="display:grid;align-content:end">
+        <button class="btn" id="clearFilters">Clear</button>
+      </div>
     </div>
 
+    <!-- KPIs -->
     <div class="kpis">
       <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
       <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
@@ -184,11 +228,14 @@
       <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
       <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
       <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
+
+      <!-- NOVOS KPIs -->
       <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDaily">—</span></div></div>
       <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot gold"></span><span id="kpiClose">—</span></div></div>
       <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGood">—</span></div></div>
     </div>
 
+    <!-- Charts -->
     <div class="grid-2">
       <div class="panel">
         <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
@@ -205,6 +252,7 @@
       <canvas id="chartProfit"></canvas>
     </div>
 
+    <!-- Data source -->
     <div class="panel">
       <div class="row">
         <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
@@ -219,14 +267,19 @@
 </main>
 
 <script>
+/* ============== View router (Home <-> Atlus) ============== */
 function openView(which){
   document.getElementById('view-home').style.display = which==='home'?'block':'none';
   document.getElementById('view-atlus').style.display = which==='atlus'?'block':'none';
   document.getElementById('headerTitle').textContent = which==='home' ? 'Atlus Dashboards' : 'Atlus Performance Dashboard';
   history.replaceState(null, '', location.pathname + '?view=' + which);
 }
-(function(){ const p=new URLSearchParams(location.search); openView(p.get('view')==='atlus'?'atlus':'home'); })();
+(function initViewFromURL(){
+  const p = new URLSearchParams(location.search);
+  openView(p.get('view')==='atlus' ? 'atlus' : 'home');
+})();
 
+/* ============== Helpers UI / format ============== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
 function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
@@ -235,181 +288,319 @@ function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency'
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
 function norm(s){return String(s||'').trim().toLowerCase()}
 
+/* ============== Number & sanitize ============== */
 function toNumber(x){
   if (x==null || x==='') return 0;
   if (typeof x==='number' && isFinite(x)) return x;
-  let s=String(x).trim().replace(/[^0-9.\-]/g,''); if((s.match(/\./g)||[]).length>1) s=s.replace(/\.(?=.*\.)/g,'');
-  const n=parseFloat(s); return isFinite(n)?n:0;
+  let s = String(x).trim().replace(/[^0-9.\-]/g,'');
+  if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+  const n = parseFloat(s);
+  return isFinite(n)?n:0;
 }
 
+/* ============== CSV parsing ============== */
 function detectColumns(headers){
   const h=headers.map(x=>String(x||'').toLowerCase());
-  const find=keys=>{for(let i=0;i<h.length;i++){for(let j=0;j<keys.length;j++){if(h[i].includes(keys[j]))return i;}}return -1;};
-  return { platform:find(['platform','source']), location:find(['location','market']), metric:find(['metric','indicator']),
-           monthyear:find(['monthyear','period','date']), month:find(['month']), value:find(['value','amount','qty','number']) };
+  const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
+  return {
+    platform:find(['platform','source']),
+    location:find(['location','market']),
+    metric:find(['metric','indicator']),
+    monthyear:find(['monthyear','period','date']),
+    month:find(['month']),
+    value:find(['value','amount','qty','number'])
+  };
 }
 function parseCSVText(text){
-  const res=Papa.parse(text,{skipEmptyLines:true}); const rows=res.data||[]; if(rows.length<2) return {headers:[],rows:[]};
-  const headers=rows[0].map(x=>String(x||'')); const col=detectColumns(headers); const out=[];
-  for(let i=1;i<rows.length;i++){ const r=rows[i]; if(!r||!r.length)continue;
-    const get=idx=>(idx>=0&&idx<r.length)?r[idx]:'';
-    out.push({ Platform:String(get(col.platform)).trim(), Location:String(get(col.location)).trim(),
-               Metric:String(get(col.metric)).trim(), Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
-               ValueRaw:get(col.value) });
-  } return {headers,rows:out};
+  const res=Papa.parse(text,{skipEmptyLines:true});
+  const rows=res.data||[]; if(rows.length<2) return {headers:[],rows:[]};
+  const headers=rows[0].map(x=>String(x||'')); const col=detectColumns(headers);
+  const out=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i]; if(!r||!r.length)continue;
+    const get=idx=> (idx>=0&&idx<r.length)?r[idx]:''; 
+    out.push({
+      Platform:String(get(col.platform)).trim(),
+      Location:String(get(col.location)).trim(),
+      Metric:String(get(col.metric)).trim(),
+      Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
+      ValueRaw:get(col.value)
+    });
+  }
+  return {headers,rows:out};
 }
 
+/* ============== reshape long->wide, cleaning ============== */
 function pivotLong(rows){
   const map={}, out=[];
   rows.forEach(r=>{
-    if(!r||!r.Month||!r.Platform) return;
+    if(!r || !r.Month || !r.Platform) return;
     if(r.Month==='#DIV/0!'||r.Platform==='#DIV/0!') return;
-    const plat=String(r.Platform||'').trim(); const platN=plat.toLowerCase();
-    const locRaw=String(r.Location||'').trim(); const locN=locRaw.toLowerCase();
-    const loc=locRaw||'All locations';
-    if((locN==='all locations'||locN==='all location') && platN!=='thumbtack') return;
-    const k=[r.Month,loc,plat].join('||'); (map[k]||(map[k]=[])).push({Month:r.Month,Location:loc,Platform:plat,Metric:r.Metric,ValueRaw:r.ValueRaw});
+
+    const plat = String(r.Platform||'').trim();
+    const platN = plat.toLowerCase();
+    const locRaw = String(r.Location||'').trim();
+    const locN = locRaw.toLowerCase();
+
+    const loc = locRaw || 'All locations';
+    if ((locN==='all locations' || locN==='all location') && platN!=='thumbtack') return;
+
+    const k = [r.Month, loc, plat].join('||');
+    (map[k]||(map[k]=[])).push({ Month:r.Month, Location:loc, Platform:plat, Metric:r.Metric, ValueRaw:r.ValueRaw });
   });
 
   Object.keys(map).forEach(k=>{
     const [Month,Location,Platform]=k.split('||');
-    const rec={Month,Location,Platform,Leads:0,Spend:0,JobsClosed:0,ContractTotal:0,Profit:0,ROI:null,CPJ:0,GoodPct:null};
+    const rec = {Month, Location, Platform, Leads:0, Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0, GoodPct:null};
     map[k].forEach(row=>{
-      const m=String(row.Metric||'').toLowerCase(); const raw=(row.ValueRaw==null?'':String(row.ValueRaw));
-      let s=raw.trim().replace(/[^0-9.\-]/g,''); if((s.match(/\./g)||[]).length>1) s=s.replace(/\.(?=.*\.)/g,'');
-      let v=parseFloat(s); v=isFinite(v)?v:0;
-      if((m.includes('spend')&&!m.includes('daily'))||m.includes('monthly spend')) rec.Spend+=v;
-      else if(m.includes('number of leads')) rec.Leads+=v;
-      else if(m.includes('closed job')) rec.JobsClosed+=v;
-      else if(m.includes('contract total')) rec.ContractTotal+=v;
-      else if(m==='roi'||m==='roi (%)'){ let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100; if(t>1.5)t/=100; rec.ROI=t; }
-      else if(m.includes('% good')){ let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100; if(t>1.5)t/=100; rec.GoodPct=t; }
-      else if(m.includes('profit')) rec.Profit+=v;
+      const m = String(row.Metric||'').toLowerCase();
+      const raw = (row.ValueRaw==null?'':String(row.ValueRaw));
+      let s = raw.trim().replace(/[^0-9.\-]/g,'');
+      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+      let v = parseFloat(s); v = isFinite(v)?v:0;
+
+      if ((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend += v;
+      else if (m.includes('number of leads')) rec.Leads += v;
+      else if (m.includes('closed job')) rec.JobsClosed += v;
+      else if (m.includes('contract total')) rec.ContractTotal += v;
+      else if (m==='roi' || m==='roi (%)'){
+        let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+        if(t>1.5)t/=100; rec.ROI=t;
+      }
+      else if (m.includes('% good')){
+        let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+        if(t>1.5)t/=100; rec.GoodPct=t;
+      }
+      else if (m.includes('profit')) rec.Profit += v;
     });
-    if(!rec.Profit) rec.Profit=rec.ContractTotal-rec.Spend;
-    if(rec.ROI==null) rec.ROI=rec.Spend>0?rec.Profit/rec.Spend:0;
-    rec.CPJ=rec.JobsClosed>0?rec.Spend/rec.JobsClosed:0;
-    rec.Leads=Math.round(rec.Leads); rec.JobsClosed=Math.round(rec.JobsClosed);
-    rec.Spend=+rec.Spend.toFixed(2); rec.ContractTotal=+rec.ContractTotal.toFixed(2); rec.Profit=+rec.Profit.toFixed(2);
+
+    if(!rec.Profit) rec.Profit = rec.ContractTotal - rec.Spend;
+    if(rec.ROI==null) rec.ROI = rec.Spend>0 ? rec.Profit/rec.Spend : 0;
+    rec.CPJ = rec.JobsClosed>0 ? rec.Spend/rec.JobsClosed : 0;
+
+    rec.Leads = Math.round(rec.Leads);
+    rec.JobsClosed = Math.round(rec.JobsClosed);
+    rec.Spend = +rec.Spend.toFixed(2);
+    rec.ContractTotal = +rec.ContractTotal.toFixed(2);
+    rec.Profit = +rec.Profit.toFixed(2);
     out.push(rec);
   });
+
   return out;
 }
 
 function uniqSortedClean(arr, excludeAllLocations){
-  const seen={}, out=[]; arr.forEach(s=>{ const t=String(s||'').trim(); const n=t.toLowerCase();
-    if(excludeAllLocations&&(n==='all locations'||n==='all location')) return;
-    if(!seen[n]){seen[n]=true; out.push(t);}
-  }); return out.sort();
+  const seen={}, out=[];
+  arr.forEach(s=>{
+    const t=String(s||'').trim(); const n=t.toLowerCase();
+    if(excludeAllLocations && (n==='all locations'||n==='all location')) return;
+    if(!seen[n]){ seen[n]=true; out.push(t); }
+  });
+  return out.sort();
 }
-function sum(arr,k){ let t=0; for(let i=0;i<arr.length;i++){ t+=(+arr[i][k]||0) } return t }
+function sum(arr,k){ let t=0; for(let i=0;i<arr.length;i++){ t += (+arr[i][k]||0) } return t }
 
-let original=[], filtered=[]; let leadsChart=null, roiChart=null, profitChart=null;
+/* ============== State ============== */
+let original=[], filtered=[];
+let leadsChart=null, roiChart=null, profitChart=null;
 
-function daysInMonth(name){ const d=new Date(name+' 01'); if(isNaN(d)) return 30; const y=d.getFullYear(), m=d.getMonth(); return new Date(y,m+1,0).getDate(); }
+/* ============== Filters ============== */
+function daysInMonth(name){
+  const d = new Date(name+' 01');
+  if(isNaN(d)) return 30;
+  const y=d.getFullYear(), m=d.getMonth();
+  return new Date(y, m+1, 0).getDate();
+}
 function fillFilters(data){
-  const months=[...new Set(data.map(r=>r.Month))].sort((a,b)=>new Date(a)-new Date(b));
-  const locs=uniqSortedClean(data.map(r=>r.Location),true);
-  const plats=uniqSortedClean(data.map(r=>r.Platform),false);
-  const fill=(id,arr,label)=>{const s=$(id); s.innerHTML=''; const opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
-    arr.forEach(v=>{const e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e);});};
-  fill('monthFilter',months,'months'); fill('locationFilter',locs,'locations'); fill('platformFilter',plats,'platforms');
-}
-function applyFilters(){ const m=$('monthFilter').value, l=$('locationFilter').value, p=$('platformFilter').value;
-  filtered=original.filter(r=>(m?r.Month===m:true)&&(l?r.Location===l:true)&&(p?r.Platform===p:true)); updateKPIs(); updateCharts(); }
+  const months = [...new Set(data.map(r=>r.Month))].sort((a,b)=> new Date(a) - new Date(b));
+  const locs  = uniqSortedClean(data.map(r=>r.Location), true);
+  const plats = uniqSortedClean(data.map(r=>r.Platform), false);
 
+  const fill = (id, arr, label)=>{
+    const s=$(id); s.innerHTML='';
+    const opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
+    arr.forEach(v=>{ const e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
+  };
+  fill('monthFilter', months, 'months');
+  fill('locationFilter', locs,  'locations');
+  fill('platformFilter', plats, 'platforms');
+}
+function applyFilters(){
+  const m=$('monthFilter').value, l=$('locationFilter').value, p=$('platformFilter').value;
+  filtered = original.filter(r => (m?r.Month===m:true) && (l?r.Location===l:true) && (p?r.Platform===p:true));
+  updateKPIs(); updateCharts();
+}
+
+/* ============== KPIs ============== */
 function updateKPIs(){
-  const leads=sum(filtered,'Leads'), spend=sum(filtered,'Spend'), jobs=sum(filtered,'JobsClosed'),
-        contract=sum(filtered,'ContractTotal'), profit=sum(filtered,'Profit'), roi=spend>0?profit/spend:0;
-  let days=0; const monthSel=$('monthFilter').value;
-  if(monthSel){ days=daysInMonth(monthSel);} else{ const months=[...new Set(filtered.map(r=>r.Month))]; if(months.length>0) days=months.map(daysInMonth).reduce((a,b)=>a+b,0); if(days===0) days=30; }
-  const daily=spend>0?spend/Math.max(1,days):0; const closeRate=leads>0?(jobs/leads):0;
-  let wNum=0,wDen=0; filtered.forEach(r=>{ if(r.GoodPct!=null&&r.Leads>0){ wNum+=r.GoodPct*r.Leads; wDen+=r.Leads; }});
-  const goodPct=(wDen>0)?(wNum/wDen):null;
+  const leads = sum(filtered,'Leads'),
+        spend = sum(filtered,'Spend'),
+        jobs  = sum(filtered,'JobsClosed'),
+        contract = sum(filtered,'ContractTotal'),
+        profit   = sum(filtered,'Profit'),
+        roi = spend>0 ? profit/spend : 0;
 
-  $('kpiLeads').textContent=fmtInt(Math.round(leads));
-  $('kpiSpend').textContent=fmtUSD(spend);
-  $('kpiJobs').textContent=fmtInt(Math.round(jobs));
-  $('kpiContract').textContent=fmtUSD(contract);
-  $('kpiProfit').textContent=fmtUSD(profit);
-  $('kpiROI').textContent=isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
-  $('kpiDaily').textContent=fmtUSD(daily);
-  $('kpiClose').textContent=(closeRate*100).toFixed(1)+'%';
-  $('kpiGood').textContent=(goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
+  // Approx Daily Spend
+  let days = 0;
+  const monthSel = $('monthFilter').value;
+  if(monthSel){
+    days = daysInMonth(monthSel);
+  }else{
+    const months = [...new Set(filtered.map(r=>r.Month))];
+    if(months.length>0) days = months.map(daysInMonth).reduce((a,b)=>a+b,0);
+    if(days===0) days = 30;
+  }
+  const daily = spend>0 ? spend/Math.max(1, days) : 0;
+
+  const closeRate = leads>0 ? (jobs/leads) : 0;
+
+  // % Good Leads (média ponderada)
+  let wNum=0, wDen=0;
+  filtered.forEach(r=>{
+    if(r.GoodPct!=null && r.Leads>0){ wNum += r.GoodPct * r.Leads; wDen += r.Leads; }
+  });
+  const goodPct = (wDen>0) ? (wNum/wDen) : null;
+
+  $('kpiLeads').textContent     = fmtInt(Math.round(leads));
+  $('kpiSpend').textContent     = fmtUSD(spend);
+  $('kpiJobs').textContent      = fmtInt(Math.round(jobs));
+  $('kpiContract').textContent  = fmtUSD(contract);
+  $('kpiProfit').textContent    = fmtUSD(profit);
+  $('kpiROI').textContent       = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
+
+  $('kpiDaily').textContent     = fmtUSD(daily);
+  $('kpiClose').textContent     = (closeRate*100).toFixed(1)+'%';
+  $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
 }
 
+/* ============== Charts ============== */
 function updateCharts(){
   const mp={}; filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
-  const l1=Object.keys(mp), d1=l1.map(k=>mp[k]); if(leadsChart) leadsChart.destroy();
-  leadsChart=new Chart($('chartLeads').getContext('2d'),{ type:'bar',
+  const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
+  if(leadsChart) leadsChart.destroy();
+  leadsChart=new Chart($('chartLeads').getContext('2d'),{
+    type:'bar',
     data:{labels:l1,datasets:[{label:'Leads',data:d1,backgroundColor:'rgba(0,119,200,.6)',borderColor:'#0077c8',borderWidth:1}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}} });
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
 
-  const byLoc={}; filtered.forEach(r=>{ const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
-    (byLoc[r.Location]||(byLoc[r.Location]={s:0,p:0})).s+=r.Spend||0; (byLoc[r.Location]).p+=r.Profit||0; });
-  const l2=Object.keys(byLoc), d2=l2.map(loc=>{const o=byLoc[loc]; return o.s>0?+((o.p/o.s)*100).toFixed(1):0;});
-  if(roiChart) roiChart.destroy(); roiChart=new Chart($('chartROI').getContext('2d'),{ type:'bar',
+  const byLoc={}, l2=[], d2=[];
+  filtered.forEach(r=>{
+    const n = norm(r.Location);
+    if(n==='all locations'||n==='all location') return;
+    (byLoc[r.Location]||(byLoc[r.Location]={s:0,p:0})).s += r.Spend||0;
+    (byLoc[r.Location]).p += r.Profit||0;
+  });
+  Object.keys(byLoc).forEach(loc=>{
+    const o=byLoc[loc]; l2.push(loc); d2.push(o.s>0?+((o.p/o.s)*100).toFixed(1):0);
+  });
+  if(roiChart) roiChart.destroy();
+  roiChart=new Chart($('chartROI').getContext('2d'),{
+    type:'bar',
     data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(25,195,125,.6)',borderColor:'#19c37d',borderWidth:1}]},
-    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}} });
+    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
+  });
 
-  const agg={}; filtered.forEach(r=>{ const n=norm(r.Location); if(n==='all locations'||n==='all location') return; agg[r.Location]=(agg[r.Location]||0)+(r.Profit||0); });
-  const pairs=Object.keys(agg).map(k=>({l:k,v:agg[k]})).filter(p=>p.v!==0).sort((a,b)=>b.v-a.v);
-  const pLabels=pairs.map(p=>p.l), pData=pairs.map(p=>+p.v.toFixed(2));
-  if(profitChart) profitChart.destroy(); profitChart=new Chart($('chartProfit').getContext('2d'),{ type:'bar',
+  const agg={}, pairs=[];
+  filtered.forEach(r=>{
+    const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
+    agg[r.Location]=(agg[r.Location]||0)+(r.Profit||0);
+  });
+  Object.keys(agg).forEach(k=>pairs.push({l:k,v:agg[k]}));
+  const pPairs = pairs.filter(p=>p.v!==0).sort((a,b)=>b.v-a.v);
+  const pLabels = pPairs.map(p=>p.l), pData=pPairs.map(p=>+p.v.toFixed(2));
+  if(profitChart) profitChart.destroy();
+  profitChart=new Chart($('chartProfit').getContext('2d'),{
+    type:'bar',
     data:{labels:pLabels,datasets:[{label:'Profit ($)',data:pData,borderColor:'#ffb81c',backgroundColor:'rgba(255,184,28,.30)'}]},
-    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}} );
+    options:{responsive:true,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+  });
 }
 
+/* ============== Networking ============== */
 function normalizeUrl(u){
-  if(!u)return''; if(/tqx=out:csv/.test(u))return u; if(/\/pub\?/.test(u)&&/output=csv/.test(u))return u;
-  const m=u.match(/spreadsheets\/d\/([^\/]+).*?[#\?].*?gid=(\d+)/); if(m)return 'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2]; return u;
+  if(!u)return'';
+  if(/tqx=out:csv/.test(u))return u;
+  if(/\/pub\?/.test(u)&&/output=csv/.test(u))return u;
+  const m=u.match(/spreadsheets\/d\/([^\/]+).*?[#\?].*?gid=(\d+)/);
+  if(m)return 'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
+  return u;
 }
 function withBust(url){ const s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()) }
 function fetchCsvText(url){
-  url=withBust(url);
-  return fetch(url,{mode:'cors'}).then(r=>{ if(r.ok)return r.text(); throw new Error('HTTP '+r.status); }).catch(()=>{
+  url = withBust(url);
+  return fetch(url,{mode:'cors'}).then(r=>{
+    if(r.ok) return r.text();
+    throw new Error('HTTP '+r.status);
+  }).catch(()=>{
     const prox=(url.indexOf('https://')===0?'https://r.jina.ai/http://':'https://r.jina.ai/https://')+url.replace(/^https?:\/\//,'');
-    return fetch(prox).then(r2=>{ if(r2.ok)return r2.text();
-      return fetch('https://cors.isomorphic-git.org/'+url).then(r3=>{ if(r3.ok)return r3.text(); throw new Error('All proxies failed'); });
+    return fetch(prox).then(r2=>{
+      if(r2.ok) return r2.text();
+      return fetch('https://cors.isomorphic-git.org/'+url).then(r3=>{
+        if(r3.ok) return r3.text();
+        throw new Error('All proxies failed');
+      });
     });
   });
 }
 
+/* ============== Load & wire ============== */
 function loadFromUrl(url){
-  const normUrl=normalizeUrl(url.trim()); if(!normUrl){ chips(['Paste a valid CSV link']); return; }
-  chips(['Loading…']); fetchCsvText(normUrl).then(text=>{
-    const parsed=parseCSVText(text); if(!parsed.rows||parsed.rows.length===0){ chips(['Empty CSV or headers not recognized']); return; }
-    original=pivotLong(parsed.rows); fillFilters(original);
+  const normUrl=normalizeUrl(url.trim());
+  if(!normUrl){ chips(['Paste a valid CSV link']); return; }
+  chips(['Loading…']);
+  fetchCsvText(normUrl).then(text=>{
+    const parsed=parseCSVText(text);
+    if(!parsed.rows||parsed.rows.length===0){ chips(['Empty CSV or headers not recognized']); return; }
+    original=pivotLong(parsed.rows);
+    fillFilters(original);
     $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value='';
-    filtered=original.slice(0); applyFilters(); chips(['CSV loaded: '+parsed.rows.length+' rows']); setUpdated();
-  }).catch(err=>{ chips(['Failed to load CSV: '+err.message]); console.error(err); });
+    filtered=original.slice(0);
+    applyFilters();
+    chips(['CSV loaded: '+parsed.rows.length+' rows']);
+    setUpdated();
+  }).catch(err=>{
+    chips(['Failed to load CSV: '+err.message]); console.error(err);
+  });
 }
 function loadFromFile(file){
   chips(['Reading local CSV…']);
   Papa.parse(file,{complete:function(res){
-    try{ const csvText=Papa.unparse(res.data); const parsed=parseCSVText(csvText);
+    try{
+      const csvText=Papa.unparse(res.data);
+      const parsed=parseCSVText(csvText);
       if(!parsed.rows||parsed.rows.length===0){chips(['Local CSV empty']); return;}
-      original=pivotLong(parsed.rows); fillFilters(original);
+      original=pivotLong(parsed.rows);
+      fillFilters(original);
       $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value='';
-      filtered=original.slice(0); applyFilters(); chips(['Local CSV loaded']); setUpdated();
+      filtered=original.slice(0);
+      applyFilters();
+      chips(['Local CSV loaded']); setUpdated();
     }catch(e){ chips(['Local parse error: '+e.message]); }
   }});
 }
 
-$('reloadBtn')?.addEventListener('click',()=>loadFromUrl($('csvUrl').value));
-$('csvFile')?.addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
-$('autoRefresh')?.addEventListener('change',e=>{
-  if(e.target?.checked){ if(!window.__auto){ window.__auto=setInterval(()=>loadFromUrl($('csvUrl').value), 5*60*1000);} }
-  else{ if(window.__auto){ clearInterval(window.__auto); window.__auto=null; } }
+/* Events */
+$('reloadBtn').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
+$('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
+$('autoRefresh').addEventListener('change',e=>{
+  if(e.target.checked){
+    if(!window.__auto){ window.__auto=setInterval(()=> loadFromUrl($('csvUrl').value), 5*60*1000); }
+  }else{
+    if(window.__auto){ clearInterval(window.__auto); window.__auto=null; }
+  }
 });
-$('clearFilters')?.addEventListener('click',()=>{ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
-['monthFilter','locationFilter','platformFilter'].forEach(id=> $(id)?.addEventListener('change',applyFilters));
+$('clearFilters').addEventListener('click',()=>{ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
+['monthFilter','locationFilter','platformFilter'].forEach(id=> $(id).addEventListener('change',applyFilters));
 
+/* Default CSV */
 const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.addEventListener('DOMContentLoaded',()=>{
-  $('csvUrl') && ($('csvUrl').value=DEFAULT_LINK);
-  if(new URLSearchParams(location.search).get('view')==='atlus'){ loadFromUrl(DEFAULT_LINK); }
-  document.getElementById('lastUpdated') && setUpdated();
+  $('csvUrl').value=DEFAULT_LINK;
+  const isAtlus = new URLSearchParams(location.search).get('view')==='atlus';
+  if(isAtlus){ loadFromUrl(DEFAULT_LINK); }
+  $('autoRefresh').dispatchEvent(new Event('change'));
+  setUpdated();
 });
 </script>
 </body>
