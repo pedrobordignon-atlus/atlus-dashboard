@@ -4,7 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Atlus Performance Dashboard — Atlus Theme</title>
-<link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=4">
+
+<!-- Favicon (usa o arquivo na raiz do repo) -->
+<link rel="icon" type="image/png" href="favicon.png">
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -37,7 +40,7 @@ header{
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.45)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1;min-width:220px}
-.input, select, textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
+.input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
 .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
 .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
 .switch{display:flex;gap:8px;align-items:center;color:var(--text-dim);font-size:13px}
@@ -58,7 +61,8 @@ header{
 <header>
   <div class="brand">
     <div class="logo">
-      <img src="./Atlus_logo_files/favicon.png?v=4" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
+      <!-- Logo no header: usa o favicon na raiz pra evitar caminho quebrado -->
+      <img src="favicon.png" alt="Atlus" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
     </div>
     <div class="title">Atlus Performance Dashboard</div>
   </div>
@@ -67,20 +71,24 @@ header{
 
 <main class="container">
 
-  <!-- NEW: Notes / Instructions (top) -->
+  <!-- NOTES FIXED -->
   <section class="panel" id="notesPanel">
     <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap">
       <div style="flex:2; min-width:260px;">
-        <div style="font-weight:700; margin-bottom:6px">Notes / Instructions</div>
-        <textarea id="userNotes" rows="3" class="input" placeholder="Type your notes or instructions here… (auto-saves)"></textarea>
-        <div class="badge" style="margin-top:6px">Notes are saved locally in your browser.</div>
+        <div style="font-weight:700; margin-bottom:6px">Notes</div>
+        <p style="margin:.2rem 0 0.6rem">
+          Hello, Atlus coworker, glad to see you here!<br><br>
+          This is a dashboard showing the leads from platforms we are currently paying for:
+          <b>LSAs</b> + <b>Thumbtack</b>. <span style="white-space:nowrap">👉</span>
+          There is an important note on the right.
+        </p>
       </div>
       <div style="flex:1; min-width:240px; background:#081b2b; border:1px solid var(--border); border-radius:12px; padding:10px">
         <div style="font-weight:700; margin-bottom:6px">Heads-up</div>
         <ul style="margin:0; padding-left:18px; color:var(--text-dim)">
           <li>
-            Thumbtack spend is paid as <b>“Atlus — All locations”</b>. Because of that, a
-            location-level breakdown for Thumbtack will not appear in the charts.
+            Thumbtack spend is paid as <b>“Atlus — All locations”</b>. Because of that,
+            a location-level breakdown for Thumbtack will not appear in the charts.
           </li>
         </ul>
       </div>
@@ -124,7 +132,7 @@ header{
     <canvas id="chartProfit"></canvas>
   </section>
 
-  <!-- MOVED: Data source panel to the bottom -->
+  <!-- Data source panel (fica no final) -->
   <section class="panel" id="dataSourcePanel">
     <div class="row">
       <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
@@ -146,21 +154,6 @@ function chips(msgs){var c=$('statusChips');c.innerHTML='';msgs.forEach(addChip)
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—';}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—';}
 function norm(s){return String(s||'').trim().toLowerCase();}
-
-/* ---------- local notes (auto-save) ---------- */
-const NOTES_KEY = 'atlus_dashboard_notes';
-function loadNotes(){ const t=$('userNotes'); if(!t) return; t.value = localStorage.getItem(NOTES_KEY) || ''; t.addEventListener('input', ()=> localStorage.setItem(NOTES_KEY, t.value)); }
-
-/* ---------- number & sanitize ---------- */
-function toNumber(x){
-  if (x==null || x==='') return 0;
-  if (typeof x==='number' && isFinite(x)) return x;
-  var s = String(x).trim().replace(/[^0-9.\-]/g,'');
-  if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
-  var n = parseFloat(s);
-  return isFinite(n)?n:0;
-}
-function onlyGood(arr){ return arr.filter(function(v){ return v && v!=='#DIV/0!' && v!=='NaN' && v!=='Infinity'; }); }
 
 /* ---------- CSV parsing ---------- */
 function detectColumns(headers){
@@ -211,10 +204,10 @@ function pivotLong(rows){
     var locRaw = String(r.Location||'').trim();
     var locN = locRaw.toLowerCase();
 
-    // If empty → treat as All locations (Thumbtack case)
+    // Empty location -> "All locations" (Thumbtack case)
     var loc = locRaw || 'All locations';
 
-    // Drop All locations ONLY when it's not Thumbtack
+    // Drop "All locations" only when NOT Thumbtack
     if ((locN === 'all locations' || locN === 'all location') && platN !== 'thumbtack') return;
 
     var k = [r.Month, loc, plat].join('||');
@@ -468,7 +461,6 @@ $('clearFilters').addEventListener('click',function(){ $('monthFilter').value=''
 /* Default link + init */
 var DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.addEventListener('DOMContentLoaded',function(){
-  loadNotes();
   $('csvUrl').value=DEFAULT_LINK;
   loadFromUrl(DEFAULT_LINK);
   $('autoRefresh').dispatchEvent(new Event('change'));
