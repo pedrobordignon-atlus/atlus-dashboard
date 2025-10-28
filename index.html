@@ -6,7 +6,7 @@
   <title>Atlus Dashboards</title>
 
   <!-- FAVICON (usa o mesmo caminho que deu certo) -->
-  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
+ <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -52,32 +52,50 @@
     .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
     .title{font-weight:700}
 
-    /* Layout */
-    .container{max-width:1280px;margin:0 auto;padding:26px;display:grid;gap:var(--gap-lg)}
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:var(--pad-lg);
-      box-shadow:var(--shadow);
-    }
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .row>*{flex:1;min-width:220px}
+    /* Contêiner principal de cada página/section */
+.container{
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 24px;      /* era 18px */
+  display: grid;
+  gap: 22px;          /* era ~16px */
+}
 
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-    .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
-    .btn.link{background:transparent;border:1px solid var(--border)}
-    .muted{color:var(--text-dim)}
+/* Painéis/cartões */
+.panel{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px; /* um pouco mais de fôlego */
+}
 
-    /* Home */
-    .hero{
-      display:grid; gap:16px;
-      background:linear-gradient(180deg, rgba(8,25,42,.6), rgba(8,25,42,.2));
-      border:1px solid var(--border); border-radius:var(--radius);
-      padding:28px;
-    }
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-    @media(max-width:1100px){ .cards{grid-template-columns:1fr} }
+/* Linha de filtros/KPIs: só um espacinho extra entre linhas quando quebrar */
+.row{
+  display: flex;
+  gap: 12px;          /* era 10px */
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Cards de KPI (respiro vertical entre blocos) */
+.kpis{ gap: 14px; }
+
+/* Home (cards e herói) – só espaçamento, sem mudar layout */
+.hero{
+  padding: 22px;      /* respiro no destaque do topo da home */
+}
+.cards{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;          /* respiro entre cards */
+}
+.card{
+  padding: 18px;
+}
+@media (max-width: 1100px){
+  .cards{ grid-template-columns: 1fr; }
+}
+
 
     .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
     .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
@@ -111,7 +129,8 @@
   <div class="brand">
     <div class="logo">
       <!-- SE o logo tiver outro nome, ajuste este src -->
-      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
+      <!-- dentro do header, à esquerda do título -->
+<img src="./Atlus_logo_files/favicon.png" alt="Atlus" class="brand-logo">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
