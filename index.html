@@ -4,10 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Atlus Performance Dashboard — Atlus Theme</title>
-
-<!-- Favicon (usa o arquivo na raiz do repo) -->
-<link rel="icon" type="image/png" href="favicon.png">
-
+<link rel="icon" type="image/png" href="favicon.png.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -15,7 +13,8 @@
   --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
   --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
 }
-*{box-sizing:border-box} html,body{height:100%}
+*{box-sizing:border-box}
+html,body{height:100%}
 body{
   margin:0;
   background:
@@ -25,6 +24,7 @@ body{
   color:var(--text);
   font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
+/* Header */
 header{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; justify-content:space-between;
@@ -33,19 +33,25 @@ header{
 }
 .brand{display:flex;align-items:center;gap:12px;font-weight:700}
 .logo{
-  width:40px; height:40px; border-radius:12px; overflow:hidden; padding:0;
-  display:grid; place-items:center; background:transparent !important; box-shadow:none !important;
+  width:40px; height:40px; border-radius:12px;
+  overflow:hidden; padding:0; display:grid; place-items:center;
+  background:transparent !important; box-shadow:none !important;
 }
+.logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.badge{font-size:12px;color:var(--text-dim)}
+
+/* Layout blocks */
 .container{max-width:1220px;margin:0 auto;padding:18px;display:grid;gap:16px}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.45)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1;min-width:220px}
 .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
-.btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-.btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
-.switch{display:flex;gap:8px;align-items:center;color:var(--text-dim);font-size:13px}
-.badge{font-size:12px;color:var(--text-dim)}
+.btn{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer;font-weight:600}
+.btn.primary{background:var(--blue);border-color:transparent;color:#fff}
+.btn.ghost{background:transparent}
+.linklike{color:#a7bfd9;text-decoration:underline;cursor:pointer}
 
+/* KPIs */
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
 .kpi .label{font-size:12px;color:var(--text-dim)}
@@ -53,107 +59,202 @@ header{
 .kpi .value .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
 .dot.blue{background:var(--blue)} .dot.gold{background:var(--gold)} .dot.green{background:var(--green)}
 
+/* Charts grid */
 .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:12px}
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr}}
+
+/* Notes */
+.note{
+  display:flex; gap:12px; align-items:flex-start;
+  border-left:4px solid var(--gold);
+  background:#0c2236; border:1px solid var(--border);
+  border-radius:12px; padding:12px 14px; color:var(--text);
+}
+.note .icon{font-size:18px; line-height:1.2}
+.note strong{color:#ffd978}
+
+/* Home */
+.hero{
+  display:grid; gap:22px; padding:24px;
+  background:linear-gradient(135deg, rgba(0,119,200,.14), rgba(255,184,28,.10));
+  border:1px solid var(--border); border-radius:18px;
+}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
+.card{
+  background:#0b1f33; border:1px solid var(--border); border-radius:14px; padding:16px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.card h3{margin:0 0 6px 0}
+.card p{margin:0; color:var(--text-dim); font-size:14px}
+
+/* Responsive */
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+}
+
+/* Chips (status) */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:#09192a;color:var(--text-dim);padding:6px 10px;border-radius:999px;font-size:12px}
+
+/* Hide/Show views */
+.view{display:none}
+.view.active{display:block}
 </style>
 </head>
 <body>
+
 <header>
   <div class="brand">
     <div class="logo">
-      <!-- Logo no header: usa o favicon na raiz pra evitar caminho quebrado -->
-      <img src="favicon.png" alt="Atlus" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
+      <img src="Atlus_logo_files/favicon.png.png" alt="Atlus logo">
     </div>
-    <div class="title">Atlus Performance Dashboard</div>
+    <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
   <div class="badge" id="lastUpdated">Last updated: —</div>
 </header>
 
 <main class="container">
 
-  <!-- NOTES FIXED -->
-  <section class="panel" id="notesPanel">
-    <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap">
-      <div style="flex:2; min-width:260px;">
-        <div style="font-weight:700; margin-bottom:6px">Notes</div>
-        <p style="margin:.2rem 0 0.6rem">
-          Hello, Atlus coworker, glad to see you here!<br><br>
-          This is a dashboard showing the leads from platforms we are currently paying for:
-          <b>LSAs</b> + <b>Thumbtack</b>. <span style="white-space:nowrap">👉</span>
-          There is an important note on the right.
-        </p>
-      </div>
-      <div style="flex:1; min-width:240px; background:#081b2b; border:1px solid var(--border); border-radius:12px; padding:10px">
-        <div style="font-weight:700; margin-bottom:6px">Heads-up</div>
-        <ul style="margin:0; padding-left:18px; color:var(--text-dim)">
-          <li>
-            Thumbtack spend is paid as <b>“Atlus — All locations”</b>. Because of that,
-            a location-level breakdown for Thumbtack will not appear in the charts.
-          </li>
-        </ul>
+  <!-- ========== HOME (landing) ========== -->
+  <section id="view-home" class="view active">
+    <div class="hero">
+      <h1 style="margin:0">Welcome to <strong>Atlus Dashboards</strong></h1>
+      <p style="margin:0;color:var(--text-dim)">Choose a dashboard below. You can come back here anytime.</p>
+      <div>
+        <button class="btn primary" onclick="go('dashboard')">Open Atlus Performance Dashboard</button>
       </div>
     </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Atlus Performance Dashboard</h3>
+        <p>Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</p>
+        <div><button class="btn" onclick="go('dashboard')">Open</button></div>
+      </div>
+
+      <!-- Espaço para futuros dashboards -->
+      <div class="card" style="opacity:.65">
+        <h3>LSA Deep Dive (coming soon)</h3>
+        <p>Channel-level conversion, CPL, match rate, and more.</p>
+        <div><button class="btn ghost" disabled>Soon</button></div>
+      </div>
+      <div class="card" style="opacity:.65">
+        <h3>Sales Overview (coming soon)</h3>
+        <p>Sales funnel from lead → close with rep breakdown.</p>
+        <div><button class="btn ghost" disabled>Soon</button></div>
+      </div>
+    </div>
   </section>
 
-  <!-- Filters -->
-  <section class="panel">
+  <!-- ========== DASHBOARD ========== -->
+  <section id="view-dashboard" class="view">
+    <!-- Back + Notes -->
     <div class="row">
-      <div><label>Month / Year</label><select id="monthFilter" class="input"></select></div>
-      <div><label>Location</label><select id="locationFilter" class="input"></select></div>
-      <div><label>Platform</label><select id="platformFilter" class="input"></select></div>
-      <div style="max-width:140px"><label>&nbsp;</label><button class="btn" id="clearFilters">Clear</button></div>
+      <div style="flex:0 0 auto">
+        <button class="btn" onclick="go('home')">← Back to Home</button>
+      </div>
     </div>
-  </section>
 
-  <!-- KPIs -->
-  <section class="kpis">
-    <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
-    <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
-    <div class="kpi"><div class="label">Closed Jobs</div><div class="value"><span class="dot gold"></span><span id="kpiJobs">—</span></div></div>
-    <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
-    <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
-    <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
-  </section>
+    <section class="panel note">
+      <div class="icon">💡</div>
+      <div>
+        <div><strong>Hello, Atlus coworker, glad to see you here!</strong></div>
+        <div style="margin-top:4px">
+          This dashboard shows leads from the platforms we currently pay for: <strong>LSAs + Thumbtack</strong>.
+          <br>Important: <em>Thumbtack spend is paid at the company level (Atlus overall)</em>, so its <strong>locations</strong> will appear as <strong>“All locations”</strong> by design.
+        </div>
+      </div>
+    </section>
 
-  <!-- Charts -->
-  <section class="grid-2">
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
-      <canvas id="chartLeads"></canvas>
-    </div>
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">ROI per Location</div>
-      <canvas id="chartROI"></canvas>
-    </div>
-  </section>
+    <!-- Filters -->
+    <section class="panel">
+      <div class="row">
+        <div><label>Month / Year</label><select id="monthFilter" class="input"></select></div>
+        <div><label>Location</label><select id="locationFilter" class="input"></select></div>
+        <div><label>Platform</label><select id="platformFilter" class="input"></select></div>
+        <div style="max-width:140px"><label>&nbsp;</label><button class="btn" id="clearFilters">Clear</button></div>
+      </div>
+    </section>
 
-  <section class="panel">
-    <div style="margin-bottom:8px;font-weight:700">Profit per Location</div>
-    <canvas id="chartProfit"></canvas>
-  </section>
+    <!-- KPIs (linha 1: 6 originais) -->
+    <section class="kpis" style="margin-top:-4px">
+      <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
+      <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
+      <div class="kpi"><div class="label">Closed Jobs</div><div class="value"><span class="dot gold"></span><span id="kpiJobs">—</span></div></div>
+      <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
+      <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
+      <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
+    </section>
 
-  <!-- Data source panel (fica no final) -->
-  <section class="panel" id="dataSourcePanel">
-    <div class="row">
-      <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-      <div style="max-width:300px"><label>or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-      <div style="max-width:160px"><label>&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
-      <div style="max-width:220px"><label>&nbsp;</label><label class="switch"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
-    </div>
-    <div id="statusChips" class="chips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-  </section>
+    <!-- KPIs (linha 2: 3 novos) -->
+    <section class="kpis">
+      <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDailySpend">—</span></div></div>
+      <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot green"></span><span id="kpiCloseRate">—</span></div></div>
+      <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGoodLeads">—</span></div></div>
+    </section>
 
+    <!-- Charts -->
+    <section class="grid-2">
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
+        <canvas id="chartLeads"></canvas>
+      </div>
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700">ROI per Location</div>
+        <canvas id="chartROI"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div style="margin-bottom:8px;font-weight:700">Profit per Location</div>
+      <canvas id="chartProfit"></canvas>
+    </section>
+
+    <!-- Data source (foi movido para o final) -->
+    <section class="panel">
+      <div class="row">
+        <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+        <div style="max-width:300px"><label>or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
+        <div style="max-width:160px"><label>&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
+        <div style="max-width:220px"><label>&nbsp;</label><label class="switch"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+      </div>
+      <div id="statusChips" class="chips" style="margin-top:10px"></div>
+    </section>
+  </section>
 </main>
 
 <script>
+/* ===== Simple view router ===== */
+function go(view){
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-dashboard').classList.remove('active');
+  if(view==='dashboard'){
+    document.getElementById('view-dashboard').classList.add('active');
+    document.getElementById('headerTitle').textContent='Atlus Performance Dashboard';
+  }else{
+    document.getElementById('view-home').classList.add('active');
+    document.getElementById('headerTitle').textContent='Atlus Dashboards';
+  }
+}
+
 /* ---------- helpers ---------- */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}); }
-function addChip(t){var c=$('statusChips');var s=document.createElement('span');s.style.border='1px solid var(--border)';s.style.background='#09192a';s.style.color='var(--text-dim)';s.style.padding='6px 10px';s.style.borderRadius='999px';s.style.fontSize='12px';s.textContent=t;c.appendChild(s);}
+function addChip(t){var c=$('statusChips');var s=document.createElement('span');s.className='chip';s.textContent=t;c.appendChild(s);}
 function chips(msgs){var c=$('statusChips');c.innerHTML='';msgs.forEach(addChip);}
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—';}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—';}
 function norm(s){return String(s||'').trim().toLowerCase();}
+
+/* ---------- number & sanitize ---------- */
+function toNumber(x){
+  if (x==null || x==='') return 0;
+  if (typeof x==='number' && isFinite(x)) return x;
+  var s = String(x).trim().replace(/[^0-9.\-]/g,'');
+  if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+  var n = parseFloat(s);
+  return isFinite(n)?n:0;
+}
 
 /* ---------- CSV parsing ---------- */
 function detectColumns(headers){
@@ -190,72 +291,68 @@ function parseCSVText(text){
   return {headers:headers,rows:out};
 }
 
-/* ---------- reshape long->wide, cleaning ---------- */
+/* ---------- reshape + metrics ---------- */
 function pivotLong(rows){
   var map={}, out=[];
-  function key(r){return [r.Month,r.Location,r.Platform].join('||');}
+  function key(r){return [r.Month, (r.Location||'').trim()||'All locations', r.Platform].join('||');}
 
   rows.forEach(function(r){
     if(!r || !r.Month || !r.Platform) return;
-    if(r.Month==='#DIV/0!'||r.Platform==='#DIV/0!') return;
-
     var plat = String(r.Platform||'').trim();
-    var platN = plat.toLowerCase();
-    var locRaw = String(r.Location||'').trim();
-    var locN = locRaw.toLowerCase();
+    var locRaw = String(r.Location||'').trim() || 'All locations';
+    // descarta "All locations" quando não for Thumbtack
+    if ((norm(locRaw)==='all locations' || norm(locRaw)==='all location') && norm(plat)!=='thumbtack') return;
 
-    // Empty location -> "All locations" (Thumbtack case)
-    var loc = locRaw || 'All locations';
-
-    // Drop "All locations" only when NOT Thumbtack
-    if ((locN === 'all locations' || locN === 'all location') && platN !== 'thumbtack') return;
-
-    var k = [r.Month, loc, plat].join('||');
-    (map[k]||(map[k]=[])).push({
-      Month: r.Month,
-      Location: loc,
-      Platform: plat,
-      Metric: r.Metric,
-      ValueRaw: r.ValueRaw
-    });
+    var k = [r.Month, locRaw, plat].join('||');
+    (map[k]||(map[k]=[])).push(r);
   });
 
   Object.keys(map).forEach(function(k){
-    var parts = k.split('||');
-    var Month = parts[0], Location = parts[1], Platform = parts[2];
-    var rec = {Month, Location, Platform, Leads:0, Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0};
-    var list = map[k];
+    var parts=k.split('||');
+    var Month=parts[0], Location=parts[1], Platform=parts[2];
+    var rec={Month,Location,Platform,
+      Leads:0, GoodLeads:0, GoodLeadsPct:null,
+      Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0
+    };
 
+    var list=map[k];
     for(var i=0;i<list.length;i++){
       var row=list[i];
-      var m=String(row.Metric||'').toLowerCase();
-      var raw=(row.ValueRaw==null?'':String(row.ValueRaw));
+      var m=norm(row.Metric||'');
+      var raw=String(row.ValueRaw==null?'':row.ValueRaw);
+      var v=toNumber(raw);
 
-      var s = raw.trim().replace(/[^0-9.\-]/g,'');
-      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
-      var v = parseFloat(s); v = isFinite(v)?v:0;
-
-      if((m.indexOf('spend')>-1 && m.indexOf('daily')===-1) || m.indexOf('monthly spend')>-1){
-        rec.Spend += v;
-      } else if (m.indexOf('number of leads')>-1){
-        rec.Leads += v;
-      } else if (m.indexOf('closed job')>-1){
-        rec.JobsClosed += v;
-      } else if (m.indexOf('contract total')>-1){
-        rec.ContractTotal += v;
-      } else if (m.indexOf('profit')>-1){
-        rec.Profit += v;
-      } else if (m==='roi' || m==='roi (%)'){
-        var t=v; if(raw.indexOf('%')>-1) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
-        if(t>1.5)t/=100;
-        rec.ROI=t;
+      if((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend+=v;
+      else if (m.includes('number of leads')) rec.Leads+=v;
+      else if (m.includes('closed job')) rec.JobsClosed+=v;
+      else if (m.includes('contract total')) rec.ContractTotal+=v;
+      else if (m==='profit') rec.Profit+=v;
+      else if (m==='roi' || m==='roi (%)'){
+        var t=v; if(raw.indexOf('%')>-1) t=(+raw.replace(/[^0-9.\-]/g,''))/100; if(t>1.5) t/=100; rec.ROI=t;
+      }
+      // Good leads (count or %)
+      if (m.includes('good leads') && !m.includes('%')) rec.GoodLeads += v;
+      if (m.includes('% good') || m==='good leads %' || m==='good leads (%)'){
+        var p = +raw.replace(/[^0-9.\-]/g,''); // e.g. "68%" -> 68
+        rec.GoodLeadsPct = isFinite(p) ? p/100 : rec.GoodLeadsPct;
       }
     }
 
+    // Derivados
     if(!rec.Profit) rec.Profit = rec.ContractTotal - rec.Spend;
     if(rec.ROI==null) rec.ROI = rec.Spend>0 ? rec.Profit/rec.Spend : 0;
     rec.CPJ = rec.JobsClosed>0 ? rec.Spend/rec.JobsClosed : 0;
 
+    // Se só tivermos % Good Leads, tenta inferir quantidade
+    if(rec.GoodLeads===0 && rec.GoodLeadsPct!=null && rec.Leads>0){
+      rec.GoodLeads = Math.round(rec.Leads * rec.GoodLeadsPct);
+    }
+    // Se só tivermos quantidade, calcula %
+    if(rec.GoodLeadsPct==null && rec.Leads>0){
+      rec.GoodLeadsPct = rec.GoodLeads/rec.Leads;
+    }
+
+    // arredondamentos
     rec.Leads = Math.round(rec.Leads);
     rec.JobsClosed = Math.round(rec.JobsClosed);
     rec.Spend = +rec.Spend.toFixed(2);
@@ -267,6 +364,7 @@ function pivotLong(rows){
 
   return out;
 }
+
 function uniqSortedClean(arr, excludeAllLocations){
   var seen={}, out=[];
   arr.forEach(function(s){
@@ -289,38 +387,71 @@ function fillFilters(data){
     var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
+  // ordena meses por data real
   var months = [...new Set(data.map(r => r.Month))].sort((a, b) => new Date(a) - new Date(b));
-  var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);
-  var plats =uniqSortedClean(data.map(function(r){return r.Platform;}), false);
+  var locs  = uniqSortedClean(data.map(r=>r.Location), true);   // remove “All locations”
+  var plats = uniqSortedClean(data.map(r=>r.Platform), false);
 
   fill('monthFilter',months,'months');
   fill('locationFilter',locs,'locations');
   fill('platformFilter',plats,'platforms');
 }
 
-function applyFilters(){
-  var m=$('monthFilter').value,l=$('locationFilter').value,p=$('platformFilter').value;
-  filtered=original.filter(function(r){ return (m?r.Month===m:true) && (l?r.Location===l:true) && (p?r.Platform===p:true); });
-  updateKPIs(); updateCharts();
+/* ---------- helpers KPIs ---------- */
+function daysInMonthLabel(label){
+  // label ex.: "October 2025"
+  var d = new Date(label+' 1');
+  if (isNaN(d)) return 30; // fallback
+  var m = d.getMonth(), y = d.getFullYear();
+  return new Date(y, m+1, 0).getDate();
 }
 
-/* ---------- KPIs ---------- */
 function updateKPIs(){
-  var leads=sum(filtered,'Leads'), spend=sum(filtered,'Spend'), jobs=sum(filtered,'JobsClosed');
-  var contract=sum(filtered,'ContractTotal'), profit=sum(filtered,'Profit'); var roi=spend>0?profit/spend:0;
-  $('kpiLeads').textContent   = fmtInt(Math.round(leads));
-  $('kpiSpend').textContent   = fmtUSD(spend);
-  $('kpiJobs').textContent    = fmtInt(Math.round(jobs));
-  $('kpiContract').textContent= fmtUSD(contract);
-  $('kpiProfit').textContent  = fmtUSD(profit);
-  $('kpiROI').textContent     = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
+  var leads=sum(filtered,'Leads'),
+      spend=sum(filtered,'Spend'),
+      jobs=sum(filtered,'JobsClosed'),
+      contract=sum(filtered,'ContractTotal'),
+      profit=sum(filtered,'Profit');
+
+  var roi = spend>0 ? (profit/spend) : 0;
+
+  // Good Leads %
+  var goodCount = sum(filtered,'GoodLeads');
+  var goodPct;
+  if (leads>0) {
+    goodPct = goodCount>0 ? (goodCount/leads) : (sum(filtered,'GoodLeadsPct')>0 ? (sum(filtered,'GoodLeadsPct')/filtered.length) : 0);
+  } else {
+    goodPct = 0;
+  }
+
+  // Close Rate
+  var closeRate = leads>0 ? (jobs/leads) : 0;
+
+  // Approx Daily Spend (usa mês selecionado se tiver 1; se múltiplos meses → média simples de dias)
+  var selectedMonth = $('monthFilter').value;
+  var days = selectedMonth ? daysInMonthLabel(selectedMonth)
+                           : Math.round([...new Set(filtered.map(r=>r.Month))].map(daysInMonthLabel).reduce((a,b)=>a+b,0) / Math.max(1, new Set(filtered.map(r=>r.Month)).size));
+  var dailySpend = days>0 ? (spend/days) : spend;
+
+  $('kpiLeads').textContent       = fmtInt(Math.round(leads));
+  $('kpiSpend').textContent       = fmtUSD(spend);
+  $('kpiJobs').textContent        = fmtInt(Math.round(jobs));
+  $('kpiContract').textContent    = fmtUSD(contract);
+  $('kpiProfit').textContent      = fmtUSD(profit);
+  $('kpiROI').textContent         = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
+
+  $('kpiDailySpend').textContent  = fmtUSD(dailySpend);
+  $('kpiCloseRate').textContent   = isFinite(closeRate)?((closeRate*100).toFixed(1)+'%'):'—';
+  $('kpiGoodLeads').textContent   = isFinite(goodPct)?((goodPct*100).toFixed(1)+'%'):'—';
 }
 
 /* ---------- charts ---------- */
 function updateCharts(){
-  // Leads by Platform
-  var mp={}, k;
-  for(var i=0;i<filtered.length;i++){k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);}
+  // Leads por Plataforma
+  var mp={};
+  for(var i=0;i<filtered.length;i++){
+    var k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);
+  }
   var l1=Object.keys(mp), d1=l1.map(function(x){return mp[x];});
   if(leadsChart) leadsChart.destroy();
   leadsChart=new Chart($('chartLeads').getContext('2d'),{
@@ -329,7 +460,7 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  // ROI by Location (ignores “All locations”)
+  // ROI por Location — ignora “All locations”
   var mapLoc={}, l2=[], d2=[];
   for(var i2=0;i2<filtered.length;i2++){
     var r=filtered[i2];
@@ -354,7 +485,7 @@ function updateCharts(){
     }
   });
 
-  // Profit by Location (ignore zero)
+  // Profit por Location — ignora zero
   var agg={}, pairs=[];
   filtered.forEach(function(r){
     if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
@@ -407,6 +538,12 @@ function fetchCsvText(url){
 }
 
 /* ---------- load & wire ---------- */
+function applyFilters(){ 
+  var m=$('monthFilter').value,l=$('locationFilter').value,p=$('platformFilter').value;
+  filtered=original.filter(function(r){ return (m?r.Month===m:true) && (l?r.Location===l:true) && (p?r.Platform===p:true); });
+  updateKPIs(); updateCharts();
+}
+
 function loadFromUrl(url){
   var normUrl=normalizeUrl(url.trim());
   if(!normUrl){chips(['Paste a valid CSV link']); return;}
@@ -446,6 +583,7 @@ function loadFromFile(file){
   }});
 }
 
+/* UI wiring */
 $('reloadBtn').addEventListener('click',function(){loadFromUrl($('csvUrl').value);});
 $('csvFile').addEventListener('change',function(e){var f=e.target.files[0]; if(f)loadFromFile(f);});
 $('autoRefresh').addEventListener('change',function(e){
@@ -455,12 +593,16 @@ $('autoRefresh').addEventListener('change',function(e){
     if(window.__auto){ clearInterval(window.__auto); window.__auto=null; }
   }
 });
-$('clearFilters').addEventListener('click',function(){ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
-['monthFilter','locationFilter','platformFilter'].forEach(function(id){ $(id).addEventListener('change',applyFilters); });
+$('clearFilters').addEventListener('click',function(){
+  $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters();
+});
 
-/* Default link + init */
+/* Default link */
 var DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.addEventListener('DOMContentLoaded',function(){
+  // Start on HOME
+  go('home');
+  // Prepare dashboard CSV link
   $('csvUrl').value=DEFAULT_LINK;
   loadFromUrl(DEFAULT_LINK);
   $('autoRefresh').dispatchEvent(new Event('change'));
