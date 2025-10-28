@@ -1,200 +1,213 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Atlus Performance Dashboard — Atlus Theme</title>
-<link rel="icon" type="image/png" href="favicon.png.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<style>
-:root{
-  --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
-  --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  background:
-    radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
-    radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
-    var(--navy);
-  color:var(--text);
-  font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-}
-/* Header */
-header{
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
-  border-bottom:1px solid var(--border);
-}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700}
-.logo{
-  width:40px; height:40px; border-radius:12px;
-  overflow:hidden; padding:0; display:grid; place-items:center;
-  background:transparent !important; box-shadow:none !important;
-}
-.logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
-.badge{font-size:12px;color:var(--text-dim)}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Atlus Dashboards</title>
 
-/* Layout blocks */
-.container{max-width:1220px;margin:0 auto;padding:18px;display:grid;gap:16px}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.45)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.row>*{flex:1;min-width:220px}
-.input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
-.btn{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer;font-weight:600}
-.btn.primary{background:var(--blue);border-color:transparent;color:#fff}
-.btn.ghost{background:transparent}
-.linklike{color:#a7bfd9;text-decoration:underline;cursor:pointer}
+  <!-- FAVICON (usa o mesmo caminho que deu certo) -->
+  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
 
-/* KPIs */
-.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-.kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
-.kpi .label{font-size:12px;color:var(--text-dim)}
-.kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
-.kpi .value .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
-.dot.blue{background:var(--blue)} .dot.gold{background:var(--gold)} .dot.green{background:var(--green)}
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-/* Charts grid */
-.grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:12px}
+  <style>
+    :root{
+      --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
+      --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+      --shadow: 0 20px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --gap: 18px;
+      --gap-lg: 22px;
+      --pad: 20px;
+      --pad-lg: 24px;
+    }
 
-/* Notes */
-.note{
-  display:flex; gap:12px; align-items:flex-start;
-  border-left:4px solid var(--gold);
-  background:#0c2236; border:1px solid var(--border);
-  border-radius:12px; padding:12px 14px; color:var(--text);
-}
-.note .icon{font-size:18px; line-height:1.2}
-.note strong{color:#ffd978}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        var(--navy);
+      color:var(--text);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
 
-/* Home */
-.hero{
-  display:grid; gap:22px; padding:24px;
-  background:linear-gradient(135deg, rgba(0,119,200,.14), rgba(255,184,28,.10));
-  border:1px solid var(--border); border-radius:18px;
-}
-.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
-.card{
-  background:#0b1f33; border:1px solid var(--border); border-radius:14px; padding:16px;
-  display:flex; flex-direction:column; gap:10px;
-}
-.card h3{margin:0 0 6px 0}
-.card p{margin:0; color:var(--text-dim); font-size:14px}
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
+      border-bottom:1px solid var(--border);
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo{
+      width:40px;height:40px;border-radius:12px;overflow:hidden;padding:0;
+      display:grid;place-items:center;background:transparent;box-shadow:none;
+      border:1px solid rgba(255,255,255,.05)
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+    .title{font-weight:700}
 
-/* Responsive */
-@media(max-width:1100px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .grid-2{grid-template-columns:1fr}
-}
+    /* Layout */
+    .container{max-width:1280px;margin:0 auto;padding:26px;display:grid;gap:var(--gap-lg)}
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:var(--pad-lg);
+      box-shadow:var(--shadow);
+    }
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .row>*{flex:1;min-width:220px}
 
-/* Chips (status) */
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{border:1px solid var(--border);background:#09192a;color:var(--text-dim);padding:6px 10px;border-radius:999px;font-size:12px}
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
+    .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
+    .btn.link{background:transparent;border:1px solid var(--border)}
+    .muted{color:var(--text-dim)}
 
-/* Hide/Show views */
-.view{display:none}
-.view.active{display:block}
-</style>
+    /* Home */
+    .hero{
+      display:grid; gap:16px;
+      background:linear-gradient(180deg, rgba(8,25,42,.6), rgba(8,25,42,.2));
+      border:1px solid var(--border); border-radius:var(--radius);
+      padding:28px;
+    }
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    @media(max-width:1100px){ .cards{grid-template-columns:1fr} }
+
+    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
+
+    /* Dashboard KPIs */
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+    @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
+    .kpi .label{font-size:12px;color:var(--text-dim)}
+    .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
+    .dot.blue{background:var(--blue)} .dot.gold{background:var(--gold)} .dot.green{background:var(--green)}
+
+    .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
+    @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
+    select, .input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
+
+    .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
+    @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
+
+    .noteTitle{font-weight:700;margin-bottom:6px}
+    .note{border-left:3px solid var(--blue);padding-left:12px}
+    .stack{display:grid;gap:12px}
+
+    .backRow{display:flex;align-items:center;gap:8px}
+  </style>
 </head>
 <body>
 
 <header>
   <div class="brand">
     <div class="logo">
-      <img src="Atlus_logo_files/favicon.png.png" alt="Atlus logo">
+      <!-- SE o logo tiver outro nome, ajuste este src -->
+      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
-  <div class="badge" id="lastUpdated">Last updated: —</div>
+  <div class="muted" id="lastUpdated">Last updated: —</div>
 </header>
 
 <main class="container">
 
-  <!-- ========== HOME (landing) ========== -->
-  <section id="view-home" class="view active">
+  <!-- ========== HOME ========== -->
+  <section id="view-home" class="stack" style="display:none">
     <div class="hero">
-      <h1 style="margin:0">Welcome to <strong>Atlus Dashboards</strong></h1>
-      <p style="margin:0;color:var(--text-dim)">Choose a dashboard below. You can come back here anytime.</p>
+      <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
+      <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
       <div>
-        <button class="btn primary" onclick="go('dashboard')">Open Atlus Performance Dashboard</button>
+        <button class="btn primary" onclick="openView('atlus')">Open Atlus Performance Dashboard</button>
       </div>
     </div>
 
     <div class="cards">
       <div class="card">
-        <h3>Atlus Performance Dashboard</h3>
-        <p>Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</p>
-        <div><button class="btn" onclick="go('dashboard')">Open</button></div>
+        <div class="pill">Featured</div>
+        <h3 style="margin:2px 0 0">Atlus Performance Dashboard</h3>
+        <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
+        <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
 
-      <!-- Espaço para futuros dashboards -->
-      <div class="card" style="opacity:.65">
-        <h3>LSA Deep Dive (coming soon)</h3>
-        <p>Channel-level conversion, CPL, match rate, and more.</p>
-        <div><button class="btn ghost" disabled>Soon</button></div>
+      <div class="card">
+        <div class="pill">Future dashboard</div>
+        <h3 style="margin:2px 0 0">LSA Deep Dive <span class="muted">(coming soon)</span></h3>
+        <div class="muted">Channel-level conversion, CPL, match rate, and more.</div>
+        <div><button class="btn link" disabled>Soon</button></div>
       </div>
-      <div class="card" style="opacity:.65">
-        <h3>Sales Overview (coming soon)</h3>
-        <p>Sales funnel from lead → close with rep breakdown.</p>
-        <div><button class="btn ghost" disabled>Soon</button></div>
+
+      <div class="card">
+        <div class="pill">Future dashboard</div>
+        <h3 style="margin:2px 0 0">Sales Overview <span class="muted">(coming soon)</span></h3>
+        <div class="muted">Sales funnel from lead → close with rep breakdown.</div>
+        <div><button class="btn link" disabled>Soon</button></div>
       </div>
     </div>
   </section>
 
-  <!-- ========== DASHBOARD ========== -->
-  <section id="view-dashboard" class="view">
-    <!-- Back + Notes -->
-    <div class="row">
-      <div style="flex:0 0 auto">
-        <button class="btn" onclick="go('home')">← Back to Home</button>
+  <!-- ========== ATLUS DASHBOARD ========== -->
+  <section id="view-atlus" class="stack" style="display:none">
+
+    <div class="backRow">
+      <button class="btn link" onclick="openView('home')">← Back to Home</button>
+    </div>
+
+    <!-- Intro / Heads-up -->
+    <div class="panel">
+      <div class="noteTitle">👋 Hello, Atlus coworker, glad to see you here!</div>
+      <div class="note">
+        This dashboard shows leads from the platforms we currently pay for:
+        <b>LSAs + Thumbtack</b>.<br>
+        <b>Important:</b> <i>Thumbtack spend is paid at the company level (Atlus overall)</i>, so its
+        <b>locations</b> will appear as <b>“All locations”</b> by design.
       </div>
     </div>
 
-    <section class="panel note">
-      <div class="icon">💡</div>
-      <div>
-        <div><strong>Hello, Atlus coworker, glad to see you here!</strong></div>
-        <div style="margin-top:4px">
-          This dashboard shows leads from the platforms we currently pay for: <strong>LSAs + Thumbtack</strong>.
-          <br>Important: <em>Thumbtack spend is paid at the company level (Atlus overall)</em>, so its <strong>locations</strong> will appear as <strong>“All locations”</strong> by design.
-        </div>
-      </div>
-    </section>
-
     <!-- Filters -->
-    <section class="panel">
-      <div class="row">
-        <div><label>Month / Year</label><select id="monthFilter" class="input"></select></div>
-        <div><label>Location</label><select id="locationFilter" class="input"></select></div>
-        <div><label>Platform</label><select id="platformFilter" class="input"></select></div>
-        <div style="max-width:140px"><label>&nbsp;</label><button class="btn" id="clearFilters">Clear</button></div>
+    <div class="panel filters">
+      <div>
+        <label class="muted">Month / Year</label>
+        <select id="monthFilter"></select>
       </div>
-    </section>
+      <div>
+        <label class="muted">Location</label>
+        <select id="locationFilter"></select>
+      </div>
+      <div>
+        <label class="muted">Platform</label>
+        <select id="platformFilter"></select>
+      </div>
+      <div style="display:grid;align-content:end">
+        <button class="btn" id="clearFilters">Clear</button>
+      </div>
+    </div>
 
-    <!-- KPIs (linha 1: 6 originais) -->
-    <section class="kpis" style="margin-top:-4px">
+    <!-- KPIs -->
+    <div class="kpis">
       <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
       <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
       <div class="kpi"><div class="label">Closed Jobs</div><div class="value"><span class="dot gold"></span><span id="kpiJobs">—</span></div></div>
       <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
       <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
       <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
-    </section>
 
-    <!-- KPIs (linha 2: 3 novos) -->
-    <section class="kpis">
-      <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDailySpend">—</span></div></div>
-      <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot green"></span><span id="kpiCloseRate">—</span></div></div>
-      <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGoodLeads">—</span></div></div>
-    </section>
+      <!-- NOVOS KPIs -->
+      <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDaily">—</span></div></div>
+      <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot gold"></span><span id="kpiClose">—</span></div></div>
+      <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGood">—</span></div></div>
+    </div>
 
     <!-- Charts -->
-    <section class="grid-2">
+    <div class="grid-2">
       <div class="panel">
         <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
         <canvas id="chartLeads"></canvas>
@@ -203,63 +216,63 @@ header{
         <div style="margin-bottom:8px;font-weight:700">ROI per Location</div>
         <canvas id="chartROI"></canvas>
       </div>
-    </section>
+    </div>
 
-    <section class="panel">
+    <div class="panel">
       <div style="margin-bottom:8px;font-weight:700">Profit per Location</div>
       <canvas id="chartProfit"></canvas>
-    </section>
+    </div>
 
-    <!-- Data source (foi movido para o final) -->
-    <section class="panel">
+    <!-- Data source (moveu pra baixo) -->
+    <div class="panel">
       <div class="row">
-        <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-        <div style="max-width:300px"><label>or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-        <div style="max-width:160px"><label>&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
-        <div style="max-width:220px"><label>&nbsp;</label><label class="switch"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+        <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+        <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
+        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
+        <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
       </div>
-      <div id="statusChips" class="chips" style="margin-top:10px"></div>
-    </section>
+      <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+
   </section>
 </main>
 
 <script>
-/* ===== Simple view router ===== */
-function go(view){
-  document.getElementById('view-home').classList.remove('active');
-  document.getElementById('view-dashboard').classList.remove('active');
-  if(view==='dashboard'){
-    document.getElementById('view-dashboard').classList.add('active');
-    document.getElementById('headerTitle').textContent='Atlus Performance Dashboard';
-  }else{
-    document.getElementById('view-home').classList.add('active');
-    document.getElementById('headerTitle').textContent='Atlus Dashboards';
-  }
+/* ============== View router (Home <-> Atlus) ============== */
+function openView(which){
+  document.getElementById('view-home').style.display = which==='home'?'block':'none';
+  document.getElementById('view-atlus').style.display = which==='atlus'?'block':'none';
+  document.getElementById('headerTitle').textContent = which==='home' ? 'Atlus Dashboards' : 'Atlus Performance Dashboard';
+  history.replaceState(null, '', location.pathname + '?view=' + which);
 }
+(function initViewFromURL(){
+  const p = new URLSearchParams(location.search);
+  openView(p.get('view')==='atlus' ? 'atlus' : 'home');
+})();
 
-/* ---------- helpers ---------- */
+/* ============== Helpers UI / format ============== */
 function $(id){return document.getElementById(id);}
-function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}); }
-function addChip(t){var c=$('statusChips');var s=document.createElement('span');s.className='chip';s.textContent=t;c.appendChild(s);}
-function chips(msgs){var c=$('statusChips');c.innerHTML='';msgs.forEach(addChip);}
-function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—';}
-function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—';}
-function norm(s){return String(s||'').trim().toLowerCase();}
+function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
+function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
+function chips(msgs){const c=$('statusChips'); c.innerHTML=''; msgs.forEach(m=>c.appendChild(chip(m)))}
+function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—'}
+function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
+function norm(s){return String(s||'').trim().toLowerCase()}
 
-/* ---------- number & sanitize ---------- */
+/* ============== Number & sanitize ============== */
 function toNumber(x){
   if (x==null || x==='') return 0;
   if (typeof x==='number' && isFinite(x)) return x;
-  var s = String(x).trim().replace(/[^0-9.\-]/g,'');
+  let s = String(x).trim().replace(/[^0-9.\-]/g,'');
   if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
-  var n = parseFloat(s);
+  const n = parseFloat(s);
   return isFinite(n)?n:0;
 }
 
-/* ---------- CSV parsing ---------- */
+/* ============== CSV parsing ============== */
 function detectColumns(headers){
-  var h=headers.map(function(x){return String(x||'').toLowerCase();});
-  function find(keys){for(var i=0;i<h.length;i++){for(var j=0;j<keys.length;j++){if(h[i].indexOf(keys[j])>-1)return i;}}return -1;}
+  const h=headers.map(x=>String(x||'').toLowerCase());
+  const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
   return {
     platform:find(['platform','source']),
     location:find(['location','market']),
@@ -269,17 +282,14 @@ function detectColumns(headers){
     value:find(['value','amount','qty','number'])
   };
 }
-
 function parseCSVText(text){
-  var res=Papa.parse(text,{skipEmptyLines:true});
-  var rows=res.data||[];
-  if(rows.length<2) return {headers:[],rows:[]};
-  var headers=rows[0].map(function(x){return String(x||'');});
-  var col=detectColumns(headers);
-  var out=[];
-  for(var i=1;i<rows.length;i++){
-    var r=rows[i]; if(!r||!r.length)continue;
-    function get(idx){return (idx>=0&&idx<r.length)?r[idx]:'';}
+  const res=Papa.parse(text,{skipEmptyLines:true});
+  const rows=res.data||[]; if(rows.length<2) return {headers:[],rows:[]};
+  const headers=rows[0].map(x=>String(x||'')); const col=detectColumns(headers);
+  const out=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i]; if(!r||!r.length)continue;
+    const get=idx=> (idx>=0&&idx<r.length)?r[idx]:'';
     out.push({
       Platform:String(get(col.platform)).trim(),
       Location:String(get(col.location)).trim(),
@@ -288,73 +298,65 @@ function parseCSVText(text){
       ValueRaw:get(col.value)
     });
   }
-  return {headers:headers,rows:out};
+  return {headers,rows:out};
 }
 
-/* ---------- reshape + metrics ---------- */
+/* ============== reshape long->wide, cleaning ============== */
 function pivotLong(rows){
-  var map={}, out=[];
-  function key(r){return [r.Month, (r.Location||'').trim()||'All locations', r.Platform].join('||');}
-
-  rows.forEach(function(r){
+  const map={}, out=[];
+  rows.forEach(r=>{
     if(!r || !r.Month || !r.Platform) return;
-    var plat = String(r.Platform||'').trim();
-    var locRaw = String(r.Location||'').trim() || 'All locations';
-    // descarta "All locations" quando não for Thumbtack
-    if ((norm(locRaw)==='all locations' || norm(locRaw)==='all location') && norm(plat)!=='thumbtack') return;
+    if(r.Month==='#DIV/0!'||r.Platform==='#DIV/0!') return;
 
-    var k = [r.Month, locRaw, plat].join('||');
-    (map[k]||(map[k]=[])).push(r);
+    const plat = String(r.Platform||'').trim();
+    const platN = plat.toLowerCase();
+    const locRaw = String(r.Location||'').trim();
+    const locN = locRaw.toLowerCase();
+
+    // Se vier vazio → vira “All locations” (Thumbtack)
+    const loc = locRaw || 'All locations';
+
+    // ignora “All locations” só quando NÃO é Thumbtack
+    if ((locN==='all locations' || locN==='all location') && platN!=='thumbtack') return;
+
+    const k = [r.Month, loc, plat].join('||');
+    (map[k]||(map[k]=[])).push({ Month:r.Month, Location:loc, Platform:plat, Metric:r.Metric, ValueRaw:r.ValueRaw });
   });
 
-  Object.keys(map).forEach(function(k){
-    var parts=k.split('||');
-    var Month=parts[0], Location=parts[1], Platform=parts[2];
-    var rec={Month,Location,Platform,
-      Leads:0, GoodLeads:0, GoodLeadsPct:null,
-      Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0
-    };
+  Object.keys(map).forEach(k=>{
+    const [Month,Location,Platform]=k.split('||');
+    const rec = {Month, Location, Platform, Leads:0, Spend:0, JobsClosed:0, ContractTotal:0, Profit:0, ROI:null, CPJ:0, GoodPct:null};
+    map[k].forEach(row=>{
+      const m = String(row.Metric||'').toLowerCase();
+      const raw = (row.ValueRaw==null?'':String(row.ValueRaw));
+      // número
+      let s = raw.trim().replace(/[^0-9.\-]/g,'');
+      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+      let v = parseFloat(s); v = isFinite(v)?v:0;
 
-    var list=map[k];
-    for(var i=0;i<list.length;i++){
-      var row=list[i];
-      var m=norm(row.Metric||'');
-      var raw=String(row.ValueRaw==null?'':row.ValueRaw);
-      var v=toNumber(raw);
-
-      if((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend+=v;
-      else if (m.includes('number of leads')) rec.Leads+=v;
-      else if (m.includes('closed job')) rec.JobsClosed+=v;
-      else if (m.includes('contract total')) rec.ContractTotal+=v;
-      else if (m==='profit') rec.Profit+=v;
+      if ((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend += v;
+      else if (m.includes('number of leads')) rec.Leads += v;
+      else if (m.includes('closed job')) rec.JobsClosed += v;
+      else if (m.includes('contract total')) rec.ContractTotal += v;
       else if (m==='roi' || m==='roi (%)'){
-        var t=v; if(raw.indexOf('%')>-1) t=(+raw.replace(/[^0-9.\-]/g,''))/100; if(t>1.5) t/=100; rec.ROI=t;
+        let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+        if(t>1.5)t/=100; rec.ROI=t;
       }
-      // Good leads (count or %)
-      if (m.includes('good leads') && !m.includes('%')) rec.GoodLeads += v;
-      if (m.includes('% good') || m==='good leads %' || m==='good leads (%)'){
-        var p = +raw.replace(/[^0-9.\-]/g,''); // e.g. "68%" -> 68
-        rec.GoodLeadsPct = isFinite(p) ? p/100 : rec.GoodLeadsPct;
+      else if (m.includes('% good')){ // % Good leads
+        let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+        if(t>1.5)t/=100; rec.GoodPct=t;
       }
-    }
+      else if (m.includes('profit')) rec.Profit += v;
+    });
 
-    // Derivados
     if(!rec.Profit) rec.Profit = rec.ContractTotal - rec.Spend;
     if(rec.ROI==null) rec.ROI = rec.Spend>0 ? rec.Profit/rec.Spend : 0;
     rec.CPJ = rec.JobsClosed>0 ? rec.Spend/rec.JobsClosed : 0;
 
-    // Se só tivermos % Good Leads, tenta inferir quantidade
-    if(rec.GoodLeads===0 && rec.GoodLeadsPct!=null && rec.Leads>0){
-      rec.GoodLeads = Math.round(rec.Leads * rec.GoodLeadsPct);
-    }
-    // Se só tivermos quantidade, calcula %
-    if(rec.GoodLeadsPct==null && rec.Leads>0){
-      rec.GoodLeadsPct = rec.GoodLeads/rec.Leads;
-    }
-
-    // arredondamentos
+    // arredonda inteiros
     rec.Leads = Math.round(rec.Leads);
     rec.JobsClosed = Math.round(rec.JobsClosed);
+    // monetários 2 casas
     rec.Spend = +rec.Spend.toFixed(2);
     rec.ContractTotal = +rec.ContractTotal.toFixed(2);
     rec.Profit = +rec.Profit.toFixed(2);
@@ -366,93 +368,104 @@ function pivotLong(rows){
 }
 
 function uniqSortedClean(arr, excludeAllLocations){
-  var seen={}, out=[];
-  arr.forEach(function(s){
-    var t=String(s||'').trim();
-    var n=t.toLowerCase();
-    if(excludeAllLocations && (n==='all locations' || n==='all location')) return;
+  const seen={}, out=[];
+  arr.forEach(s=>{
+    const t=String(s||'').trim(); const n=t.toLowerCase();
+    if(excludeAllLocations && (n==='all locations'||n==='all location')) return;
     if(!seen[n]){ seen[n]=true; out.push(t); }
   });
   return out.sort();
 }
-function sum(arr,k){var t=0;for(var i=0;i<arr.length;i++){t+= (+arr[i][k]||0);} return t;}
+function sum(arr,k){ let t=0; for(let i=0;i<arr.length;i++){ t += (+arr[i][k]||0) } return t }
 
-/* ---------- state ---------- */
-var original=[], filtered=[], leadsChart=null, roiChart=null, profitChart=null;
+/* ============== State ============== */
+let original=[], filtered=[];
+let leadsChart=null, roiChart=null, profitChart=null;
 
-/* ---------- filters ---------- */
-function fillFilters(data){
-  function fill(id,arr,label){
-    var s=$(id); s.innerHTML='';
-    var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
-    arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
-  }
-  // ordena meses por data real
-  var months = [...new Set(data.map(r => r.Month))].sort((a, b) => new Date(a) - new Date(b));
-  var locs  = uniqSortedClean(data.map(r=>r.Location), true);   // remove “All locations”
-  var plats = uniqSortedClean(data.map(r=>r.Platform), false);
-
-  fill('monthFilter',months,'months');
-  fill('locationFilter',locs,'locations');
-  fill('platformFilter',plats,'platforms');
-}
-
-/* ---------- helpers KPIs ---------- */
-function daysInMonthLabel(label){
-  // label ex.: "October 2025"
-  var d = new Date(label+' 1');
-  if (isNaN(d)) return 30; // fallback
-  var m = d.getMonth(), y = d.getFullYear();
+/* ============== Filters ============== */
+function daysInMonth(name){
+  // tenta parsear "October 2025", etc.
+  const d = new Date(name+' 01'); // confiando no locale inglês do CSV
+  if(isNaN(d)) return 30;
+  const y=d.getFullYear(), m=d.getMonth();
   return new Date(y, m+1, 0).getDate();
 }
+function fillFilters(data){
+  // months – ordenar cronologicamente
+  const months = [...new Set(data.map(r=>r.Month))]
+    .sort((a,b)=> new Date(a) - new Date(b));
 
-function updateKPIs(){
-  var leads=sum(filtered,'Leads'),
-      spend=sum(filtered,'Spend'),
-      jobs=sum(filtered,'JobsClosed'),
-      contract=sum(filtered,'ContractTotal'),
-      profit=sum(filtered,'Profit');
+  const locs  = uniqSortedClean(data.map(r=>r.Location), true);   // remove “All locations”
+  const plats = uniqSortedClean(data.map(r=>r.Platform), false);
 
-  var roi = spend>0 ? (profit/spend) : 0;
-
-  // Good Leads %
-  var goodCount = sum(filtered,'GoodLeads');
-  var goodPct;
-  if (leads>0) {
-    goodPct = goodCount>0 ? (goodCount/leads) : (sum(filtered,'GoodLeadsPct')>0 ? (sum(filtered,'GoodLeadsPct')/filtered.length) : 0);
-  } else {
-    goodPct = 0;
-  }
-
-  // Close Rate
-  var closeRate = leads>0 ? (jobs/leads) : 0;
-
-  // Approx Daily Spend (usa mês selecionado se tiver 1; se múltiplos meses → média simples de dias)
-  var selectedMonth = $('monthFilter').value;
-  var days = selectedMonth ? daysInMonthLabel(selectedMonth)
-                           : Math.round([...new Set(filtered.map(r=>r.Month))].map(daysInMonthLabel).reduce((a,b)=>a+b,0) / Math.max(1, new Set(filtered.map(r=>r.Month)).size));
-  var dailySpend = days>0 ? (spend/days) : spend;
-
-  $('kpiLeads').textContent       = fmtInt(Math.round(leads));
-  $('kpiSpend').textContent       = fmtUSD(spend);
-  $('kpiJobs').textContent        = fmtInt(Math.round(jobs));
-  $('kpiContract').textContent    = fmtUSD(contract);
-  $('kpiProfit').textContent      = fmtUSD(profit);
-  $('kpiROI').textContent         = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
-
-  $('kpiDailySpend').textContent  = fmtUSD(dailySpend);
-  $('kpiCloseRate').textContent   = isFinite(closeRate)?((closeRate*100).toFixed(1)+'%'):'—';
-  $('kpiGoodLeads').textContent   = isFinite(goodPct)?((goodPct*100).toFixed(1)+'%'):'—';
+  const fill = (id, arr, label)=>{
+    const s=$(id); s.innerHTML='';
+    const opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
+    arr.forEach(v=>{ const e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
+  };
+  fill('monthFilter', months, 'months');
+  fill('locationFilter', locs,  'locations');
+  fill('platformFilter', plats, 'platforms');
+}
+function applyFilters(){
+  const m=$('monthFilter').value, l=$('locationFilter').value, p=$('platformFilter').value;
+  filtered = original.filter(r => (m?r.Month===m:true) && (l?r.Location===l:true) && (p?r.Platform===p:true));
+  updateKPIs(); updateCharts();
 }
 
-/* ---------- charts ---------- */
+/* ============== KPIs ============== */
+function updateKPIs(){
+  const leads = sum(filtered,'Leads'),
+        spend = sum(filtered,'Spend'),
+        jobs  = sum(filtered,'JobsClosed'),
+        contract = sum(filtered,'ContractTotal'),
+        profit   = sum(filtered,'Profit'),
+        roi = spend>0 ? profit/spend : 0;
+
+  // Approx Daily Spend
+  let days = 0;
+  const monthSel = $('monthFilter').value;
+  if(monthSel){
+    days = daysInMonth(monthSel);
+  }else{
+    // soma dias dos meses presentes de forma única
+    const months = [...new Set(filtered.map(r=>r.Month))];
+    if(months.length>0) days = months.map(daysInMonth).reduce((a,b)=>a+b,0);
+    if(days===0) days = 30;
+  }
+  const daily = spend>0 ? spend/Math.max(1, days) : 0;
+
+  // Close rate
+  const closeRate = leads>0 ? (jobs/leads) : 0;
+
+  // % Good Leads (média ponderada pelos leads para linhas que têm GoodPct)
+  let wNum=0, wDen=0;
+  filtered.forEach(r=>{
+    if(r.GoodPct!=null && r.Leads>0){
+      wNum += r.GoodPct * r.Leads;
+      wDen += r.Leads;
+    }
+  });
+  const goodPct = (wDen>0) ? (wNum/wDen) : null;
+
+  $('kpiLeads').textContent     = fmtInt(Math.round(leads));
+  $('kpiSpend').textContent     = fmtUSD(spend);
+  $('kpiJobs').textContent      = fmtInt(Math.round(jobs));
+  $('kpiContract').textContent  = fmtUSD(contract);
+  $('kpiProfit').textContent    = fmtUSD(profit);
+  $('kpiROI').textContent       = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
+
+  $('kpiDaily').textContent     = fmtUSD(daily);
+  $('kpiClose').textContent     = (closeRate*100).toFixed(1)+'%';
+  $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
+}
+
+/* ============== Charts ============== */
 function updateCharts(){
   // Leads por Plataforma
-  var mp={};
-  for(var i=0;i<filtered.length;i++){
-    var k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);
-  }
-  var l1=Object.keys(mp), d1=l1.map(function(x){return mp[x];});
+  const mp={};
+  filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
+  const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
   if(leadsChart) leadsChart.destroy();
   leadsChart=new Chart($('chartLeads').getContext('2d'),{
     type:'bar',
@@ -461,96 +474,75 @@ function updateCharts(){
   });
 
   // ROI por Location — ignora “All locations”
-  var mapLoc={}, l2=[], d2=[];
-  for(var i2=0;i2<filtered.length;i2++){
-    var r=filtered[i2];
-    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') continue;
-    var o=mapLoc[r.Location]||{s:0,p:0};
-    o.s+=r.Spend||0; o.p+=r.Profit||0; mapLoc[r.Location]=o;
-  }
-  l2=Object.keys(mapLoc);
-  d2=l2.map(function(loc){
-    var o=mapLoc[loc]; return o.s>0 ? +((o.p/o.s)*100).toFixed(1) : 0;
+  const byLoc={}, l2=[], d2=[];
+  filtered.forEach(r=>{
+    const n = norm(r.Location);
+    if(n==='all locations'||n==='all location') return;
+    (byLoc[r.Location]||(byLoc[r.Location]={s:0,p:0})).s += r.Spend||0;
+    (byLoc[r.Location]).p += r.Profit||0;
   });
-
+  Object.keys(byLoc).forEach(loc=>{
+    const o=byLoc[loc]; l2.push(loc); d2.push(o.s>0?+((o.p/o.s)*100).toFixed(1):0);
+  });
   if(roiChart) roiChart.destroy();
   roiChart=new Chart($('chartROI').getContext('2d'),{
     type:'bar',
     data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(25,195,125,.6)',borderColor:'#19c37d',borderWidth:1}]},
-    options:{
-      indexAxis:'y',
-      responsive:true,
-      plugins:{legend:{display:false}},
-      scales:{ x:{ beginAtZero:true, ticks:{ callback:function(v){ return Number(v).toFixed(1)+'%'; } } } }
-    }
+    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
   });
 
-  // Profit por Location — ignora zero
-  var agg={}, pairs=[];
-  filtered.forEach(function(r){
-    if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
-    agg[r.Location]=(agg[r.Location]||0)+r.Profit;
+  // Profit por Location — ignora zero e “All locations”
+  const agg={}, pairs=[];
+  filtered.forEach(r=>{
+    const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
+    agg[r.Location]=(agg[r.Location]||0)+(r.Profit||0);
   });
-  pairs = Object.keys(agg).map(function(k){ return {l:k,v:agg[k]}; })
-          .filter(function(p){ return p.v!==0; })
-          .sort(function(a,b){ return b.v-a.v; });
-  var pLabels = pairs.map(function(p){return p.l;});
-  var pData   = pairs.map(function(p){return +p.v.toFixed(2);});
-
+  Object.keys(agg).forEach(k=>pairs.push({l:k,v:agg[k]}));
+  const pPairs = pairs.filter(p=>p.v!==0).sort((a,b)=>b.v-a.v);
+  const pLabels = pPairs.map(p=>p.l), pData=pPairs.map(p=>+p.v.toFixed(2));
   if(profitChart) profitChart.destroy();
   profitChart=new Chart($('chartProfit').getContext('2d'),{
     type:'bar',
     data:{labels:pLabels,datasets:[{label:'Profit ($)',data:pData,borderColor:'#ffb81c',backgroundColor:'rgba(255,184,28,.30)'}]},
-    options:{
-      responsive:true,
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(ctx){return fmtUSD(ctx.parsed.y);}}}},
-      scales:{ y:{ beginAtZero:true, ticks:{ callback:function(v){return fmtUSD(v);} } } }
-    }
+    options:{responsive:true,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
   });
 }
 
-/* ---------- networking ---------- */
+/* ============== Networking ============== */
 function normalizeUrl(u){
   if(!u)return'';
   if(/tqx=out:csv/.test(u))return u;
   if(/\/pub\?/.test(u)&&/output=csv/.test(u))return u;
-  var m=u.match(/spreadsheets\/d\/([^\/]+).*?[#\?].*?gid=(\d+)/);
-  if(m)return'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
+  const m=u.match(/spreadsheets\/d\/([^\/]+).*?[#\?].*?gid=(\d+)/);
+  if(m)return 'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
   return u;
 }
-function withBust(url){ var s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()); }
-
+function withBust(url){ const s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()) }
 function fetchCsvText(url){
   url = withBust(url);
-  return fetch(url,{mode:'cors'}).then(function(r){
-    if(r.ok)return r.text();
+  return fetch(url,{mode:'cors'}).then(r=>{
+    if(r.ok) return r.text();
     throw new Error('HTTP '+r.status);
-  }).catch(function(){
-    var prox=(url.indexOf('https://')===0?'https://r.jina.ai/http://':'https://r.jina.ai/https://')+url.replace(/^https?:\/\//,'');
-    return fetch(prox).then(function(r2){
-      if(r2.ok)return r2.text();
-      return fetch('https://cors.isomorphic-git.org/'+url).then(function(r3){
-        if(r3.ok)return r3.text();
+  }).catch(()=>{
+    const prox=(url.indexOf('https://')===0?'https://r.jina.ai/http://':'https://r.jina.ai/https://')+url.replace(/^https?:\/\//,'');
+    return fetch(prox).then(r2=>{
+      if(r2.ok) return r2.text();
+      return fetch('https://cors.isomorphic-git.org/'+url).then(r3=>{
+        if(r3.ok) return r3.text();
         throw new Error('All proxies failed');
       });
     });
   });
 }
 
-/* ---------- load & wire ---------- */
-function applyFilters(){ 
-  var m=$('monthFilter').value,l=$('locationFilter').value,p=$('platformFilter').value;
-  filtered=original.filter(function(r){ return (m?r.Month===m:true) && (l?r.Location===l:true) && (p?r.Platform===p:true); });
-  updateKPIs(); updateCharts();
-}
-
+/* ============== Load & wire ============== */
 function loadFromUrl(url){
-  var normUrl=normalizeUrl(url.trim());
-  if(!normUrl){chips(['Paste a valid CSV link']); return;}
+  const normUrl=normalizeUrl(url.trim());
+  if(!normUrl){ chips(['Paste a valid CSV link']); return; }
   chips(['Loading…']);
-  fetchCsvText(normUrl).then(function(text){
-    var parsed=parseCSVText(text);
-    if(!parsed.rows||parsed.rows.length===0){chips(['Empty CSV or headers not recognized']); return;}
+  fetchCsvText(normUrl).then(text=>{
+    const parsed=parseCSVText(text);
+    if(!parsed.rows||parsed.rows.length===0){ chips(['Empty CSV or headers not recognized']); return; }
     original=pivotLong(parsed.rows);
     fillFilters(original);
     $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value='';
@@ -558,54 +550,49 @@ function loadFromUrl(url){
     applyFilters();
     chips(['CSV loaded: '+parsed.rows.length+' rows']);
     setUpdated();
-  }).catch(function(err){
+  }).catch(err=>{
     chips(['Failed to load CSV: '+err.message]); console.error(err);
   });
 }
-
 function loadFromFile(file){
   chips(['Reading local CSV…']);
   Papa.parse(file,{complete:function(res){
     try{
-      var csvText=Papa.unparse(res.data);
-      var parsed=parseCSVText(csvText);
+      const csvText=Papa.unparse(res.data);
+      const parsed=parseCSVText(csvText);
       if(!parsed.rows||parsed.rows.length===0){chips(['Local CSV empty']); return;}
       original=pivotLong(parsed.rows);
       fillFilters(original);
       $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value='';
       filtered=original.slice(0);
       applyFilters();
-      chips(['Local CSV loaded']);
-      setUpdated();
-    }catch(e){
-      chips(['Local parse error: '+e.message]);
-    }
+      chips(['Local CSV loaded']); setUpdated();
+    }catch(e){ chips(['Local parse error: '+e.message]); }
   }});
 }
 
-/* UI wiring */
-$('reloadBtn').addEventListener('click',function(){loadFromUrl($('csvUrl').value);});
-$('csvFile').addEventListener('change',function(e){var f=e.target.files[0]; if(f)loadFromFile(f);});
-$('autoRefresh').addEventListener('change',function(e){
+/* Events */
+$('reloadBtn').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
+$('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
+$('autoRefresh').addEventListener('change',e=>{
   if(e.target.checked){
-    if(!window.__auto){ window.__auto=setInterval(function(){ loadFromUrl($('csvUrl').value); }, 5*60*1000); }
+    if(!window.__auto){ window.__auto=setInterval(()=> loadFromUrl($('csvUrl').value), 5*60*1000); }
   }else{
     if(window.__auto){ clearInterval(window.__auto); window.__auto=null; }
   }
 });
-$('clearFilters').addEventListener('click',function(){
-  $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters();
-});
+$('clearFilters').addEventListener('click',()=>{ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
+['monthFilter','locationFilter','platformFilter'].forEach(id=> $(id).addEventListener('change',applyFilters));
 
-/* Default link */
-var DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
-window.addEventListener('DOMContentLoaded',function(){
-  // Start on HOME
-  go('home');
-  // Prepare dashboard CSV link
+/* Default CSV */
+const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
+window.addEventListener('DOMContentLoaded',()=>{
   $('csvUrl').value=DEFAULT_LINK;
-  loadFromUrl(DEFAULT_LINK);
+  // abre direto o dashboard se já estiver no /?view=atlus
+  const isAtlus = new URLSearchParams(location.search).get('view')==='atlus';
+  if(isAtlus){ loadFromUrl(DEFAULT_LINK); }
   $('autoRefresh').dispatchEvent(new Event('change'));
+  setUpdated();
 });
 </script>
 </body>
