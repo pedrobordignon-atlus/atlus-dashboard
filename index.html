@@ -4,10 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Atlus Performance Dashboard — Atlus Theme</title>
-
-<!-- Favicon correto -->
 <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=4">
-
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -33,21 +30,14 @@ header{
 }
 .brand{display:flex;align-items:center;gap:12px;font-weight:700}
 .logo{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  overflow:hidden;
-  padding:0;
-  display:grid;
-  place-items:center;
-  background:transparent !important;
-  box-shadow:none !important;
+  width:40px; height:40px; border-radius:12px; overflow:hidden; padding:0;
+  display:grid; place-items:center; background:transparent !important; box-shadow:none !important;
 }
 .container{max-width:1220px;margin:0 auto;padding:18px;display:grid;gap:16px}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.45)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row>*{flex:1;min-width:220px}
-.input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
+.input, select, textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
 .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
 .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
 .switch{display:flex;gap:8px;align-items:center;color:var(--text-dim);font-size:13px}
@@ -66,23 +56,38 @@ header{
 </head>
 <body>
 <header>
-  <div class="logo">
-  <img src="favicon.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
-
-</div>
+  <div class="brand">
+    <div class="logo">
+      <img src="./Atlus_logo_files/favicon.png?v=4" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
+    </div>
+    <div class="title">Atlus Performance Dashboard</div>
+  </div>
+  <div class="badge" id="lastUpdated">Last updated: —</div>
 </header>
 
 <main class="container">
-  <section class="panel">
-    <div class="row">
-      <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-      <div style="max-width:300px"><label>or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-      <div style="max-width:160px"><label>&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
-      <div style="max-width:220px"><label>&nbsp;</label><label class="switch"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+
+  <!-- NEW: Notes / Instructions (top) -->
+  <section class="panel" id="notesPanel">
+    <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap">
+      <div style="flex:2; min-width:260px;">
+        <div style="font-weight:700; margin-bottom:6px">Notes / Instructions</div>
+        <textarea id="userNotes" rows="3" class="input" placeholder="Type your notes or instructions here… (auto-saves)"></textarea>
+        <div class="badge" style="margin-top:6px">Notes are saved locally in your browser.</div>
+      </div>
+      <div style="flex:1; min-width:240px; background:#081b2b; border:1px solid var(--border); border-radius:12px; padding:10px">
+        <div style="font-weight:700; margin-bottom:6px">Heads-up</div>
+        <ul style="margin:0; padding-left:18px; color:var(--text-dim)">
+          <li>
+            Thumbtack spend is paid as <b>“Atlus — All locations”</b>. Because of that, a
+            location-level breakdown for Thumbtack will not appear in the charts.
+          </li>
+        </ul>
+      </div>
     </div>
-    <div id="statusChips" class="chips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
   </section>
 
+  <!-- Filters -->
   <section class="panel">
     <div class="row">
       <div><label>Month / Year</label><select id="monthFilter" class="input"></select></div>
@@ -92,6 +97,7 @@ header{
     </div>
   </section>
 
+  <!-- KPIs -->
   <section class="kpis">
     <div class="kpi"><div class="label">Leads</div><div class="value"><span class="dot blue"></span><span id="kpiLeads">—</span></div></div>
     <div class="kpi"><div class="label">Spend</div><div class="value"><span class="dot blue"></span><span id="kpiSpend">—</span></div></div>
@@ -101,6 +107,7 @@ header{
     <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
   </section>
 
+  <!-- Charts -->
   <section class="grid-2">
     <div class="panel">
       <div style="margin-bottom:8px;font-weight:700">Leads per Platform</div>
@@ -116,6 +123,18 @@ header{
     <div style="margin-bottom:8px;font-weight:700">Profit per Location</div>
     <canvas id="chartProfit"></canvas>
   </section>
+
+  <!-- MOVED: Data source panel to the bottom -->
+  <section class="panel" id="dataSourcePanel">
+    <div class="row">
+      <div><label>Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+      <div style="max-width:300px"><label>or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
+      <div style="max-width:160px"><label>&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
+      <div style="max-width:220px"><label>&nbsp;</label><label class="switch"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+    </div>
+    <div id="statusChips" class="chips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+  </section>
+
 </main>
 
 <script>
@@ -127,6 +146,10 @@ function chips(msgs){var c=$('statusChips');c.innerHTML='';msgs.forEach(addChip)
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—';}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—';}
 function norm(s){return String(s||'').trim().toLowerCase();}
+
+/* ---------- local notes (auto-save) ---------- */
+const NOTES_KEY = 'atlus_dashboard_notes';
+function loadNotes(){ const t=$('userNotes'); if(!t) return; t.value = localStorage.getItem(NOTES_KEY) || ''; t.addEventListener('input', ()=> localStorage.setItem(NOTES_KEY, t.value)); }
 
 /* ---------- number & sanitize ---------- */
 function toNumber(x){
@@ -188,10 +211,10 @@ function pivotLong(rows){
     var locRaw = String(r.Location||'').trim();
     var locN = locRaw.toLowerCase();
 
-    // Se vier vazio → vira “All locations” (Thumbtack)
+    // If empty → treat as All locations (Thumbtack case)
     var loc = locRaw || 'All locations';
 
-    // Remove “All locations” apenas se NÃO for Thumbtack
+    // Drop All locations ONLY when it's not Thumbtack
     if ((locN === 'all locations' || locN === 'all location') && platN !== 'thumbtack') return;
 
     var k = [r.Month, loc, plat].join('||');
@@ -273,10 +296,8 @@ function fillFilters(data){
     var opt=document.createElement('option'); opt.value=''; opt.textContent='All '+label; s.appendChild(opt);
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
-  var months = [...new Set(data.map(r => r.Month))].sort((a, b) => {
-    return new Date(a) - new Date(b);
-  });
-  var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);   // remove “All locations”
+  var months = [...new Set(data.map(r => r.Month))].sort((a, b) => new Date(a) - new Date(b));
+  var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);
   var plats =uniqSortedClean(data.map(function(r){return r.Platform;}), false);
 
   fill('monthFilter',months,'months');
@@ -304,7 +325,7 @@ function updateKPIs(){
 
 /* ---------- charts ---------- */
 function updateCharts(){
-  /* Leads by Platform */
+  // Leads by Platform
   var mp={}, k;
   for(var i=0;i<filtered.length;i++){k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);}
   var l1=Object.keys(mp), d1=l1.map(function(x){return mp[x];});
@@ -315,7 +336,7 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  /* ROI by Location (ignore “All locations”) */
+  // ROI by Location (ignores “All locations”)
   var mapLoc={}, l2=[], d2=[];
   for(var i2=0;i2<filtered.length;i2++){
     var r=filtered[i2];
@@ -340,7 +361,7 @@ function updateCharts(){
     }
   });
 
-  /* Profit by Location (no zeros) */
+  // Profit by Location (ignore zero)
   var agg={}, pairs=[];
   filtered.forEach(function(r){
     if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
@@ -444,9 +465,10 @@ $('autoRefresh').addEventListener('change',function(e){
 $('clearFilters').addEventListener('click',function(){ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
 ['monthFilter','locationFilter','platformFilter'].forEach(function(id){ $(id).addEventListener('change',applyFilters); });
 
-/* Default link */
+/* Default link + init */
 var DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.addEventListener('DOMContentLoaded',function(){
+  loadNotes();
   $('csvUrl').value=DEFAULT_LINK;
   loadFromUrl(DEFAULT_LINK);
   $('autoRefresh').dispatchEvent(new Event('change'));
