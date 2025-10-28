@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Atlus Dashboards</title>
 
-  <!-- FAVICON (mesmo caminho que funcionou) -->
-  <link rel="icon" type="image/png" href="Atlus_logo_files/favicon.png">
+  <!-- FAVICON (mesmo caminho que já funcionou) -->
+  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -16,6 +16,12 @@
     :root{
       --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
       --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+      --shadow: 0 20px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --gap: 18px;
+      --gap-lg: 22px;
+      --pad: 20px;
+      --pad-lg: 24px;
     }
 
     *{box-sizing:border-box}
@@ -30,6 +36,23 @@
       font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
 
+    /* ========= Marca d’água (logo completo no fundo) ========= */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      /* Tenta 3 arquivos (o 1º que existir aparece) */
+      background:
+        url("./Atlus_logo_files/atlus-bg.png")        center 22vh / min(70vw, 920px) auto no-repeat,
+        url("./Atlus_logo_files/Atlus%20Logo%20-%20Transparent%20(2).png") center 22vh / min(70vw, 920px) auto no-repeat,
+        url("./Atlus_logo_files/favicon.png")         center 22vh / 160px auto no-repeat;
+      opacity:.06;             /* bem discreto */
+      filter:saturate(70%);
+      z-index:0;
+    }
+    /* garante conteúdo acima da marca d’água */
+    header, main { position:relative; z-index:1; }
+
     /* Header */
     header{
       position:sticky; top:0; z-index:50;
@@ -39,47 +62,44 @@
     }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
     .logo{
-  width:40px;height:40px;border-radius:12px;
-  overflow:hidden;display:grid;place-items:center;
-  background:transparent;border:none;box-shadow:none;
-}
-.logo img{
-  display:block;             /* evita espaço de baseline */
-  width:100%; height:100%;
-  object-fit:cover;          /* preenche sem distorcer */
-  border-radius:12px;
-  vertical-align:middle;     /* belt & suspenders */
-}
-    /* Botões / inputs básicos */
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-    .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
-    .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:default}
-    .muted{color:var(--text-dim)}
-    .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
+      width:40px;height:40px;border-radius:12px;overflow:hidden;padding:0;
+      display:grid;place-items:center;background:transparent;box-shadow:none;
+      border:1px solid rgba(255,255,255,.05)
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+    .title{font-weight:700}
 
-    /* Container principal (mais espaço, como combinado) */
-    .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    /* Contêiner principal */
+    .container{
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 22px;
+    }
 
-    /* Home */
-    .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
-    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
-    @media (max-width:1100px){.cards{grid-template-columns:1fr}}
+    /* Painéis/cartões */
+    .panel{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
 
-    /* KPIs */
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+
+    /* Cards de KPI */
     .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
     @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
     .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
     .kpi .label{font-size:12px;color:var(--text-dim)}
     .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
     .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
-    .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
+    .dot.blue{background:var(--blue)} .dot.gold{background:var(--gold)} .dot.green{background:var(--green)}
 
     .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
     @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
+    select, .input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
 
     .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
     @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
@@ -87,20 +107,43 @@
     .noteTitle{font-weight:700;margin-bottom:6px}
     .note{border-left:3px solid var(--blue);padding-left:12px}
     .stack{display:grid;gap:12px}
+
     .backRow{display:flex;align-items:center;gap:8px}
+
+    /* ======== HOME ======== */
+    .hero{
+      padding: 32px;                 /* respiro */
+      text-align: center;            /* centraliza textos */
+      display: grid;
+      justify-items: center;         /* centraliza botão */
+      gap: 12px;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:22px;
+    }
+    @media (max-width: 1100px){ .cards{ grid-template-columns:1fr; } }
+    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
+
+    /* Botões (iguais aos que você já usava) */
+    .btn{cursor:pointer;border:1px solid var(--border);background:#0a2236;color:var(--text);padding:10px 12px;border-radius:12px}
+    .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
+    .btn.link{background:transparent;color:var(--text-dim)}
+    .muted{color:var(--text-dim)}
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-  <img
-    src="Atlus_logo_files/favicon.png"
-    alt="Atlus"
-    width="40" height="40"
-    onerror="this.src='favicon.png';"
-  >
-</div>
+  <div class="brand">
+    <div class="logo">
+      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
+    </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
   <div class="muted" id="lastUpdated">Last updated: —</div>
@@ -113,7 +156,7 @@
     <div class="hero">
       <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
       <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
-      <div style="margin-top:10px">
+      <div>
         <button class="btn primary" onclick="openView('atlus')">Open Atlus Performance Dashboard</button>
       </div>
     </div>
@@ -126,14 +169,13 @@
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
 
-      <!-- Cartões futuros simplificados: apenas “Coming soon” + botão “Soon” -->
-      <div class="card" style="align-content:start">
+      <div class="card">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
         <div><button class="btn link" disabled>Soon</button></div>
       </div>
 
-      <div class="card" style="align-content:start">
+      <div class="card">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
         <div><button class="btn link" disabled>Soon</button></div>
@@ -187,7 +229,7 @@
       <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
       <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
 
-      <!-- Novos KPIs -->
+      <!-- NOVOS KPIs -->
       <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDaily">—</span></div></div>
       <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot gold"></span><span id="kpiClose">—</span></div></div>
       <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGood">—</span></div></div>
@@ -210,7 +252,7 @@
       <canvas id="chartProfit"></canvas>
     </div>
 
-    <!-- Data source (embaixo) -->
+    <!-- Data source -->
     <div class="panel">
       <div class="row">
         <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
@@ -225,7 +267,7 @@
 </main>
 
 <script>
-/* ===== View router (Home <-> Atlus) ===== */
+/* ============== View router (Home <-> Atlus) ============== */
 function openView(which){
   document.getElementById('view-home').style.display = which==='home'?'block':'none';
   document.getElementById('view-atlus').style.display = which==='atlus'?'block':'none';
@@ -237,7 +279,7 @@ function openView(which){
   openView(p.get('view')==='atlus' ? 'atlus' : 'home');
 })();
 
-/* ===== Helpers ===== */
+/* ============== Helpers UI / format ============== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
 function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
@@ -246,7 +288,7 @@ function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency'
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
 function norm(s){return String(s||'').trim().toLowerCase()}
 
-/* ===== Number / sanitize ===== */
+/* ============== Number & sanitize ============== */
 function toNumber(x){
   if (x==null || x==='') return 0;
   if (typeof x==='number' && isFinite(x)) return x;
@@ -256,7 +298,7 @@ function toNumber(x){
   return isFinite(n)?n:0;
 }
 
-/* ===== CSV parsing ===== */
+/* ============== CSV parsing ============== */
 function detectColumns(headers){
   const h=headers.map(x=>String(x||'').toLowerCase());
   const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
@@ -288,7 +330,7 @@ function parseCSVText(text){
   return {headers,rows:out};
 }
 
-/* ===== reshape long->wide ===== */
+/* ============== reshape long->wide, cleaning ============== */
 function pivotLong(rows){
   const map={}, out=[];
   rows.forEach(r=>{
@@ -300,10 +342,7 @@ function pivotLong(rows){
     const locRaw = String(r.Location||'').trim();
     const locN = locRaw.toLowerCase();
 
-    // vazio → “All locations” (Thumbtack)
     const loc = locRaw || 'All locations';
-
-    // ignora “All locations” se NÃO for Thumbtack
     if ((locN==='all locations' || locN==='all location') && platN!=='thumbtack') return;
 
     const k = [r.Month, loc, plat].join('||');
@@ -316,7 +355,6 @@ function pivotLong(rows){
     map[k].forEach(row=>{
       const m = String(row.Metric||'').toLowerCase();
       const raw = (row.ValueRaw==null?'':String(row.ValueRaw));
-      // número sanitizado
       let s = raw.trim().replace(/[^0-9.\-]/g,'');
       if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
       let v = parseFloat(s); v = isFinite(v)?v:0;
@@ -329,7 +367,7 @@ function pivotLong(rows){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.ROI=t;
       }
-      else if (m.includes('% good')){ // % Good leads
+      else if (m.includes('% good')){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.GoodPct=t;
       }
@@ -345,7 +383,6 @@ function pivotLong(rows){
     rec.Spend = +rec.Spend.toFixed(2);
     rec.ContractTotal = +rec.ContractTotal.toFixed(2);
     rec.Profit = +rec.Profit.toFixed(2);
-
     out.push(rec);
   });
 
@@ -363,11 +400,11 @@ function uniqSortedClean(arr, excludeAllLocations){
 }
 function sum(arr,k){ let t=0; for(let i=0;i<arr.length;i++){ t += (+arr[i][k]||0) } return t }
 
-/* ===== State ===== */
+/* ============== State ============== */
 let original=[], filtered=[];
 let leadsChart=null, roiChart=null, profitChart=null;
 
-/* ===== Filters ===== */
+/* ============== Filters ============== */
 function daysInMonth(name){
   const d = new Date(name+' 01');
   if(isNaN(d)) return 30;
@@ -394,7 +431,7 @@ function applyFilters(){
   updateKPIs(); updateCharts();
 }
 
-/* ===== KPIs ===== */
+/* ============== KPIs ============== */
 function updateKPIs(){
   const leads = sum(filtered,'Leads'),
         spend = sum(filtered,'Spend'),
@@ -415,10 +452,9 @@ function updateKPIs(){
   }
   const daily = spend>0 ? spend/Math.max(1, days) : 0;
 
-  // Close rate
   const closeRate = leads>0 ? (jobs/leads) : 0;
 
-  // % Good Leads (média ponderada pelos leads)
+  // % Good Leads (média ponderada)
   let wNum=0, wDen=0;
   filtered.forEach(r=>{
     if(r.GoodPct!=null && r.Leads>0){ wNum += r.GoodPct * r.Leads; wDen += r.Leads; }
@@ -437,11 +473,9 @@ function updateKPIs(){
   $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
 }
 
-/* ===== Charts ===== */
+/* ============== Charts ============== */
 function updateCharts(){
-  // Leads por Plataforma
-  const mp={};
-  filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
+  const mp={}; filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
   const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
   if(leadsChart) leadsChart.destroy();
   leadsChart=new Chart($('chartLeads').getContext('2d'),{
@@ -450,16 +484,15 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  // ROI por Location — ignora “All locations”
-  const byLoc={};
+  const byLoc={}, l2=[], d2=[];
   filtered.forEach(r=>{
     const n = norm(r.Location);
     if(n==='all locations'||n==='all location') return;
     (byLoc[r.Location]||(byLoc[r.Location]={s:0,p:0})).s += r.Spend||0;
     (byLoc[r.Location]).p += r.Profit||0;
   });
-  const l2=Object.keys(byLoc), d2=l2.map(loc=>{
-    const o=byLoc[loc]; return o.s>0?+((o.p/o.s)*100).toFixed(1):0;
+  Object.keys(byLoc).forEach(loc=>{
+    const o=byLoc[loc]; l2.push(loc); d2.push(o.s>0?+((o.p/o.s)*100).toFixed(1):0);
   });
   if(roiChart) roiChart.destroy();
   roiChart=new Chart($('chartROI').getContext('2d'),{
@@ -468,7 +501,6 @@ function updateCharts(){
     options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
   });
 
-  // Profit por Location — ignora zero e “All locations”
   const agg={}, pairs=[];
   filtered.forEach(r=>{
     const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
@@ -485,7 +517,7 @@ function updateCharts(){
   });
 }
 
-/* ===== Networking ===== */
+/* ============== Networking ============== */
 function normalizeUrl(u){
   if(!u)return'';
   if(/tqx=out:csv/.test(u))return u;
@@ -512,7 +544,7 @@ function fetchCsvText(url){
   });
 }
 
-/* ===== Load & wire ===== */
+/* ============== Load & wire ============== */
 function loadFromUrl(url){
   const normUrl=normalizeUrl(url.trim());
   if(!normUrl){ chips(['Paste a valid CSV link']); return; }
