@@ -6,7 +6,7 @@
   <title>Atlus Dashboards</title>
 
   <!-- FAVICON (mesmo caminho que funcionou) -->
-  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
+  <link rel="preload" as="image" href="./Atlus_logo_files/favicon.png?v=6">
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -39,13 +39,17 @@
     }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
     .logo{
-      width:40px;height:40px;border-radius:12px;
-      overflow:hidden;padding:0;display:grid;place-items:center;
-      background:transparent;box-shadow:none;border:none; /* sem borda pra não aparecer “risco” */
-    }
-    .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
-    .title{font-weight:700}
-
+  width:40px;height:40px;border-radius:12px;
+  overflow:hidden;display:grid;place-items:center;
+  background:transparent;border:none;box-shadow:none;
+}
+.logo img{
+  display:block;             /* evita espaço de baseline */
+  width:100%; height:100%;
+  object-fit:cover;          /* preenche sem distorcer */
+  border-radius:12px;
+  vertical-align:middle;     /* belt & suspenders */
+}
     /* Botões / inputs básicos */
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
     .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
@@ -89,11 +93,18 @@
 <body>
 
 <header>
-  <div class="brand">
-    <div class="logo">
-      <!-- LOGO com o mesmo caminho do favicon (funcionando) -->
-      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
-    </div>
+  <div class="logo">
+  <picture>
+    <source srcset="./Atlus_logo_files/favicon.png?v=6" type="image/png">
+    <img
+      src="./Atlus_logo_files/favicon.png?v=6"
+      alt="Atlus"
+      width="40" height="40"
+      class="brand-logo"
+      onerror="this.src='/Atlus_logo_files/favicon.png?v=6';"
+    >
+  </picture>
+</div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
   <div class="muted" id="lastUpdated">Last updated: —</div>
