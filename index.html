@@ -30,9 +30,15 @@ header{
 }
 .brand{display:flex;align-items:center;gap:12px;font-weight:700}
 .logo{
-  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-  background: linear-gradient(135deg,var(--gold),#ffd978); color:#1b1200; font-weight:900;
-  box-shadow:0 14px 38px rgba(0,0,0,.45)
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  overflow:hidden; /* << ADICIONE ISSO */
+  padding:0;       /* << ADICIONE ISSO */
+  display:grid;
+  place-items:center;
+  background:transparent !important; /* remove o quadrado amarelo */
+  box-shadow:none !important;
 }
 .container{max-width:1220px;margin:0 auto;padding:18px;display:grid;gap:16px}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.45)}
@@ -58,14 +64,13 @@ header{
 <body>
 <header>
   <div class="brand">
-    <div class="logo" style="background:none;padding:0;">
-      <img src="Atlus_logo_files/favicon.png" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+    <div class="logo">
+      <img src="Atlus_logo_files/favicon.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
     </div>
     <div class="title">Atlus Performance Dashboard</div>
   </div>
   <div class="badge" id="lastUpdated">Last updated: —</div>
 </header>
-
 
 <main class="container">
   <section class="panel">
