@@ -6,7 +6,7 @@
   <title>Atlus Dashboards</title>
 
   <!-- FAVICON (mesmo caminho que já funcionou) -->
-  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=5">
+  <link rel="icon" type="image/png" href="./Atlus_logo_files/favicon.png?v=7">
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -36,17 +36,16 @@
       font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* ========= Marca d’água (logo completo no fundo) ========= */
+    /* ========= Marca d’água (logo no fundo; tenta 3 arquivos) ========= */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
-      /* Tenta 3 arquivos (o 1º que existir aparece) */
       background:
-        url("./Atlus_logo_files/atlus-bg.png")        center 22vh / min(70vw, 920px) auto no-repeat,
+        url("./Atlus_logo_files/atlus-bg.png?v=7")                  center 22vh / min(70vw, 920px) auto no-repeat,
         url("./Atlus_logo_files/Atlus%20Logo%20-%20Transparent%20(2).png") center 22vh / min(70vw, 920px) auto no-repeat,
-        url("./Atlus_logo_files/favicon.png")         center 22vh / 160px auto no-repeat;
-      opacity:.06;             /* bem discreto */
+        url("./Atlus_logo_files/favicon.png?v=7")                   center 22vh / 160px auto no-repeat;
+      opacity:.06;
       filter:saturate(70%);
       z-index:0;
     }
@@ -130,7 +129,7 @@
     .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
     .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
 
-    /* Botões (iguais aos que você já usava) */
+    /* Botões */
     .btn{cursor:pointer;border:1px solid var(--border);background:#0a2236;color:var(--text);padding:10px 12px;border-radius:12px}
     .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
     .btn.link{background:transparent;color:var(--text-dim)}
@@ -142,7 +141,7 @@
 <header>
   <div class="brand">
     <div class="logo">
-      <img src="./Atlus_logo_files/favicon.png?v=5" alt="Atlus">
+      <img src="./Atlus_logo_files/favicon.png?v=7" alt="Atlus">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
@@ -318,7 +317,7 @@ function parseCSVText(text){
   const out=[];
   for(let i=1;i<rows.length;i++){
     const r=rows[i]; if(!r||!r.length)continue;
-    const get=idx=> (idx>=0&&idx<r.length)?r[idx]:''; 
+    const get=idx=> (idx>=0&&idx<r.length)?r[idx]:'';
     out.push({
       Platform:String(get(col.platform)).trim(),
       Location:String(get(col.location)).trim(),
