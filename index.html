@@ -4,7 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Atlus Performance Dashboard — Atlus Theme</title>
-<link rel="icon" type="image/png" href="favicon.png.png">
+
+<!-- Favicon correto -->
+<link rel="icon" type="image/png" href="Atlus_logo_files/favicon.png?v=2">
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -33,11 +36,11 @@ header{
   width:40px;
   height:40px;
   border-radius:12px;
-  overflow:hidden; /* << ADICIONE ISSO */
-  padding:0;       /* << ADICIONE ISSO */
+  overflow:hidden;
+  padding:0;
   display:grid;
   place-items:center;
-  background:transparent !important; /* remove o quadrado amarelo */
+  background:transparent !important;
   box-shadow:none !important;
 }
 .container{max-width:1220px;margin:0 auto;padding:18px;display:grid;gap:16px}
@@ -65,7 +68,7 @@ header{
 <header>
   <div class="brand">
     <div class="logo">
-      <img src="Atlus_logo_files/favicon.png.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
+      <img src="Atlus_logo_files/favicon.png?v=2" style="width:100%;height:100%;object-fit:cover;">
     </div>
     <div class="title">Atlus Performance Dashboard</div>
   </div>
@@ -222,7 +225,7 @@ function pivotLong(rows){
       if((m.indexOf('spend')>-1 && m.indexOf('daily')===-1) || m.indexOf('monthly spend')>-1){
         rec.Spend += v;
       } else if (m.indexOf('number of leads')>-1){
-        rec.Leads += v; // <-- SOMA EXATA
+        rec.Leads += v;
       } else if (m.indexOf('closed job')>-1){
         rec.JobsClosed += v;
       } else if (m.indexOf('contract total')>-1){
@@ -274,8 +277,8 @@ function fillFilters(data){
     arr.forEach(function(v){ var e=document.createElement('option'); e.value=v; e.textContent=v; s.appendChild(e); });
   }
   var months = [...new Set(data.map(r => r.Month))].sort((a, b) => {
-  return new Date(a) - new Date(b);
-});
+    return new Date(a) - new Date(b);
+  });
   var locs  =uniqSortedClean(data.map(function(r){return r.Location;}), true);   // remove “All locations”
   var plats =uniqSortedClean(data.map(function(r){return r.Platform;}), false);
 
@@ -304,7 +307,7 @@ function updateKPIs(){
 
 /* ---------- charts ---------- */
 function updateCharts(){
-  // Leads por Plataforma
+  /* Leads by Platform */
   var mp={}, k;
   for(var i=0;i<filtered.length;i++){k=filtered[i].Platform; mp[k]=(mp[k]||0)+(filtered[i].Leads||0);}
   var l1=Object.keys(mp), d1=l1.map(function(x){return mp[x];});
@@ -315,7 +318,7 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  // ROI por Location — ignora “All locations”
+  /* ROI by Location (ignore “All locations”) */
   var mapLoc={}, l2=[], d2=[];
   for(var i2=0;i2<filtered.length;i2++){
     var r=filtered[i2];
@@ -340,7 +343,7 @@ function updateCharts(){
     }
   });
 
-  // Profit por Location — ignora zero
+  /* Profit by Location (no zeros) */
   var agg={}, pairs=[];
   filtered.forEach(function(r){
     if (norm(r.Location)==='all locations' || norm(r.Location)==='all location') return;
