@@ -19,36 +19,34 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-  margin:0;
-  background:
-    radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
-    radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
-    url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,  /* ← marca d’água */
-    var(--navy);
-  /* tamanhos das camadas de fundo, na mesma ordem */
-  background-size: auto, auto, 780px auto, auto;
-  color:var(--text);
-  font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-}
+      margin:0;
+      background:
+        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
+        var(--navy);
+      background-size: auto, auto, 780px auto, auto;
+      color:var(--text);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      position: relative;
+    }
 
- body{ position: relative; }
-
-body::before{
-  content:"";
-  position:fixed;
-  top:50%;
-  left:50%;
-  width:680px;
-  height:680px;
-  transform:translate(-50%,-50%);
-  background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-  background-size:contain;
-  opacity:0.10;
-  pointer-events:none;
-  z-index:-1;
-}
-
-header, main { position: relative; z-index: 1; }
+    /* marca d'água com o favicon (opcional, pode remover se quiser só o atlus-bg.png) */
+    body::before{
+      content:"";
+      position:fixed;
+      top:50%;
+      left:50%;
+      width:680px;
+      height:680px;
+      transform:translate(-50%,-50%);
+      background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+      background-size:contain;
+      opacity:0.10;
+      pointer-events:none;
+      z-index:-1;
+    }
+    header, main { position: relative; z-index: 1; }
 
     /* Header */
     header{
@@ -59,23 +57,20 @@ header, main { position: relative; z-index: 1; }
     }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
 
-    /* ====== ALTERADO APENAS AQUI ====== */
     .logo{
       width:40px; height:40px;
       display:flex; align-items:center; justify-content:center;
       background:transparent; border:none; box-shadow:none;
-      border-radius:0;           /* sem arredondar o contêiner */
-      overflow:visible;          /* não recortar a imagem */
+      border-radius:0; overflow:visible;
     }
     .logo img{
       display:block;
-      height:100%; width:auto;   /* preserva proporção, usa a altura do header */
-      object-fit:contain;        /* sem recorte */
-      border-radius:0;           /* sem arredondar a imagem */
+      height:100%; width:auto;
+      object-fit:contain;
+      border-radius:0;
       vertical-align:middle;
-      filter:none;               /* garante cores originais */
+      filter:none;
     }
-    /* ====== /FIM DAS MUDANÇAS ====== */
 
     /* Botões / inputs básicos */
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
@@ -84,21 +79,15 @@ header, main { position: relative; z-index: 1; }
     .muted{color:var(--text-dim)}
     .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
 
-    /* Container principal (mais espaço, como combinado) */
+    /* Container principal */
     .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
     .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
     /* Home */
     .hero{
-      padding:22px;
-      background:rgba(10,27,43,.55);
-      border:1px solid var(--border);
-      border-radius:16px;
-      text-align:center;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+      padding:22px; background:rgba(10,27,43,.55); border:1px solid var(--border); border-radius:16px;
+      text-align:center; display:flex; flex-direction:column; align-items:center;
     }
     .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
     .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
@@ -131,12 +120,7 @@ header, main { position: relative; z-index: 1; }
 <header>
   <div class="brand">
     <div class="logo">
-      <img
-        src="Atlus_logo_files/favicon.png"
-        alt="Atlus"
-        width="40" height="40"
-        onerror="this.src='favicon.png';"
-      >
+      <img src="Atlus_logo_files/favicon.png" alt="Atlus" width="40" height="40" onerror="this.src='favicon.png';">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
@@ -162,14 +146,11 @@ header, main { position: relative; z-index: 1; }
         <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
-
-      <!-- Cartões futuros simplificados: apenas “Coming soon” + botão “Soon” -->
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
         <div><button class="btn link" disabled>Soon</button></div>
       </div>
-
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
@@ -194,6 +175,11 @@ header, main { position: relative; z-index: 1; }
         <b>Important:</b> <i>Thumbtack spend is paid at the company level (Atlus overall)</i>, so its
         <b>locations</b> will appear as <b>“All locations”</b> by design.
       </div>
+    </div>
+
+    <!-- Ações no topo -->
+    <div class="panel" style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
+      <button class="btn primary" id="reloadTop">Reload</button>
     </div>
 
     <!-- Filters -->
@@ -223,8 +209,6 @@ header, main { position: relative; z-index: 1; }
       <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
       <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
       <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
-
-      <!-- Novos KPIs -->
       <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDaily">—</span></div></div>
       <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot gold"></span><span id="kpiClose">—</span></div></div>
       <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGood">—</span></div></div>
@@ -267,6 +251,15 @@ function openView(which){
   document.getElementById('view-home').style.display = which==='home'?'block':'none';
   document.getElementById('view-atlus').style.display = which==='atlus'?'block':'none';
   document.getElementById('headerTitle').textContent = which==='home' ? 'Atlus Dashboards' : 'Atlus Performance Dashboard';
+
+  // se entrou em Atlus e ainda não carregou dados, carrega o CSV lembrado
+  if (which==='atlus' && (!original || original.length===0)) {
+    let saved = null;
+    try { saved = localStorage.getItem('csvUrl'); } catch(e) {}
+    const link = saved || document.getElementById('csvUrl').value || DEFAULT_LINK;
+    loadFromUrl(link);
+  }
+
   history.replaceState(null, '', location.pathname + '?view=' + which);
 }
 (function initViewFromURL(){
@@ -277,7 +270,7 @@ function openView(which){
 /* ===== Helpers ===== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
-function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='#a7bfd9'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
+function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
 function chips(msgs){const c=$('statusChips'); c.innerHTML=''; msgs.forEach(m=>c.appendChild(chip(m)))}
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—'}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
@@ -337,10 +330,7 @@ function pivotLong(rows){
     const locRaw = String(r.Location||'').trim();
     const locN = locRaw.toLowerCase();
 
-    // vazio → “All locations” (Thumbtack)
     const loc = locRaw || 'All locations';
-
-    // ignora “All locations” se NÃO for Thumbtack
     if ((locN==='all locations' || locN==='all location') && platN!=='thumbtack') return;
 
     const k = [r.Month, loc, plat].join('||');
@@ -353,9 +343,7 @@ function pivotLong(rows){
     map[k].forEach(row=>{
       const m = String(row.Metric||'').toLowerCase();
       const raw = (row.ValueRaw==null?'':String(row.ValueRaw));
-      // número sanitizado
-      let s = raw.trim().replace(/[^0-9.\-]/g,'');
-      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+      let s = raw.trim().replace(/[^0-9.\-]/g,''); if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
       let v = parseFloat(s); v = isFinite(v)?v:0;
 
       if ((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend += v;
@@ -366,7 +354,7 @@ function pivotLong(rows){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.ROI=t;
       }
-      else if (m.includes('% good')){ // % Good leads
+      else if (m.includes('% good')){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.GoodPct=t;
       }
@@ -440,7 +428,6 @@ function updateKPIs(){
         profit   = sum(filtered,'Profit'),
         roi = spend>0 ? profit/spend : 0;
 
-  // Approx Daily Spend
   let days = 0;
   const monthSel = $('monthFilter').value;
   if(monthSel){
@@ -452,10 +439,8 @@ function updateKPIs(){
   }
   const daily = spend>0 ? spend/Math.max(1, days) : 0;
 
-  // Close rate
   const closeRate = leads>0 ? (jobs/leads) : 0;
 
-  // % Good Leads (média ponderada pelos leads)
   let wNum=0, wDen=0;
   filtered.forEach(r=>{
     if(r.GoodPct!=null && r.Leads>0){ wNum += r.GoodPct * r.Leads; wDen += r.Leads; }
@@ -468,7 +453,6 @@ function updateKPIs(){
   $('kpiContract').textContent  = fmtUSD(contract);
   $('kpiProfit').textContent    = fmtUSD(profit);
   $('kpiROI').textContent       = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
-
   $('kpiDaily').textContent     = fmtUSD(daily);
   $('kpiClose').textContent     = (closeRate*100).toFixed(1)+'%';
   $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
@@ -476,7 +460,6 @@ function updateKPIs(){
 
 /* ===== Charts ===== */
 function updateCharts(){
-  // Leads por Plataforma
   const mp={};
   filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
   const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
@@ -487,7 +470,6 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  // ROI por Location — ignora “All locations”
   const byLoc={};
   filtered.forEach(r=>{
     const n = norm(r.Location);
@@ -505,7 +487,6 @@ function updateCharts(){
     options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
   });
 
-  // Profit por Location — ignora zero e “All locations”
   const agg={}, pairs=[];
   filtered.forEach(r=>{
     const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
@@ -553,6 +534,10 @@ function fetchCsvText(url){
 function loadFromUrl(url){
   const normUrl=normalizeUrl(url.trim());
   if(!normUrl){ chips(['Paste a valid CSV link']); return; }
+
+  // guarda o último CSV para recarregar após refresh
+  try { localStorage.setItem('csvUrl', normUrl); } catch(e) {}
+
   chips(['Loading…']);
   fetchCsvText(normUrl).then(text=>{
     const parsed=parseCSVText(text);
@@ -587,6 +572,7 @@ function loadFromFile(file){
 
 /* Events */
 $('reloadBtn').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
+$('reloadTop').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
 $('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
 $('autoRefresh').addEventListener('change',e=>{
   if(e.target.checked){
@@ -601,9 +587,15 @@ $('clearFilters').addEventListener('click',()=>{ $('monthFilter').value=''; $('l
 /* Default CSV */
 const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.addEventListener('DOMContentLoaded',()=>{
-  $('csvUrl').value=DEFAULT_LINK;
+  // restaura o link salvo (se existir), senão usa o DEFAULT_LINK
+  let saved = null;
+  try { saved = localStorage.getItem('csvUrl'); } catch(e) {}
+  const link = saved || DEFAULT_LINK;
+  $('csvUrl').value = link;
+
   const isAtlus = new URLSearchParams(location.search).get('view')==='atlus';
-  if(isAtlus){ loadFromUrl(DEFAULT_LINK); }
+  if(isAtlus){ loadFromUrl(link); }   // carrega automaticamente ao abrir a view Atlus
+
   $('autoRefresh').dispatchEvent(new Event('change'));
   setUpdated();
 });
