@@ -348,6 +348,10 @@ body.admin .if-guest{ display:none; }
         <div><label class="muted">Guide CSV link (active sheet)</label><input id="btCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
       </div>
+      <!-- Public reload button (for non-admin users) -->
+<div class="panel if-guest" style="display:flex; justify-content:flex-end; gap:10px; align-items:center;">
+  <button class="btn primary" id="btReloadPublic">Reload</button>
+</div>
       <div id="btStatusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
     </div>
 
