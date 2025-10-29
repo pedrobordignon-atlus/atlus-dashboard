@@ -12,26 +12,19 @@
 
   <style>
     :root{
-      /* paleta mais variada (menos “tudo azul”) */
       --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
-      --text:#e9f1fb; --text-dim:#a7bfd9;
-
-      --blue:#1e88e5;       /* primary */
-      --teal:#2dd4bf;       /* accents */
-      --gold:#ffb81c;
-      --green:#19c37d;
-      --purple:#a78bfa;
-      --coral:#f87171;
+      --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+      /* novas cores para variar os gráficos */
+      --coral:#ff6b6b; --purple:#7c5cff; --teal:#2dd4bf; --sky:#38bdf8;
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
       margin:0;
       background:
-        radial-gradient(900px 600px at 12% 10%, rgba(30,136,229,.10), transparent 70%),
-        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.12), transparent 70%),
+        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.14), transparent 70%),
         url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
         var(--navy);
       background-size: auto, auto, 780px auto, auto;
@@ -41,28 +34,25 @@
       position: relative;
       overflow-x: hidden;
     }
-
     body::before{
       content:"";
       position:fixed;
       top:50%; left:50%;
-      width:680px; height:680px;
-      transform:translate(-50%,-50%);
+      width:680px; height:680px; transform:translate(-50%,-50%);
       background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-      background-size:contain;
-      opacity:0.08; pointer-events:none; z-index:0;
+      background-size:contain; opacity:0.08; pointer-events:none; z-index:0;
     }
     body::after{
-      content:"";
-      position:fixed; inset:0;
+      content:""; position:fixed; inset:0;
       background-image:
-        linear-gradient(rgba(255,184,28,0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30,136,229,0.10) 1px, transparent 1px);
-      background-size: 46px 46px, 46px 46px;
+        linear-gradient(rgba(255,184,28,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,119,200,0.12) 1px, transparent 1px);
+      background-size: 46px 46px, 46px 46px; background-position: 0 0, 0 0;
       opacity:0.35; pointer-events:none; z-index:0;
     }
 
     header, main { position: relative; z-index: 1; }
+
     header{
       position:sticky; top:0; z-index:50;
       display:flex; align-items:center; justify-content:space-between;
@@ -74,7 +64,7 @@
     .logo img{height:100%;width:auto;object-fit:contain}
 
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-    .btn.primary{background:var(--blue);border-color:transparent;color:#fff;font-weight:600}
+    .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
     .btn.link{background:transparent;border:1px solid var(--border);color:#dbeafe}
     .muted{color:var(--text-dim)}
     .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
@@ -95,12 +85,12 @@
     .kpi .label{font-size:12px;color:var(--text-dim)}
     .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
     .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
-    .dot.blue{background:var(--blue)} .dot.gold{background:var(--gold)} .dot.green{background:var(--green)}
+    .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
 
     .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
     @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
 
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
     @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
 
     .noteTitle{font-weight:700;margin-bottom:6px}
@@ -116,11 +106,6 @@
     body.admin .if-admin{ display:inline-flex; }
     body.admin .if-guest{ display:none; }
 
-    /* Alturas maiores para evitar corte */
-    .chart-500{height:500px}
-    .chart-420{height:420px}
-    .chart-380{height:380px}
-
     #adminLoginBox{
       position: fixed; inset: 0; display: none; place-items: center;
       background: rgba(0,0,0,.45); z-index: 1000;
@@ -129,6 +114,12 @@
       width: 320px; background: var(--panel); border:1px solid var(--border);
       border-radius: 16px; padding: 16px; display: grid; gap: 10px;
     }
+
+    /* ---------- Espaço extra para os gráficos (layout B) ---------- */
+    .panel.chart-420{ height:420px; }
+    .panel.chart-500{ height:500px; }
+    .panel.chart-460{ height:460px; }
+    .panel > canvas{ width:100% !important; height:100% !important; display:block; }
   </style>
 </head>
 <body>
@@ -273,7 +264,9 @@
 
     <div class="panel">
       <div class="noteTitle">🧰 Bonus & Tech Dashboard (Current pay period)</div>
-      <div class="note">This panel reads <b>only the active sheet</b> of the guide (Current pay period).</div>
+      <div class="note">
+        This panel reads <b>only the active sheet</b> of the guide (Current pay period).
+      </div>
     </div>
 
     <div class="panel if-guest">
@@ -324,14 +317,16 @@
     <!-- Título + notas -->
     <div class="panel">
       <div class="noteTitle">📄 Subscriptions / ARV</div>
+
       <div class="note" id="svcCycleNote">Loading cycle…</div>
+
       <div class="note" style="margin-top:8px">
         <b>Supported columns:</b>
         Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV.
       </div>
     </div>
 
-    <!-- “Reload” para visitantes — ACIMA DOS KPIs -->
+    <!-- “Reload” para visitantes — ACIMA dos KPIs -->
     <div class="panel if-guest">
       <div class="muted">
         Need to refresh the data? Click
@@ -373,45 +368,44 @@
       </div>
     </div>
 
-    <!-- ===== Reorganização (Opção B) ===== -->
-
-    <!-- 1) Donut (linha inteira) -->
-    <div class="panel">
+    <!-- Layout B -->
+    <!-- Linha 1: Donut sozinho -->
+    <div class="panel chart-420">
       <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
-      <div class="chart-380"><canvas id="svcChartActive"></canvas></div>
+      <canvas id="svcChartActive"></canvas>
     </div>
 
-    <!-- 2) Top subscription plans (linha inteira) -->
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">Top Subscription Plans</div>
-      <div class="chart-420"><canvas id="svcChartTopPlans"></canvas></div>
+    <!-- Linha 2: Top Plans sozinho -->
+    <div class="panel chart-460">
+      <div style="margin-bottom:8px;font-weight:700">Top Plans (by # of subscriptions)</div>
+      <canvas id="svcChartPlans"></canvas>
     </div>
 
-    <!-- 3) Timelines lado a lado -->
+    <!-- Linha 3: Timelines lado a lado -->
     <div class="grid-2">
-      <div class="panel">
+      <div class="panel chart-500">
         <div style="margin-bottom:8px;font-weight:700">Date Sold — timeline</div>
-        <div class="chart-420"><canvas id="svcChartSoldTimeline"></canvas></div>
+        <canvas id="svcChartSoldTimeline"></canvas>
       </div>
-      <div class="panel">
+      <div class="panel chart-500">
         <div style="margin-bottom:8px;font-weight:700">Initial Service — timeline</div>
-        <div class="chart-420"><canvas id="svcChartInitTimeline"></canvas></div>
+        <canvas id="svcChartInitTimeline"></canvas>
       </div>
     </div>
 
-    <!-- 4) ARV / Count por Sales Rep lado a lado -->
+    <!-- Linha 4: ARV / Count por Sales Rep lado a lado -->
     <div class="grid-2">
-      <div class="panel">
+      <div class="panel chart-460">
         <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
-        <div class="chart-420"><canvas id="svcChartArvByRep"></canvas></div>
+        <canvas id="svcChartArvByRep"></canvas>
       </div>
-      <div class="panel">
+      <div class="panel chart-460">
         <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
-        <div class="chart-420"><canvas id="svcChartCountByRep"></canvas></div>
+        <canvas id="svcChartCountByRep"></canvas>
       </div>
     </div>
 
-    <!-- Tabela escondida para manter a view limpa -->
+    <!-- Tabela oculta (apenas se quiser voltar depois) -->
     <div class="panel" style="display:none">
       <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
       <div id="svcTable" style="display:grid;gap:8px"></div>
@@ -534,8 +528,10 @@
           let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
           if(t>1.5)t/=100; rec.ROI=t;
         }
-        else if (m.includes('% good')){ let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
-          if(t>1.5)t/=100; rec.GoodPct=t; }
+        else if (m.includes('% good')){
+          let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
+          if(t>1.5)t/=100; rec.GoodPct=t;
+        }
         else if (m.includes('profit')) rec.Profit += v;
       });
 
@@ -578,7 +574,10 @@
     const locs  = uniqSortedClean(data.map(r=>r.Location), true);
     const plats = uniqSortedClean(data.map(r=>r.Platform), false);
 
-    const fixLabel = (t) => { const l = String(t||'').trim(); return (l.toLowerCase() === 'pendig') ? 'Pending' : l; };
+    const fixLabel = (t) => {
+      const l = String(t||'').trim();
+      return (l.toLowerCase() === 'pendig') ? 'Pending' : l;
+    };
 
     const fill = (id, arr, label)=>{
       const s=$(id); s.innerHTML='';
@@ -639,8 +638,8 @@
     if(leadsChart) leadsChart.destroy();
     leadsChart=new Chart($('chartLeads').getContext('2d'),{
       type:'bar',
-      data:{labels:l1,datasets:[{label:'Leads',data:d1,backgroundColor:'rgba(30,136,229,.6)',borderColor:'var(--blue)',borderWidth:1}]},
-      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+      data:{labels:l1,datasets:[{label:'Leads',data:d1,backgroundColor:'rgba(56,189,248,.55)',borderColor:'var(--sky)',borderWidth:1}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     });
 
     const byLoc={};
@@ -656,8 +655,8 @@
     if(roiChart) roiChart.destroy();
     roiChart=new Chart($('chartROI').getContext('2d'),{
       type:'bar',
-      data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(25,195,125,.6)',borderColor:'var(--green)',borderWidth:1}]},
-      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
+      data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(45,212,191,.55)',borderColor:'var(--teal)',borderWidth:1}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
     });
 
     const agg={}, pairs=[];
@@ -672,7 +671,7 @@
     profitChart=new Chart($('chartProfit').getContext('2d'),{
       type:'bar',
       data:{labels:pLabels,datasets:[{label:'Profit ($)',data:pData,borderColor:'var(--gold)',backgroundColor:'rgba(255,184,28,.30)'}]},
-      options:{responsive:true,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
     });
   }
 
@@ -854,9 +853,39 @@
     });
   }
 
+  function btNormalizeUrl(u){
+    if(!u)return'';
+    if(/tqx=out:csv/.test(u))return u;
+    if(/\/pub\?/.test(u)&&/output=csv/.test(u))return u;
+    const m=u.match(/spreadsheets\/d\/([^\/]+).*?[#\?].*?gid=(\d+)/);
+    if(m)return 'https://docs.google.com/spreadsheets/d/'+m[1]+'/gviz/tq?tqx=out:csv&gid='+m[2];
+    return u;
+  }
+  function btWithBust(url){ const s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()); }
+  function btLoad(url){
+    const norm = btNormalizeUrl(url.trim());
+    if(!norm){ btChips(['Paste a valid CSV link']); return; }
+    btChips(['Loading…']);
+    fetch(btWithBust(norm))
+      .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
+      .then(text=>{
+        const parsed = btParseCSV(text);
+        if(!parsed.rows.length){ btChips(['Empty CSV or headers not recognized']); return; }
+        BT_ALL = parsed.rows;
+        btFillFilters(BT_ALL);
+        $bt('btOwner').value=''; $bt('btStatus').value=''; $bt('btJobSearch').value='';
+        btApply();
+        btChips(['CSV loaded: '+BT_ALL.length+' rows']); setUpdated();
+      })
+      .catch(err=>{ btChips(['Failed to load CSV: '+err.message]); console.error(err); });
+  }
+
   ['btOwner','btStatus'].forEach(id=> $bt(id).addEventListener('change', btApply));
   $bt('btJobSearch').addEventListener('input', btApply);
   $bt('btClear').addEventListener('click', ()=>{ $bt('btOwner').value=''; $bt('btStatus').value=''; $bt('btJobSearch').value=''; btApply(); });
+  $bt('btReload').addEventListener('click', ()=> btLoad($bt('btCsvUrl').value));
+  const btReloadPub = document.getElementById('btReloadPublic');
+  if(btReloadPub){ btReloadPub.addEventListener('click', (e)=>{ e.preventDefault(); btLoad($bt('btCsvUrl').value); }); }
 
   /* Defaults */
   const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
@@ -868,7 +897,7 @@
 
     const v = new URLSearchParams(location.search).get('view');
     if(v==='atlus'){ loadFromUrl(DEFAULT_LINK); }
-    if(v==='bonus'){ /* btLoad removed for cleanliness (optional) */ }
+    if(v==='bonus'){ btLoad(BONUS_DEFAULT_LINK); }
 
     $('autoRefresh').dispatchEvent(new Event('change'));
     setUpdated();
@@ -956,7 +985,7 @@ function svcParseCSV(text){
   return { rows: out };
 }
 
-/* ===================== Cycle Note ===================== */
+/* ===================== Cycle Note Helpers ===================== */
 function svcParseDate(str){
   if(!str) return null;
   const s = String(str).trim();
@@ -1018,28 +1047,14 @@ function svcComputeAggregates(list){
   const active = list.filter(r=>/^y(es)?$/i.test(r.Active)).length;
   const arvSum = list.reduce((a,b)=>a+(b.ARV||0),0);
   const balSum = list.reduce((a,b)=>a+(b.Balance||0),0);
-
   const byRep={};
-  const byPlan={};
-  const soldTimeline = {};   // yyyy-mm -> count
-  const initTimeline = {};   // yyyy-mm -> count
-
   list.forEach(r=>{
     const k=r.SalesRep||'—';
     (byRep[k]||(byRep[k]={count:0,arv:0}));
     byRep[k].count++;
     byRep[k].arv += (r.ARV||0);
-
-    const plan = (r.Subscription||'—').trim();
-    byPlan[plan] = (byPlan[plan]||0)+1;
-
-    const dS = svcParseDate(r.DateSold);
-    const dI = svcParseDate(r.InitialServiceDate);
-    if(dS){ const kS = `${dS.getFullYear()}-${String(dS.getMonth()+1).padStart(2,'0')}`; soldTimeline[kS]=(soldTimeline[kS]||0)+1; }
-    if(dI){ const kI = `${dI.getFullYear()}-${String(dI.getMonth()+1).padStart(2,'0')}`; initTimeline[kI]=(initTimeline[kI]||0)+1; }
   });
-
-  return {total,active,arv:arvSum,balance:balSum,byRep,byPlan,soldTimeline,initTimeline};
+  return {total,active,arv:arvSum,balance:balSum,byRep};
 }
 
 function svcRenderKpis(agg){
@@ -1049,10 +1064,16 @@ function svcRenderKpis(agg){
   $svc('svcKpiBalance').textContent = fmtUSD(agg.balance||0);
 }
 
-let svcArvChart=null, svcCountChart=null, svcActiveChart=null, svcTopPlansChart=null, svcSoldChart=null, svcInitChart=null;
+let svcArvChart=null, svcCountChart=null, svcActiveChart=null, svcPlansChart=null, svcSoldChart=null, svcInitChart=null;
 
-function svcRenderCharts(agg){
-  /* Donut Active vs Inactive */
+function monthKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function prettyMonth(key){
+  const [y,m]=key.split('-').map(Number);
+  return new Date(y,m-1,1).toLocaleString('en-US',{month:'short', year:'numeric'});
+}
+
+function svcRenderCharts(agg, rows){
+  /* ---------- Donut Active x Inactive ---------- */
   const active = agg.active;
   const inactive = Math.max(0, (agg.total||0) - active);
   const actEl = document.getElementById('svcChartActive');
@@ -1062,87 +1083,121 @@ function svcRenderCharts(agg){
       type:'doughnut',
       data:{
         labels:['Active','Inactive'],
-        datasets:[{ data:[active, inactive], backgroundColor:['var(--green)','var(--coral)'] }]
+        datasets:[{ data:[active, inactive],
+          backgroundColor:['rgba(25,195,125,.85)','rgba(255,107,107,.85)'],
+          borderColor:['#19c37d','#ff6b6b'], borderWidth:1
+        }]
       },
-      options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } }
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
     });
   }
 
-  /* Top Plans */
-  const planPairs = Object.entries(agg.byPlan).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,10);
-  const pLabels = planPairs.map(p=>p.k);
-  const pData   = planPairs.map(p=>p.v);
-  const pEl = document.getElementById('svcChartTopPlans');
-  if(pEl){
-    if(svcTopPlansChart) svcTopPlansChart.destroy();
-    svcTopPlansChart = new Chart(pEl.getContext('2d'),{
-      type:'bar',
-      data:{ labels:pLabels, datasets:[{ label:'#', data:pData, backgroundColor:'rgba(167,139,250,.45)', borderColor:'var(--purple)' }]},
-      options:{
-        responsive:true,
-        plugins:{ legend:{display:false} },
-        scales:{ x:{ ticks:{ maxRotation:45, minRotation:30 } }, y:{ beginAtZero:true } }
-      }
-    });
-  }
+  /* ---------- Top Plans (por contagem) ---------- */
+  const planCount = {};
+  (rows||[]).forEach(r=>{
+    const p = r.Subscription?.trim() || '—';
+    planCount[p] = (planCount[p]||0)+1;
+  });
+  const planPairs = Object.entries(planCount).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,12);
+  const planLabels = planPairs.map(p=>p.k);
+  const planValues = planPairs.map(p=>p.v);
+  if(svcPlansChart) svcPlansChart.destroy();
+  svcPlansChart = new Chart($('svcChartPlans').getContext('2d'),{
+    type:'bar',
+    data:{ labels:planLabels, datasets:[{ label:'# Subs', data:planValues,
+      backgroundColor:'rgba(124,92,255,.55)', borderColor:'var(--purple)', borderWidth:1 }]},
+    options:{
+      responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ ticks:{ maxRotation:30, autoSkip:true } }, y:{ beginAtZero:true } }
+    }
+  });
 
-  /* Timelines */
-  function toSortedSeries(map){
-    const keys = Object.keys(map).sort();
-    return { labels: keys, data: keys.map(k=>map[k]) };
-  }
-  const soldS = toSortedSeries(agg.soldTimeline);
-  const initS = toSortedSeries(agg.initTimeline);
+  /* ---------- Timelines (Sold / Initial Service por mês) ---------- */
+  const soldByMonth={}, initByMonth={};
+  (rows||[]).forEach(r=>{
+    const ds = svcParseDate(r?.DateSold);
+    const di = svcParseDate(r?.InitialServiceDate);
+    if(ds){ const k=monthKey(ds); soldByMonth[k]=(soldByMonth[k]||0)+1; }
+    if(di){ const k=monthKey(di); initByMonth[k]=(initByMonth[k]||0)+1; }
+  });
+  const allKeys = Array.from(new Set([...Object.keys(soldByMonth),...Object.keys(initByMonth)]))
+                    .sort((a,b)=> a.localeCompare(b));
+  const soldSeries = allKeys.map(k=> soldByMonth[k]||0);
+  const initSeries = allKeys.map(k=> initByMonth[k]||0);
+  const labels = allKeys.map(prettyMonth);
 
-  const sEl = document.getElementById('svcChartSoldTimeline');
-  if(sEl){
-    if(svcSoldChart) svcSoldChart.destroy();
-    svcSoldChart = new Chart(sEl.getContext('2d'),{
-      type:'line',
-      data:{ labels:soldS.labels, datasets:[{ label:'Sold', data:soldS.data, borderColor:'var(--blue)', backgroundColor:'rgba(30,136,229,.25)', tension:.25, fill:true }]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true}} }
-    });
-  }
-  const iEl = document.getElementById('svcChartInitTimeline');
-  if(iEl){
-    if(svcInitChart) svcInitChart.destroy();
-    svcInitChart = new Chart(iEl.getContext('2d'),{
-      type:'line',
-      data:{ labels:initS.labels, datasets:[{ label:'Initial Service', data:initS.data, borderColor:'var(--teal)', backgroundColor:'rgba(45,212,191,.25)', tension:.25, fill:true }]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true}} }
-    });
-  }
+  if(svcSoldChart) svcSoldChart.destroy();
+  svcSoldChart = new Chart($('svcChartSoldTimeline').getContext('2d'),{
+    type:'line',
+    data:{ labels, datasets:[{ label:'Sold', data:soldSeries, borderColor:'var(--sky)', backgroundColor:'rgba(56,189,248,.35)', tension:.35, pointRadius:0, borderWidth:3, fill:false }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{ y:{ beginAtZero:true } } }
+  });
 
-  /* ARV por Sales Rep */
+  if(svcInitChart) svcInitChart.destroy();
+  svcInitChart = new Chart($('svcChartInitTimeline').getContext('2d'),{
+    type:'line',
+    data:{ labels, datasets:[{ label:'Initial Service', data:initSeries, borderColor:'var(--green)', backgroundColor:'rgba(25,195,125,.35)', tension:.35, pointRadius:0, borderWidth:3, fill:false }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{ y:{ beginAtZero:true } } }
+  });
+
+  /* ---------- ARV / Count por Sales Rep ---------- */
   const reps = Object.keys(agg.byRep).sort((a,b)=> (agg.byRep[b].arv - agg.byRep[a].arv));
   const arvData = reps.map(k=> +(agg.byRep[k].arv||0).toFixed(2));
   const cntData = reps.map(k=> agg.byRep[k].count||0);
 
-  const arvEl = document.getElementById('svcChartArvByRep');
-  if(arvEl){
-    if(svcArvChart) svcArvChart.destroy();
-    svcArvChart = new Chart(arvEl.getContext('2d'),{
-      type:'bar',
-      data:{labels:reps,datasets:[{label:'ARV ($)',data:arvData,borderColor:'var(--gold)',backgroundColor:'rgba(255,184,28,.30)'}]},
-      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.x)}}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
-    });
-  }
+  if(svcArvChart) svcArvChart.destroy();
+  svcArvChart = new Chart($('svcChartArvByRep').getContext('2d'),{
+    type:'bar',
+    data:{labels:reps,datasets:[{label:'ARV ($)',data:arvData,borderColor:'var(--gold)',backgroundColor:'rgba(255,184,28,.30)'}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.x)}}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+  });
 
-  const cntEl = document.getElementById('svcChartCountByRep');
-  if(cntEl){
-    if(svcCountChart) svcCountChart.destroy();
-    svcCountChart = new Chart(cntEl.getContext('2d'),{
-      type:'bar',
-      data:{labels:reps,datasets:[{label:'# Subs',data:cntData,backgroundColor:'rgba(30,136,229,.6)',borderColor:'var(--blue)'}]},
-      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-    });
-  }
+  if(svcCountChart) svcCountChart.destroy();
+  svcCountChart = new Chart($('svcChartCountByRep').getContext('2d'),{
+    type:'bar',
+    data:{labels:reps,datasets:[{label:'# Subs',data:cntData,backgroundColor:'rgba(0,119,200,.60)',borderColor:'var(--blue)'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
 }
 
 function svcRender(list){
   const T = $svc('svcTable'); if(!T) return;
   T.innerHTML = '';
-  /* tabela mantida oculta na DOM */
+
+  const header = document.createElement('div');
+  header.style.display='grid';
+  header.style.gridTemplateColumns='0.85fr 1.4fr 1fr 0.6fr 0.9fr 0.9fr 0.9fr 0.7fr 0.8fr 0.9fr';
+  header.style.gap='10px';
+  header.style.padding='8px 10px';
+  header.style.color='var(--text-dim)';
+  header.innerHTML = `
+    <div>Customer ID</div><div>Customer</div><div>Subscription</div><div>Active</div>
+    <div>Sales Rep</div><div>Date Sold</div><div>Initial Service</div><div>Status</div>
+    <div>Balance</div><div>ARV</div>`;
+  T.appendChild(header);
+
+  list.forEach(r=>{
+    const row = document.createElement('div');
+    row.style.display='grid';
+    row.style.gridTemplateColumns='0.85fr 1.4fr 1fr 0.6fr 0.9fr 0.9fr 0.9fr 0.7fr 0.8fr 0.9fr';
+    row.style.gap='10px';
+    row.style.padding='10px';
+    row.style.border='1px solid var(--border)';
+    row.style.borderRadius='12px';
+    row.style.background='#081b2b';
+    row.innerHTML = `
+      <div>${r.CustomerID || '-'}</div>
+      <div><b>${r.Customer || '-'}</b></div>
+      <div>${r.Subscription || '-'}</div>
+      <div>${r.Active || '-'}</div>
+      <div>${r.SalesRep || '-'}</div>
+      <div>${r.DateSold || '-'}</div>
+      <div>${r.InitialServiceDate || '-'}</div>
+      <div>${r.Status || '-'}</div>
+      <div>${fmtUSD(r.Balance || 0)}</div>
+      <div>${fmtUSD(r.ARV || 0)}</div>`;
+    T.appendChild(row);
+  });
 }
 
 function svcLoad(url){
@@ -1155,7 +1210,7 @@ function svcLoad(url){
       svcUpdateCycleNote(parsed.rows);
       const agg = svcComputeAggregates(parsed.rows);
       svcRenderKpis(agg);
-      svcRenderCharts(agg);
+      svcRenderCharts(agg, parsed.rows);
       setUpdated();
     })
     .catch(err=>{
