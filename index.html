@@ -16,20 +16,19 @@
       --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body::before {
+    /* ===== Marca d'água Atlus (centralizada) ===== */
+body::before {
   content: "";
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 800px;          /* tamanho da marca d’água */
-  height: 800px;
+  width: 780px;               /* ajuste se quiser maior/menor */
+  height: 780px;
   transform: translate(-50%, -50%);
   background: url('./Atlus_logo_files/atlus-bg.png') no-repeat center center;
   background-size: contain;
-  opacity: 0.12;         /* transparência da marca d’água */
-  pointer-events: none;  /* não interfere nos cliques */
+  opacity: 0.12;              /* 0.05 = bem fraco | 0.25 = forte */
+  pointer-events: none;       /* não interfere no clique */
   z-index: 0;
 }
 
