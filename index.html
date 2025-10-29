@@ -213,15 +213,16 @@
     </div>
 
     <!-- Data source (embaixo) — sem o botão aqui -->
-    <div class="panel">
-      <div class="row">
-        <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-        <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-        <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
-      </div>
-      <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-    </div>
-
+   <!-- Data source (embaixo) -->
+<div class="panel">
+  <div class="row">
+    <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+    <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
+    <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
+    <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+  </div>
+  <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+</div>
   </section>
 </main>
 
