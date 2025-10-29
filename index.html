@@ -320,13 +320,6 @@
     <button class="btn link" onclick="openView('home')">← Back to Home</button>
   </div>
 
-  <!-- Public: refresh hint (now ABOVE KPIs) -->
-  <div class="panel if-guest" style="margin-bottom:0">
-    <div class="muted">
-      Need to refresh the data? Click
-      <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
-    </div>
-  </div>
 
   <!-- Header / Note (EN only, no 'Paste the CSV link') -->
   <div class="panel" style="margin-top:0">
@@ -336,7 +329,13 @@
       <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
     </div>
   </div>
-
+ <!-- Public: refresh hint (now ABOVE KPIs) -->
+  <div class="panel if-guest" style="margin-bottom:0">
+    <div class="muted">
+      Need to refresh the data? Click
+      <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
+    </div>
+  </div>
   <!-- KPIs -->
   <div class="kpis">
     <div class="kpi">
