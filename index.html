@@ -150,6 +150,30 @@
 /* alturas mais equilibradas (menos “tijolão”) */
 .chart-340 canvas{ height:340px !important; }
 .chart-360 canvas{ height:360px !important; }
+
+/* ===== Mobile polish extra (fonte/alturas/paddings) ===== */
+@media (max-width:700px){
+  header{ padding:10px 12px; }
+  .container{ padding:14px; gap:16px; }
+  .panel{ padding:16px 16px 14px; border-radius:12px; }
+  .cards{ grid-template-columns:1fr; gap:14px; }
+  .filters{ grid-template-columns:1fr; gap:10px; }
+  .kpis{ grid-template-columns:1fr; gap:10px; }
+  .grid-2{ grid-template-columns:1fr !important; gap:16px; }
+  .stack{ gap:14px; }
+  .stack-charts{ gap:18px; }
+
+  .panel.chart-480 > canvas,
+  .panel.chart-460 > canvas,
+  .panel.chart-420 > canvas{ height:300px !important; }
+  .panel.chart-380 > canvas,
+  .panel.chart-360 > canvas,
+  .panel.chart-340 > canvas{ height:260px !important; }
+
+  .panel > div[style*="font-weight:700"]{ font-size:14px !important; }
+
+  #btTable, #svcTable{ overflow-x:auto; }
+}
   </style>
 </head>
 <body>
@@ -489,6 +513,13 @@
     return isFinite(n)?n:0;
   }
 
+  /* ====== MOBILE HELPERS (gráficos mais limpos no celular) ====== */
+  const MOBILE = window.matchMedia('(max-width:700px)');
+  function mobFont(szDesktop=12, szMobile=10){ return { size: MOBILE.matches ? szMobile : szDesktop }; }
+  function mobTicks(showDesktop=true, showMobile=true){
+    return MOBILE.matches ? (showMobile?{}:{display:false}) : (showDesktop?{}:{display:false});
+  }
+
   /* ===== CSV parsing (Atlus) ===== */
   function detectColumns(headers){
     const h=headers.map(x=>String(x||'').toLowerCase());
@@ -660,7 +691,13 @@
     leadsChart=new Chart($('chartLeads').getContext('2d'),{
       type:'bar',
       data:{labels:l1,datasets:[{label:'Leads',data:d1,backgroundColor:'rgba(56,189,248,.55)',borderColor:'var(--sky)',borderWidth:1}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+      options:{
+        responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{
+          x:{ ticks:Object.assign({ font: mobFont(11,10), maxRotation:0, minRotation:0 }, mobTicks(true,false)), grid:{display:!MOBILE.matches}, border:{display:!MOBILE.matches} },
+          y:{ beginAtZero:true, ticks:{ font: mobFont(11,10) } }
+        }
+      }
     });
 
     const byLoc={};
@@ -677,7 +714,15 @@
     roiChart=new Chart($('chartROI').getContext('2d'),{
       type:'bar',
       data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(45,212,191,.55)',borderColor:'var(--teal)',borderWidth:1}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
+      options:{
+        indexAxis:'y',
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{beginAtZero:true,ticks:{ font: mobFont(11,10), callback:v=>Number(v).toFixed(1)+'%' }},
+          y:{ticks:{ font: mobFont(11,10) }}
+        }
+      }
     });
 
     const agg={}, pairs=[];
@@ -692,7 +737,14 @@
     profitChart=new Chart($('chartProfit').getContext('2d'),{
       type:'bar',
       data:{labels:pLabels,datasets:[{label:'Profit ($)',data:pData,borderColor:'var(--gold)',backgroundColor:'rgba(255,184,28,.30)'}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},
+        scales:{
+          x:{ ticks:{ font: mobFont(11,10), maxRotation:0, minRotation:0 } },
+          y:{ beginAtZero:true, ticks:{ font: mobFont(11,10), callback:v=>fmtUSD(v) } }
+        }
+      }
     });
   }
 
@@ -945,6 +997,14 @@
   }
   if(passInput){ passInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ confirmBtn.click(); } }); }
   if(logoutBtn){ logoutBtn.addEventListener('click', ()=> setAdmin(false)); }
+
+  /* Reaplica fontes/labels ao girar tela */
+  MOBILE.addEventListener?.('change', () => {
+    try{
+      [leadsChart, roiChart, profitChart, svcPlansChart, svcArvChart, svcCountChart, svcActiveChart]
+        .filter(Boolean).forEach(ch => ch.update('none'));
+    }catch(e){}
+  });
 </script>
 
 <!-- ===== SUBSCRIPTIONS / ARV (JS) ===== -->
@@ -1062,7 +1122,7 @@ function svcUpdateCycleNote(rows){
     Combined: <b>serviced in ${monthName}</b> but <b>sold in ${prevName}</b>: <b>${servicedThisMonth_soldLastMonth}</b>.
   `;
 }
-/* ===================== Aggregates + Charts ===================== */
+  /* ===================== Aggregates + Charts ===================== */
 function svcComputeAggregates(list){
   const total = list.length;
   const active = list.filter(r=>/^y(es)?$/i.test(r.Active)).length;
@@ -1128,21 +1188,21 @@ function svcRenderCharts(agg, rows){
     data:{ labels:planLabels, datasets:[{ label:'# Subs', data:planValues,
       backgroundColor:'rgba(124,92,255,.55)', borderColor:'var(--purple)', borderWidth:1 }]},
     options:{
-  responsive:true,
-  maintainAspectRatio:false,
-  plugins:{ legend:{ display:false } },
-  scales:{
-    x:{
-      ticks:{ display:false },     // 🔕 some os escritos debaixo
-      grid:{ display:false },      // limpa a grade vertical
-      border:{ display:false }     // remove a linha do eixo
-    },
-    y:{
-      beginAtZero:true,
-      ticks:{ font:{ size:11 } }   // mantém legível no eixo Y
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{
+          ticks:{ display:false },     // oculta rótulos do eixo X
+          grid:{ display:false },
+          border:{ display:false }
+        },
+        y:{
+          beginAtZero:true,
+          ticks:{ font:{ size:11 } }
+        }
+      }
     }
-  }
-}
   });
 
   /* ---------- ARV / Count por Sales Rep ---------- */
@@ -1223,6 +1283,7 @@ function svcLoad(url){
       alert('Failed to load CSV: ' + err.message);
     });
 }
+
 (function(){
   if($svc('svcCsvUrl')){ $svc('svcCsvUrl').value = SVC_DEFAULT_LINK; }
   if($svc('svcReload')){ $svc('svcReload').addEventListener('click', ()=> svcLoad($svc('svcCsvUrl').value)); }
@@ -1235,6 +1296,5 @@ function svcLoad(url){
   });
 })();
 </script>
-
 </body>
 </html>
