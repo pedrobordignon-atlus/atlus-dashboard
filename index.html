@@ -1128,23 +1128,9 @@ function svcRenderCharts(agg, rows){
     data:{ labels:planLabels, datasets:[{ label:'# Subs', data:planValues,
       backgroundColor:'rgba(124,92,255,.55)', borderColor:'var(--purple)', borderWidth:1 }]},
     options:{
-  responsive:true,
-  maintainAspectRatio:false,
-  plugins:{ legend:{ display:false } },
-  scales:{
-    x:{
-      ticks:{
-        maxRotation:0,
-        minRotation:0,
-        font:{ size:11 }
-      }
-    },
-    y:{
-      beginAtZero:true,
-      ticks:{ font:{ size:11 } }
+      responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ ticks:{ maxRotation:30, autoSkip:true } }, y:{ beginAtZero:true } }
     }
-  }
-}
   });
 
   /* ---------- ARV / Count por Sales Rep ---------- */
