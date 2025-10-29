@@ -11,95 +11,85 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
-  :root{
-    --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
-    --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
-  }
+    :root{
+      --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
+      --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+    }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    background:
-      radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
-      radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
-      url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
-      var(--navy);
-    background-size: auto, auto, 780px auto, auto;
-    color:var(--text);
-    font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    position: relative;
-  }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
+        var(--navy);
+      background-size: auto, auto, 780px auto, auto;
+      color:var(--text);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      position: relative;
+    }
 
-  /* marca d’água com o favicon */
-  body::before{
-    content:"";
-    position:fixed;
-    top:50%;
-    left:50%;
-    width:680px;
-    height:680px;
-    transform:translate(-50%,-50%);
-    background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-    background-size:contain;
-    opacity:0.06;           /* bem fraquinho */
-    pointer-events:none;
-    z-index:0;
-  }
+    /* marca d’água opcional com o favicon */
+    body::before{
+      content:"";
+      position:fixed; top:50%; left:50%;
+      width:680px; height:680px; transform:translate(-50%,-50%);
+      background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+      background-size:contain; opacity:.10; pointer-events:none; z-index:-1;
+    }
+    header, main { position: relative; z-index: 1; }
 
-  /* garante que o conteúdo fique acima da marca d’água */
-  header, main { position: relative; z-index: 1; }
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
+      border-bottom:1px solid var(--border);
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+    .logo img{height:100%;width:auto;object-fit:contain}
 
-  /* Header */
-  header{
-    position:sticky; top:0; z-index:50;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
-    border-bottom:1px solid var(--border);
-  }
-  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
-  .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
-  .logo img{height:100%;width:auto;object-fit:contain}
+    /* UI */
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
+    .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
+    .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+    .muted{color:var(--text-dim)}
+    .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
 
-  /* UI */
-  .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-  .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
-  .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
-  .muted{color:var(--text-dim)}
-  .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
+    .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
-  .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
-  .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim)}
+    @media (max-width:1100px){.cards{grid-template-columns:1fr}}
 
-  .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
-  .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim)}
-  @media (max-width:1100px){.cards{grid-template-columns:1fr}}
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+    @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
+    .kpi .label{font-size:12px;color:var(--text-dim)}
+    .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
+    .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
 
-  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
-  @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
-  .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
-  .kpi .label{font-size:12px;color:var(--text-dim)}
-  .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
-  .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
+    .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
+    @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
 
-  .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
-  @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
+    .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
+    @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
 
-  .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
-  @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
-
-  .noteTitle{font-weight:700;margin-bottom:6px}
-  .note{border-left:3px solid var(--blue);padding-left:12px}
-  .stack{display:grid;gap:12px}
-  .backRow{display:flex;align-items:center;gap:8px}
-
-  /* some o botão antigo */
-  #reloadBtn { display:none !important; }
-</style>
+    .noteTitle{font-weight:700;margin-bottom:6px}
+    .note{border-left:3px solid var(--blue);padding-left:12px}
+    .stack{display:grid;gap:12px}
+    .backRow{display:flex;align-items:center;gap:8px}
+    /* some o botão "Reload" de BAIXO (antigo) */
+#reloadBtn { display:none !important; }
+  </style>
 </head>
 <body>
 
@@ -132,6 +122,15 @@
         <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
+
+      <!-- NOVO CARD (sem mexer nos existentes) -->
+      <div class="card">
+        <div class="pill">New</div>
+        <h3 style="margin:2px 0 0">Bonus & Tech Dashboard</h3>
+        <div class="muted">Bônus por técnico, status e notas do pay period ativo.</div>
+        <div><button class="btn" onclick="openBonus()">Open</button></div>
+      </div>
+
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
@@ -224,8 +223,7 @@
       <canvas id="chartProfit"></canvas>
     </div>
 
-    <!-- Data source (embaixo) — sem o botão aqui -->
-   <!-- Data source (embaixo) -->
+    <!-- Data source (embaixo) -->
 <div class="panel">
   <div class="row">
     <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
@@ -235,6 +233,71 @@
   </div>
   <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
 </div>
+  </section>
+
+  <!-- ========== NOVA VIEW: BONUS / TECH DASHBOARD ========== -->
+  <section id="view-bonus" class="stack" style="display:none">
+
+    <div class="backRow">
+      <button class="btn link" onclick="openView('home')">← Back to Home</button>
+    </div>
+
+    <div class="panel">
+      <div class="noteTitle">💸 Bonus & Tech Dashboard (pay period atual)</div>
+      <div class="note">
+        Este painel lê <b>apenas a aba ativa</b> da planilha (o CSV da guia do pay period atual).
+        Cole o <b>link CSV da guia</b> no bloco abaixo e clique <b>Reload</b>.
+      </div>
+    </div>
+
+    <div class="panel filters">
+      <div>
+        <label class="muted">Tech / Owner</label>
+        <select id="bonusOwnerFilter"></select>
+      </div>
+      <div>
+        <label class="muted">Status</label>
+        <select id="bonusStatusFilter"></select>
+      </div>
+      <div>
+        <label class="muted">Job (contains)</label>
+        <input id="bonusJobFilter" class="input" placeholder="ex.: Trelona, Bed Bug..." />
+      </div>
+      <div style="display:grid;align-content:end">
+        <button class="btn" id="bonusClearFilters">Clear</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="label">Jobs</div><div class="value"><span class="dot blue"></span><span id="kpiBJobs">—</span></div></div>
+      <div class="kpi"><div class="label">Completed</div><div class="value"><span class="dot green"></span><span id="kpiBCompleted">—</span></div></div>
+      <div class="kpi"><div class="label">Pending</div><div class="value"><span class="dot gold"></span><span id="kpiBPending">—</span></div></div>
+      <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot blue"></span><span id="kpiBContract">—</span></div></div>
+      <div class="kpi"><div class="label">Bonus Total</div><div class="value"><span class="dot green"></span><span id="kpiBBonus">—</span></div></div>
+      <div class="kpi"><div class="label">Avg Bonus / Job</div><div class="value"><span class="dot gold"></span><span id="kpiBAvgBonus">—</span></div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700">Bonus por Tech</div>
+        <canvas id="chartBonusByTech"></canvas>
+      </div>
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700">Jobs por Status</div>
+        <canvas id="chartJobsByStatus"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <div><label class="muted">Bravo (guia do período) — CSV link</label><input id="csvUrlBonus" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+        <div style="max-width:300px"><label class="muted">ou CSV upload</label><input id="csvFileBonus" type="file" class="input" accept=".csv"></div>
+        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBonus" class="btn primary">Reload</button></div>
+        <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefreshBonus" type="checkbox"> Live (auto-refresh 5 min)</label></div>
+      </div>
+      <div id="statusChipsBonus" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+
   </section>
 </main>
 
@@ -560,6 +623,216 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(isAtlus){ loadFromUrl(DEFAULT_LINK); }
   $('autoRefresh').dispatchEvent(new Event('change'));
   setUpdated();
+});
+</script>
+
+<!-- ====== NOVO SCRIPT: LÓGICA DO BONUS (não altera nada acima) ====== -->
+<script>
+// abrir a view bonus sem tocar no openView existente
+function openBonus(){
+  const home = document.getElementById('view-home');
+  const atlus = document.getElementById('view-atlus');
+  const bonus = document.getElementById('view-bonus');
+  if(home) home.style.display='none';
+  if(atlus) atlus.style.display='none';
+  if(bonus) bonus.style.display='block';
+  const ht = document.getElementById('headerTitle'); if(ht) ht.textContent = 'Bonus & Tech Dashboard';
+  history.replaceState(null, '', location.pathname + '?view=bonus');
+}
+// se a URL vier com ?view=bonus
+(function(){
+  const p = new URLSearchParams(location.search);
+  if(p.get('view')==='bonus'){ openBonus(); }
+})();
+
+let bonusRows=[], bonusFiltered=[];
+let chartBonusByTech=null, chartJobsByStatus=null;
+
+function chipsBonus(msgs){
+  const c = document.getElementById('statusChipsBonus'); if(!c) return;
+  c.innerHTML='';
+  msgs.forEach(m=>{
+    const s=document.createElement('span');
+    s.style.border='1px solid var(--border)';
+    s.style.background='#09192a';
+    s.style.color='#a7bfd9';
+    s.style.padding='6px 10px';
+    s.style.borderRadius='999px';
+    s.style.fontSize='12px';
+    s.textContent=m;
+    c.appendChild(s);
+  });
+}
+
+function detectBravoCols(headers){
+  const h=headers.map(x=>String(x||'').toLowerCase());
+  const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
+  return {
+    name:find(['name']),
+    status:find(['status']),
+    owner:find(['owner','tech']),
+    arrived:find(['arrived','lead']),
+    job:find(['job']),
+    contract:find(['contract value','contract']),
+    bonus:find(['bonus','should be receiving']),
+    notes:find(['notes'])
+  };
+}
+function parseBravoCSV(text){
+  const res=Papa.parse(text,{skipEmptyLines:true});
+  const rows=res.data||[]; if(rows.length<2) return {headers:[],rows:[]};
+  const headers=rows[0].map(x=>String(x||'')); const col=detectBravoCols(headers);
+  const money = (v)=>{ const s=String(v||'').replace(/[^0-9.\-]/g,''); if(!s) return 0; const n=parseFloat(s); return isFinite(n)?n:0; };
+  const out=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i]; if(!r||!r.length) continue;
+    const get=idx=> (idx>=0&&idx<r.length)?r[idx]:'';
+    out.push({
+      Name : String(get(col.name)).trim(),
+      Status : String(get(col.status)).trim(),
+      Owner : String(get(col.owner)).trim(),
+      Arrived : String(get(col.arrived)).trim(),
+      Job : String(get(col.job)).trim(),
+      Contract : money(get(col.contract)),
+      Bonus : money(get(col.bonus)),
+      Notes : String(get(col.notes)).trim()
+    });
+  }
+  return {headers,rows:out};
+}
+
+function fillBonusFilters(data){
+  const owners=[...new Set(data.map(r=>r.Owner).filter(Boolean))].sort();
+  const sOwner=document.getElementById('bonusOwnerFilter'); if(!sOwner) return;
+  sOwner.innerHTML=''; const o0=document.createElement('option'); o0.value=''; o0.textContent='All owners'; sOwner.appendChild(o0);
+  owners.forEach(v=>{ const e=document.createElement('option'); e.value=v; e.textContent=v; sOwner.appendChild(e); });
+
+  const statuses=[...new Set(data.map(r=>r.Status).filter(Boolean))].sort();
+  const sStat=document.getElementById('bonusStatusFilter'); sStat.innerHTML='';
+  const s0=document.createElement('option'); s0.value=''; s0.textContent='All status'; sStat.appendChild(s0);
+  statuses.forEach(v=>{ const e=document.createElement('option'); e.value=v; e.textContent=v; sStat.appendChild(e); });
+}
+
+function applyBonusFilters(){
+  const fOwner = (document.getElementById('bonusOwnerFilter')||{}).value||'';
+  const fStatus= (document.getElementById('bonusStatusFilter')||{}).value||'';
+  const fJob   = (document.getElementById('bonusJobFilter')||{}).value||'';
+  const fJobN  = (fJob||'').toLowerCase().trim();
+
+  bonusFiltered = bonusRows.filter(r=>{
+    const okOwner  = fOwner ? r.Owner===fOwner : true;
+    const okStatus = fStatus? r.Status===fStatus: true;
+    const okJob    = fJobN ? String(r.Job||'').toLowerCase().includes(fJobN) : true;
+    return okOwner && okStatus && okJob;
+  });
+
+  updateBonusKPIs();
+  updateBonusCharts();
+}
+
+function updateBonusKPIs(){
+  const jobs = bonusFiltered.length;
+  let completed=0, pending=0, contract=0, bonus=0;
+  bonusFiltered.forEach(r=>{
+    const s=String(r.Status||'').toLowerCase();
+    if(s.includes('complete')) completed++;
+    else if(s.includes('pend')) pending++;
+    contract += (+r.Contract||0);
+    bonus    += (+r.Bonus||0);
+  });
+  const avg = jobs>0 ? (bonus/jobs) : 0;
+  document.getElementById('kpiBJobs').textContent = fmtInt(jobs);
+  document.getElementById('kpiBCompleted').textContent = fmtInt(completed);
+  document.getElementById('kpiBPending').textContent = fmtInt(pending);
+  document.getElementById('kpiBContract').textContent = fmtUSD(contract);
+  document.getElementById('kpiBBonus').textContent = fmtUSD(bonus);
+  document.getElementById('kpiBAvgBonus').textContent = fmtUSD(avg);
+}
+
+function updateBonusCharts(){
+  const byOwner={};
+  bonusFiltered.forEach(r=>{ byOwner[r.Owner]=(byOwner[r.Owner]||0)+(r.Bonus||0) });
+  const owners=Object.keys(byOwner);
+  const vals=owners.map(o=>+byOwner[o].toFixed(2));
+  if(chartBonusByTech) chartBonusByTech.destroy();
+  chartBonusByTech = new Chart(document.getElementById('chartBonusByTech').getContext('2d'),{
+    type:'bar',
+    data:{labels:owners,datasets:[{label:'Bonus ($)',data:vals,borderWidth:1,backgroundColor:'rgba(25,195,125,.35)',borderColor:'#19c37d'}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+  });
+
+  let c=0,p=0,o=0;
+  bonusFiltered.forEach(r=>{
+    const s=String(r.Status||'').toLowerCase();
+    if(s.includes('complete')) c++;
+    else if(s.includes('pend')) p++;
+    else o++;
+  });
+  if(chartJobsByStatus) chartJobsByStatus.destroy();
+  chartJobsByStatus = new Chart(document.getElementById('chartJobsByStatus').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:['Completed','Pending','Other'],datasets:[{data:[c,p,o]}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+function loadBonusFromUrl(url){
+  const normUrl = normalizeUrl((url||'').trim());
+  if(!normUrl){ chipsBonus(['Paste a valid CSV link']); return; }
+  chipsBonus(['Loading…']);
+  fetchCsvText(normUrl).then(text=>{
+    const parsed = parseBravoCSV(text);
+    if(!parsed.rows || parsed.rows.length===0){ chipsBonus(['Empty CSV or headers not recognized']); return; }
+    bonusRows = parsed.rows;
+    fillBonusFilters(bonusRows);
+    (document.getElementById('bonusOwnerFilter')||{}).value='';
+    (document.getElementById('bonusStatusFilter')||{}).value='';
+    (document.getElementById('bonusJobFilter')||{}).value='';
+    bonusFiltered = bonusRows.slice(0);
+    applyBonusFilters();
+    chipsBonus(['Bonus CSV loaded: '+bonusRows.length+' rows']);
+    setUpdated();
+  }).catch(err=>{
+    chipsBonus(['Failed to load CSV: '+err.message]); console.error(err);
+  });
+}
+function loadBonusFromFile(file){
+  chipsBonus(['Reading local CSV…']);
+  Papa.parse(file,{complete:function(res){
+    try{
+      const csvText=Papa.unparse(res.data);
+      const parsed=parseBravoCSV(csvText);
+      if(!parsed.rows||parsed.rows.length===0){chipsBonus(['Local CSV empty']); return;}
+      bonusRows=parsed.rows;
+      fillBonusFilters(bonusRows);
+      (document.getElementById('bonusOwnerFilter')||{}).value='';
+      (document.getElementById('bonusStatusFilter')||{}).value='';
+      (document.getElementById('bonusJobFilter')||{}).value='';
+      bonusFiltered=bonusRows.slice(0);
+      applyBonusFilters();
+      chipsBonus(['Local CSV loaded']);
+      setUpdated();
+    }catch(e){ chipsBonus(['Local parse error: '+e.message]); }
+  }});
+}
+
+/* Eventos específicos da view Bonus */
+(document.getElementById('reloadBonus')||{}).addEventListener?.('click',()=> loadBonusFromUrl((document.getElementById('csvUrlBonus')||{}).value||''));
+(document.getElementById('csvFileBonus')||{}).addEventListener?.('change',e=>{ const f=e.target.files?.[0]; if(f) loadBonusFromFile(f); });
+(document.getElementById('autoRefreshBonus')||{}).addEventListener?.('change',e=>{
+  if(e.target.checked){
+    if(!window.__autoB){ window.__autoB=setInterval(()=> loadBonusFromUrl((document.getElementById('csvUrlBonus')||{}).value||''), 5*60*1000); }
+  }else{
+    if(window.__autoB){ clearInterval(window.__autoB); window.__autoB=null; }
+  }
+});
+['bonusOwnerFilter','bonusStatusFilter','bonusJobFilter'].forEach(id=>{
+  (document.getElementById(id)||{}).addEventListener?.('change',applyBonusFilters);
+});
+(document.getElementById('bonusClearFilters')||{}).addEventListener?.('click',()=>{
+  const o=document.getElementById('bonusOwnerFilter'), s=document.getElementById('bonusStatusFilter'), j=document.getElementById('bonusJobFilter');
+  if(o) o.value=''; if(s) s.value=''; if(j) j.value='';
+  applyBonusFilters();
 });
 </script>
 </body>
