@@ -313,29 +313,51 @@
       <div id="btTable" style="display:grid;gap:8px"></div>
     </div>
   </section>
-
-  <!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
+  
+<!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
 <section id="view-subs" class="stack" style="display:none">
   <div class="backRow">
     <button class="btn link" onclick="openView('home')">← Back to Home</button>
   </div>
 
-
-  <!-- Header / Note (EN only, no 'Paste the CSV link') -->
-  <div class="panel" style="margin-top:0">
+  <!-- Título + notas -->
+  <div class="panel">
     <div class="noteTitle">📄 Subscriptions / ARV</div>
-    <div class="note">
+
+    <!-- NOTA DINÂMICA (preenchida via JS) -->
+    <div class="note" id="svcCycleNote">
+      Loading cycle…
+    </div>
+
+    <!-- Colunas suportadas (fixo, sem “Paste the CSV link…”) -->
+    <div class="note" style="margin-top:8px">
       <b>Supported columns:</b>
-      <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
+      Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV.
     </div>
   </div>
- <!-- Public: refresh hint (now ABOVE KPIs) -->
-  <div class="panel if-guest" style="margin-bottom:0">
+
+  <!-- “Reload” para visitantes — AGORA ACIMA DOS KPIs -->
+  <div class="panel if-guest">
     <div class="muted">
       Need to refresh the data? Click
       <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
     </div>
   </div>
+
+  <!-- Admin: input + botão -->
+  <div class="panel admin-only">
+    <div class="row">
+      <div>
+        <label class="muted">Subscriptions CSV link</label>
+        <input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv">
+      </div>
+      <div style="max-width:160px">
+        <label class="muted">&nbsp;</label>
+        <button id="svcReload" class="btn primary">Reload</button>
+      </div>
+    </div>
+  </div>
+
   <!-- KPIs -->
   <div class="kpis">
     <div class="kpi">
@@ -356,33 +378,19 @@
     </div>
   </div>
 
-  <!-- Charts by Sales Rep -->
+  <!-- Charts por Sales Rep -->
   <div class="grid-2">
     <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">ARV by Sales Rep</div>
+      <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
       <canvas id="svcChartArvByRep"></canvas>
     </div>
     <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700"># Subscriptions by Sales Rep</div>
+      <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
       <canvas id="svcChartCountByRep"></canvas>
     </div>
   </div>
 
-  <!-- Admin: input + button -->
-  <div class="panel admin-only">
-    <div class="row">
-      <div>
-        <label class="muted">Subscriptions CSV link</label>
-        <input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv">
-      </div>
-      <div style="max-width:160px">
-        <label class="muted">&nbsp;</label>
-        <button id="svcReload" class="btn primary">Reload</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Table -->
+  <!-- Tabela -->
   <div class="panel">
     <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
     <div id="svcTable" style="display:grid;gap:8px"></div>
@@ -963,6 +971,66 @@ function svcParseCSV(text){
   return { rows: out };
 }
 
+/* ===================== (B) CYCLE NOTE HELPERS ===================== */
+/** Try to parse common date formats (MM/DD/YYYY, YYYY-MM-DD, etc.) */
+function svcParseDate(str){
+  if(!str) return null;
+  const s = String(str).trim();
+  let d = new Date(s);
+  if(!isNaN(d)) return d;
+  d = new Date(s.replace(/-/g,'/'));
+  if(!isNaN(d)) return d;
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
+  if(m){
+    const mm=+m[1]-1, dd=+m[2], yy=+m[3];
+    const full=(yy>=70?1900+yy:2000+yy);
+    const d2=new Date(full,mm,dd);
+    if(!isNaN(d2)) return d2;
+  }
+  return null;
+}
+function svcIsSameMonthYear(d,y,m){ return d && d.getFullYear()===y && d.getMonth()===m; }
+function svcPrevMonth(y,m){ return (m===0)?{y:y-1,m:11}:{y:y,m:m-1}; }
+
+/** Update the dynamic cycle insight note */
+function svcUpdateCycleNote(rows){
+  const box = document.getElementById('svcCycleNote');
+  if(!box) return;
+
+  const now = new Date();
+  const cy = now.getFullYear();
+  const cm = now.getMonth();
+  const { y:py, m:pm } = svcPrevMonth(cy, cm);
+
+  let soldThisMonth = 0;
+  let servicedThisMonth = 0;
+  let servicedThisMonth_soldLastMonth = 0;
+
+  (rows||[]).forEach(r=>{
+    const dSold = svcParseDate(r?.DateSold);
+    const dInit = svcParseDate(r?.InitialServiceDate);
+
+    if (dSold && svcIsSameMonthYear(dSold, cy, cm)) soldThisMonth++;
+    if (dInit && svcIsSameMonthYear(dInit, cy, cm)) servicedThisMonth++;
+
+    if (dInit && svcIsSameMonthYear(dInit, cy, cm) &&
+        dSold && svcIsSameMonthYear(dSold, py, pm)) {
+      servicedThisMonth_soldLastMonth++;
+    }
+  });
+
+  const monthName = now.toLocaleString('en-US', { month:'long' });
+  const prevName  = new Date(py, pm, 1).toLocaleString('en-US', { month:'long' });
+
+  box.innerHTML = `
+    <b>Cycle insight — ${monthName} ${cy}</b><br>
+    One for <b>sold in ${monthName}</b>: <b>${soldThisMonth}</b> ·
+    One for <b>serviced in ${monthName}</b>: <b>${servicedThisMonth}</b> ·
+    Combined: <b>serviced in ${monthName}</b> but <b>sold in ${prevName}</b>: <b>${servicedThisMonth_soldLastMonth}</b>.
+  `;
+}
+/* ===================== (end Cycle Note) ===================== */
+
 function svcComputeAggregates(list){
   const total = list.length;
   const active = list.filter(r=>/^y(es)?$/i.test(r.Active)).length;
@@ -1054,16 +1122,18 @@ function svcLoad(url){
     .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
     .then(text=>{
       const parsed = svcParseCSV(text);
-      const rows = parsed.rows;
-      const agg = svcComputeAggregates(rows);
+      svcUpdateCycleNote(parsed.rows);
+      const agg = svcComputeAggregates(parsed.rows);
       svcRenderKpis(agg);
       svcRenderCharts(agg);
-      svcRender(rows);
+      svcRender(parsed.rows);
       setUpdated();
     })
-    .catch(err=>{ console.error(err); alert('Failed to load CSV: ' + err.message); });
+    .catch(err=>{
+      console.error(err);
+      alert('Failed to load CSV: ' + err.message);
+    });
 }
-
 (function(){
   if($svc('svcCsvUrl')){ $svc('svcCsvUrl').value = SVC_DEFAULT_LINK; }
   if($svc('svcReload')){ $svc('svcReload').addEventListener('click', ()=> svcLoad($svc('svcCsvUrl').value)); }
