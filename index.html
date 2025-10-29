@@ -211,7 +211,7 @@ body.admin .if-guest{ display:none; }
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
 
-    <div class="panel admin-only">
+  <div class="panel">
       <div class="noteTitle">👋 Hello, Atlus coworker, glad to see you here!</div>
       <div class="note">
         This dashboard shows leads from the platforms we currently pay for:
@@ -284,7 +284,7 @@ body.admin .if-guest{ display:none; }
     </div>
 
     <!-- Data source (bottom) -->
-    <div class="panel">
+    <div class="panel admin-only">
       <div class="row">
         <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
@@ -301,7 +301,7 @@ body.admin .if-guest{ display:none; }
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
 
-    <div class="panel admin-only">
+    <div class="panel">
       <div class="noteTitle">🧰 Bonus & Tech Dashboard (current pay period)</div>
       <div class="note">
         This panel reads <b>only the active sheet</b> of the guide (current pay period). Paste the
@@ -343,7 +343,7 @@ body.admin .if-guest{ display:none; }
     </div>
 
     <!-- Data source -->
-    <div class="panel">
+    <div class="panel admin-only">
       <div class="row">
         <div><label class="muted">Guide CSV link (active sheet)</label><input id="btCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
