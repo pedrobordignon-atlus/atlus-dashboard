@@ -268,20 +268,20 @@
   <section id="view-bonus" class="stack" style="display:none">
     <div class="backRow"><button class="btn link" onclick="openView('home')">← Back to Home</button></div>
 
-   <div class="panel">
-  <div class="noteTitle">🧰 Bonus & Tech Dashboard (Current pay period)</div>
-  <div class="note">
-    This panel reads <b>only the active sheet</b> of the guide (Current pay period).
-  </div>
-</div>
+    <div class="panel">
+      <div class="noteTitle">🧰 Bonus & Tech Dashboard (Current pay period)</div>
+      <div class="note">
+        This panel reads <b>only the active sheet</b> of the guide (Current pay period).
+      </div>
+    </div>
 
-<!-- “Reload” para visitantes — agora logo abaixo do aviso principal -->
-<div class="panel if-guest">
-  <div class="muted">
-    Want to refresh the data? Click
-    <a href="#" id="btReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
-  </div>
-</div>
+    <!-- “Reload” para visitantes — agora logo abaixo do aviso principal -->
+    <div class="panel if-guest">
+      <div class="muted">
+        Want to refresh the data? Click
+        <a href="#" id="btReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
+      </div>
+    </div>
 
     <div class="panel filters">
       <div><label class="muted">Tech / Owner</label><select id="btOwner"></select></div>
@@ -315,88 +315,94 @@
     </div>
   </section>
   
-<!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
-<section id="view-subs" class="stack" style="display:none">
-  <div class="backRow">
-    <button class="btn link" onclick="openView('home')">← Back to Home</button>
-  </div>
-
-  <!-- Título + notas -->
-  <div class="panel">
-    <div class="noteTitle">📄 Subscriptions / ARV</div>
-
-    <!-- NOTA DINÂMICA (preenchida via JS) -->
-    <div class="note" id="svcCycleNote">
-      Loading cycle…
+  <!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
+  <section id="view-subs" class="stack" style="display:none">
+    <div class="backRow">
+      <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
 
-    <!-- Colunas suportadas (fixo, sem “Paste the CSV link…”) -->
-    <div class="note" style="margin-top:8px">
-      <b>Supported columns:</b>
-      Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV.
-    </div>
-  </div>
+    <!-- Título + notas -->
+    <div class="panel">
+      <div class="noteTitle">📄 Subscriptions / ARV</div>
 
-  <!-- “Reload” para visitantes — AGORA ACIMA DOS KPIs -->
-  <div class="panel if-guest">
-    <div class="muted">
-      Need to refresh the data? Click
-      <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
-    </div>
-  </div>
-
-  <!-- Admin: input + botão -->
-  <div class="panel admin-only">
-    <div class="row">
-      <div>
-        <label class="muted">Subscriptions CSV link</label>
-        <input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv">
+      <!-- NOTA DINÂMICA (preenchida via JS) -->
+      <div class="note" id="svcCycleNote">
+        Loading cycle…
       </div>
-      <div style="max-width:160px">
-        <label class="muted">&nbsp;</label>
-        <button id="svcReload" class="btn primary">Reload</button>
+
+      <!-- Colunas suportadas (fixo) -->
+      <div class="note" style="margin-top:8px">
+        <b>Supported columns:</b>
+        Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV.
       </div>
     </div>
-  </div>
 
-  <!-- KPIs -->
-  <div class="kpis">
-    <div class="kpi">
-      <div class="label">Subscriptions</div>
-      <div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div>
+    <!-- “Reload” para visitantes — ACIMA DOS KPIs -->
+    <div class="panel if-guest">
+      <div class="muted">
+        Need to refresh the data? Click
+        <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
+      </div>
     </div>
-    <div class="kpi">
-      <div class="label">Active</div>
-      <div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div>
-    </div>
-    <div class="kpi">
-      <div class="label">Total ARV</div>
-      <div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div>
-    </div>
-    <div class="kpi">
-      <div class="label">Total Balance</div>
-      <div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div>
-    </div>
-  </div>
 
-  <!-- Charts por Sales Rep -->
-  <div class="grid-2">
+    <!-- Admin: input + botão -->
+    <div class="panel admin-only">
+      <div class="row">
+        <div>
+          <label class="muted">Subscriptions CSV link</label>
+          <input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv">
+        </div>
+        <div style="max-width:160px">
+          <label class="muted">&nbsp;</label>
+          <button id="svcReload" class="btn primary">Reload</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Subscriptions</div>
+        <div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div>
+      </div>
+      <div class="kpi">
+        <div class="label">Active</div>
+        <div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total ARV</div>
+        <div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total Balance</div>
+        <div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div>
+      </div>
+    </div>
+
+    <!-- Novo gráfico: Active vs Inactive -->
     <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
-      <canvas id="svcChartArvByRep"></canvas>
+      <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
+      <canvas id="svcChartActive"></canvas>
     </div>
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
-      <canvas id="svcChartCountByRep"></canvas>
-    </div>
-  </div>
 
-  <!-- Tabela -->
-  <div class="panel">
-    <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
-    <div id="svcTable" style="display:grid;gap:8px"></div>
-  </div>
-</section>
+    <!-- Charts por Sales Rep -->
+    <div class="grid-2">
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
+        <canvas id="svcChartArvByRep"></canvas>
+      </div>
+      <div class="panel">
+        <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
+        <canvas id="svcChartCountByRep"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabela (oculta para “limpar” a view) -->
+    <div class="panel" style="display:none">
+      <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
+      <div id="svcTable" style="display:grid;gap:8px"></div>
+    </div>
+  </section>
 
 </main>
 
@@ -972,7 +978,6 @@ function svcParseCSV(text){
 }
 
 /* ===================== (B) CYCLE NOTE HELPERS ===================== */
-/** Try to parse common date formats (MM/DD/YYYY, YYYY-MM-DD, etc.) */
 function svcParseDate(str){
   if(!str) return null;
   const s = String(str).trim();
@@ -1053,12 +1058,13 @@ function svcRenderKpis(agg){
   $svc('svcKpiBalance').textContent = fmtUSD(agg.balance||0);
 }
 
-let svcArvChart=null, svcCountChart=null;
+/* === alterado: agora com o gráfico de Active vs Inactive === */
+let svcArvChart=null, svcCountChart=null, svcActiveChart=null;
 
 function svcRenderCharts(agg){
+  // ARV por Sales Rep
   const reps = Object.keys(agg.byRep).sort((a,b)=> (agg.byRep[b].arv - agg.byRep[a].arv));
   const arvData = reps.map(k=> +(agg.byRep[k].arv||0).toFixed(2));
-  const cntData = reps.map(k=> agg.byRep[k].count||0);
 
   if(svcArvChart) svcArvChart.destroy();
   svcArvChart = new Chart($('svcChartArvByRep').getContext('2d'),{
@@ -1067,12 +1073,34 @@ function svcRenderCharts(agg){
     options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.x)}}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
   });
 
+  // # Subs por Sales Rep
+  const cntData = reps.map(k=> agg.byRep[k].count||0);
+
   if(svcCountChart) svcCountChart.destroy();
   svcCountChart = new Chart($('svcChartCountByRep').getContext('2d'),{
     type:'bar',
     data:{labels:reps,datasets:[{label:'# Subs',data:cntData,backgroundColor:'rgba(0,119,200,.6)',borderColor:'#0077c8'}]},
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
+
+  // Active vs Inactive (doughnut)
+  const active = agg.active;
+  const inactive = Math.max(0, (agg.total||0) - active);
+  const actEl = document.getElementById('svcChartActive');
+  if (actEl){
+    if(svcActiveChart) svcActiveChart.destroy();
+    svcActiveChart = new Chart(actEl.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:['Active','Inactive'],
+        datasets:[{ data:[active, inactive] }]
+      },
+      options:{
+        responsive:true,
+        plugins:{ legend:{ position:'bottom' } }
+      }
+    });
+  }
 }
 
 function svcRender(list){
@@ -1122,11 +1150,14 @@ function svcLoad(url){
     .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
     .then(text=>{
       const parsed = svcParseCSV(text);
+      // nota dinâmica
       svcUpdateCycleNote(parsed.rows);
+      // KPIs + gráficos
       const agg = svcComputeAggregates(parsed.rows);
       svcRenderKpis(agg);
       svcRenderCharts(agg);
-      svcRender(parsed.rows);
+      // tabela NÃO é mais renderizada para manter a view limpa
+      // svcRender(parsed.rows);
       setUpdated();
     })
     .catch(err=>{
