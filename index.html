@@ -11,93 +11,95 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
-    :root{
-      --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
-      --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
-    }
+  :root{
+    --navy:#0a1b2b; --navy-2:#0f2436; --panel:#0e2234; --border:#15354f;
+    --text:#e9f1fb; --text-dim:#a7bfd9; --blue:#0077c8; --gold:#ffb81c; --green:#19c37d;
+  }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:
-        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
-        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
-        url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
-        var(--navy);
-      background-size: auto, auto, 780px auto, auto;
-      color:var(--text);
-      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      position: relative;
-    }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+      radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+      url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
+      var(--navy);
+    background-size: auto, auto, 780px auto, auto;
+    color:var(--text);
+    font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    position: relative;
+  }
 
-    /* marca d’água com o favicon */
-body::before{
-  content:"";
-  position:fixed;
-  top:50%;
-  left:50%;
-  width:680px;
-  height:680px;
-  transform:translate(-50%,-50%);
-  background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-  background-size:contain;
-  opacity:0.06;           /* bem fraquinho */
-  pointer-events:none;
-  z-index:0;              /* ← fica acima do fundo do body, abaixo do conteúdo */
-}
+  /* marca d’água com o favicon */
+  body::before{
+    content:"";
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:680px;
+    height:680px;
+    transform:translate(-50%,-50%);
+    background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+    background-size:contain;
+    opacity:0.06;           /* bem fraquinho */
+    pointer-events:none;
+    z-index:0;
+  }
 
-/* garante que o conteúdo fique acima da marca d’água */
-header, main { position: relative; z-index: 1; }
-    /* Header */
-    header{
-      position:sticky; top:0; z-index:50;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
-      border-bottom:1px solid var(--border);
-    }
-    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
-    .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
-    .logo img{height:100%;width:auto;object-fit:contain}
+  /* garante que o conteúdo fique acima da marca d’água */
+  header, main { position: relative; z-index: 1; }
 
-    /* UI */
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
-    .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
-    .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
-    .muted{color:var(--text-dim)}
-    .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
+  /* Header */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; background:rgba(10,27,43,.85); backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+  .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+  .logo img{height:100%;width:auto;object-fit:contain}
 
-    .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  /* UI */
+  .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
+  .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
+  .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+  .muted{color:var(--text-dim)}
+  .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
 
-    .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
-    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim)}
-    @media (max-width:1100px){.cards{grid-template-columns:1fr}}
+  .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
-    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
-    @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
-    .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
-    .kpi .label{font-size:12px;color:var(--text-dim)}
-    .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
-    .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
-    .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
+  .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
+  .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim)}
+  @media (max-width:1100px){.cards{grid-template-columns:1fr}}
 
-    .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
-    @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+  .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
+  .kpi .label{font-size:12px;color:var(--text-dim)}
+  .kpi .value{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .kpi .dot{width:8px;height:8px;border-radius:999px;display:inline-block;opacity:.6}
+  .dot.blue{background:#0077c8} .dot.gold{background:#ffb81c} .dot.green{background:#19c37d}
 
-    .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
-    @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
+  .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
+  @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
 
-    .noteTitle{font-weight:700;margin-bottom:6px}
-    .note{border-left:3px solid var(--blue);padding-left:12px}
-    .stack{display:grid;gap:12px}
-    .backRow{display:flex;align-items:center;gap:8px}
-    /* some o botão "Reload" de BAIXO (antigo) */
-#reloadBtn { display:none !important; }
-  </style>
+  .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
+  @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
+
+  .noteTitle{font-weight:700;margin-bottom:6px}
+  .note{border-left:3px solid var(--blue);padding-left:12px}
+  .stack{display:grid;gap:12px}
+  .backRow{display:flex;align-items:center;gap:8px}
+
+  /* some o botão antigo */
+  #reloadBtn { display:none !important; }
+</style>
 </head>
 <body>
 
