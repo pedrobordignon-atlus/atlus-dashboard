@@ -218,14 +218,9 @@
 
       <div class="note" style="margin-top:8px">
         <b>Tip:</b> If you don’t see the data yet, click
-        <a href="#" onclick="document.getElementById('reloadAtlusTop').click(); return false;"><u>Reload</u></a>
+        <a href="#" onclick="loadFromUrl(document.getElementById('csvUrl').value); return false;"><u>Reload</u></a>
         to load it.
       </div>
-    </div>
-
-    <!-- Single RELOAD button (top) -->
-    <div class="panel" style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
-      <button class="btn primary" id="reloadAtlusTop">Reload</button>
     </div>
 
     <!-- Filters -->
@@ -722,7 +717,6 @@
   }
 
   /* Events Atlus */
-  $('reloadAtlusTop').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
   $('reloadAtlus').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
   $('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
   $('autoRefresh').addEventListener('change',e=>{
