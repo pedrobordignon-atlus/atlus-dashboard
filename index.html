@@ -23,10 +23,23 @@
       background:
         radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
         radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
         var(--navy);
+      background-size: auto, auto, 780px auto, auto;
       color:var(--text);
       font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      position: relative;
     }
+
+    /* marca d’água opcional com o favicon */
+    body::before{
+      content:"";
+      position:fixed; top:50%; left:50%;
+      width:680px; height:680px; transform:translate(-50%,-50%);
+      background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+      background-size:contain; opacity:.10; pointer-events:none; z-index:-1;
+    }
+    header, main { position: relative; z-index: 1; }
 
     /* Header */
     header{
@@ -36,54 +49,26 @@
       border-bottom:1px solid var(--border);
     }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+    .logo img{height:100%;width:auto;object-fit:contain}
 
-    /* ====== ALTERADO APENAS AQUI ====== */
-    .logo{
-      width:40px; height:40px;
-      display:flex; align-items:center; justify-content:center;
-      background:transparent; border:none; box-shadow:none;
-      border-radius:0;           /* sem arredondar o contêiner */
-      overflow:visible;          /* não recortar a imagem */
-    }
-    .logo img{
-      display:block;
-      height:100%; width:auto;   /* preserva proporção, usa a altura do header */
-      object-fit:contain;        /* sem recorte */
-      border-radius:0;           /* sem arredondar a imagem */
-      vertical-align:middle;
-      filter:none;               /* garante cores originais */
-    }
-    /* ====== /FIM DAS MUDANÇAS ====== */
-
-    /* Botões / inputs básicos */
+    /* UI */
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
     .btn.primary{background:#0077c8;border-color:transparent;color:#fff;font-weight:600}
-    .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:default}
+    .btn.link{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
     .muted{color:var(--text-dim)}
-    .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text);outline:none}
+    .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
 
-    /* Container principal (mais espaço, como combinado) */
     .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
     .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
-    /* Home */
-    .hero{
-  padding:22px;
-  background:rgba(10,27,43,.55);
-  border:1px solid var(--border);
-  border-radius:16px;
-  text-align:center;                /* ← centraliza título */
-  display:flex;                     /* ← centraliza o bloco */
-  flex-direction:column;
-  align-items:center;
-}
+    .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
     .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
     .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
-    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim)}
     @media (max-width:1100px){.cards{grid-template-columns:1fr}}
 
-    /* KPIs */
     .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
     @media(max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr)} }
     .kpi{background:#081b2b;border:1px solid var(--border);border-radius:14px;padding:12px}
@@ -109,12 +94,7 @@
 <header>
   <div class="brand">
     <div class="logo">
-      <img
-        src="Atlus_logo_files/favicon.png"
-        alt="Atlus"
-        width="40" height="40"
-        onerror="this.src='favicon.png';"
-      >
+      <img src="Atlus_logo_files/favicon.png" alt="Atlus" width="40" height="40" onerror="this.src='favicon.png';">
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
@@ -123,7 +103,7 @@
 
 <main class="container">
 
-  <!-- ========== HOME ========== -->
+  <!-- HOME -->
   <section id="view-home" class="stack" style="display:none">
     <div class="hero">
       <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
@@ -140,14 +120,11 @@
         <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
-
-      <!-- Cartões futuros simplificados: apenas “Coming soon” + botão “Soon” -->
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
         <div><button class="btn link" disabled>Soon</button></div>
       </div>
-
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
@@ -156,14 +133,13 @@
     </div>
   </section>
 
-  <!-- ========== ATLUS DASHBOARD ========== -->
+  <!-- ATLUS -->
   <section id="view-atlus" class="stack" style="display:none">
 
     <div class="backRow">
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
 
-    <!-- Intro / Heads-up -->
     <div class="panel">
       <div class="noteTitle">👋 Hello, Atlus coworker, glad to see you here!</div>
       <div class="note">
@@ -173,10 +149,12 @@
         <b>locations</b> will appear as <b>“All locations”</b> by design.
       </div>
     </div>
-<!-- ÚNICO botão Reload no topo -->
+
+    <!-- ✅ Botão RELOAD ÚNICO (movido para cima) -->
     <div class="panel" style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
       <button class="btn primary" id="reloadBtn">Reload</button>
     </div>
+
     <!-- Filters -->
     <div class="panel filters">
       <div>
@@ -204,8 +182,6 @@
       <div class="kpi"><div class="label">Contract Total</div><div class="value"><span class="dot gold"></span><span id="kpiContract">—</span></div></div>
       <div class="kpi"><div class="label">Profit</div><div class="value"><span class="dot green"></span><span id="kpiProfit">—</span></div></div>
       <div class="kpi"><div class="label">ROI</div><div class="value"><span class="dot green"></span><span id="kpiROI">—</span></div></div>
-
-      <!-- Novos KPIs -->
       <div class="kpi"><div class="label">Approx. Daily Spend</div><div class="value"><span class="dot blue"></span><span id="kpiDaily">—</span></div></div>
       <div class="kpi"><div class="label">Close Rate</div><div class="value"><span class="dot gold"></span><span id="kpiClose">—</span></div></div>
       <div class="kpi"><div class="label">% Good Leads</div><div class="value"><span class="dot green"></span><span id="kpiGood">—</span></div></div>
@@ -228,12 +204,11 @@
       <canvas id="chartProfit"></canvas>
     </div>
 
-    <!-- Data source (embaixo) -->
+    <!-- Data source (embaixo) — sem o botão aqui -->
     <div class="panel">
       <div class="row">
         <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
         <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
       </div>
       <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
@@ -243,7 +218,7 @@
 </main>
 
 <script>
-/* ===== View router (Home <-> Atlus) ===== */
+/* ===== View router ===== */
 function openView(which){
   document.getElementById('view-home').style.display = which==='home'?'block':'none';
   document.getElementById('view-atlus').style.display = which==='atlus'?'block':'none';
@@ -258,11 +233,11 @@ function openView(which){
 /* ===== Helpers ===== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
-function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
+function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='#a7bfd9'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
 function chips(msgs){const c=$('statusChips'); c.innerHTML=''; msgs.forEach(m=>c.appendChild(chip(m)))}
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—'}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
-function norm(s){return String(s||'').trim().toLowerCase()}
+function norm(s){return String(s||'').toLowerCase().trim()}
 
 /* ===== Number / sanitize ===== */
 function toNumber(x){
@@ -277,19 +252,10 @@ function toNumber(x){
 /* ===== CSV parsing ===== */
 function detectColumns(headers){
   const h=headers.map(x=>String(x||'').toLowerCase());
-  const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<h.length;j++){ } } return -1; };
-}
-function detectColumns(headers){
-  const h=headers.map(x=>String(x||'').toLowerCase());
   const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
-  return {
-    platform:find(['platform','source']),
-    location:find(['location','market']),
-    metric:find(['metric','indicator']),
-    monthyear:find(['monthyear','period','date']),
-    month:find(['month']),
-    value:find(['value','amount','qty','number'])
-  };
+  return { platform:find(['platform','source']), location:find(['location','market']),
+           metric:find(['metric','indicator']), monthyear:find(['monthyear','period','date']),
+           month:find(['month']), value:find(['value','amount','qty','number']) };
 }
 function parseCSVText(text){
   const res=Papa.parse(text,{skipEmptyLines:true});
@@ -299,13 +265,11 @@ function parseCSVText(text){
   for(let i=1;i<rows.length;i++){
     const r=rows[i]; if(!r||!r.length)continue;
     const get=idx=> (idx>=0&&idx<r.length)?r[idx]:'';
-    out.push({
-      Platform:String(get(col.platform)).trim(),
-      Location:String(get(col.location)).trim(),
-      Metric:String(get(col.metric)).trim(),
-      Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
-      ValueRaw:get(col.value)
-    });
+    out.push({ Platform:String(get(col.platform)).trim(),
+               Location:String(get(col.location)).trim(),
+               Metric:String(get(col.metric)).trim(),
+               Month:String(col.monthyear>=0?get(col.monthyear):(col.month>=0?get(col.month):'')).trim(),
+               ValueRaw:get(col.value) });
   }
   return {headers,rows:out};
 }
@@ -322,11 +286,8 @@ function pivotLong(rows){
     const locRaw = String(r.Location||'').trim();
     const locN = locRaw.toLowerCase();
 
-    // vazio → “All locations” (Thumbtack)
     const loc = locRaw || 'All locations';
-
-    // ignora “All locations” se NÃO for Thumbtack
-    if ((locN==='all locations' || locN==='all location') && platN!=='thumbtack') return;
+    if ((locN==='all locations'||locN==='all location') && platN!=='thumbtack') return;
 
     const k = [r.Month, loc, plat].join('||');
     (map[k]||(map[k]=[])).push({ Month:r.Month, Location:loc, Platform:plat, Metric:r.Metric, ValueRaw:r.ValueRaw });
@@ -338,9 +299,7 @@ function pivotLong(rows){
     map[k].forEach(row=>{
       const m = String(row.Metric||'').toLowerCase();
       const raw = (row.ValueRaw==null?'':String(row.ValueRaw));
-      // número sanitizado
-      let s = raw.trim().replace(/[^0-9.\-]/g,'');
-      if ((s.match(/\./g)||[]).length>1) s = s.replace(/\.(?=.*\.)/g,'');
+      let s = raw.trim().replace(/[^0-9.\-]/g,''); if((s.match(/\./g)||[]).length>1) s=s.replace(/\.(?=.*\.)/g,'');
       let v = parseFloat(s); v = isFinite(v)?v:0;
 
       if ((m.includes('spend') && !m.includes('daily')) || m.includes('monthly spend')) rec.Spend += v;
@@ -351,7 +310,7 @@ function pivotLong(rows){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.ROI=t;
       }
-      else if (m.includes('% good')){ // % Good leads
+      else if (m.includes('% good')){
         let t=v; if(raw.includes('%')) t=(+raw.replace(/[^0-9.\-]/g,''))/100;
         if(t>1.5)t/=100; rec.GoodPct=t;
       }
@@ -391,10 +350,8 @@ let leadsChart=null, roiChart=null, profitChart=null;
 
 /* ===== Filters ===== */
 function daysInMonth(name){
-  const d = new Date(name+' 01');
-  if(isNaN(d)) return 30;
-  const y=d.getFullYear(), m=d.getMonth();
-  return new Date(y, m+1, 0).getDate();
+  const d = new Date(name+' 01'); if(isNaN(d)) return 30;
+  const y=d.getFullYear(), m=d.getMonth(); return new Date(y, m+1, 0).getDate();
 }
 function fillFilters(data){
   const months = [...new Set(data.map(r=>r.Month))].sort((a,b)=> new Date(a) - new Date(b));
@@ -425,22 +382,18 @@ function updateKPIs(){
         profit   = sum(filtered,'Profit'),
         roi = spend>0 ? profit/spend : 0;
 
-  // Approx Daily Spend
   let days = 0;
   const monthSel = $('monthFilter').value;
-  if(monthSel){
-    days = daysInMonth(monthSel);
-  }else{
+  if(monthSel){ days = daysInMonth(monthSel); }
+  else{
     const months = [...new Set(filtered.map(r=>r.Month))];
     if(months.length>0) days = months.map(daysInMonth).reduce((a,b)=>a+b,0);
     if(days===0) days = 30;
   }
   const daily = spend>0 ? spend/Math.max(1, days) : 0;
 
-  // Close rate
   const closeRate = leads>0 ? (jobs/leads) : 0;
 
-  // % Good Leads (média ponderada pelos leads)
   let wNum=0, wDen=0;
   filtered.forEach(r=>{
     if(r.GoodPct!=null && r.Leads>0){ wNum += r.GoodPct * r.Leads; wDen += r.Leads; }
@@ -453,7 +406,6 @@ function updateKPIs(){
   $('kpiContract').textContent  = fmtUSD(contract);
   $('kpiProfit').textContent    = fmtUSD(profit);
   $('kpiROI').textContent       = isFinite(roi)?((roi*100).toFixed(1)+'%'):'—';
-
   $('kpiDaily').textContent     = fmtUSD(daily);
   $('kpiClose').textContent     = (closeRate*100).toFixed(1)+'%';
   $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
@@ -461,9 +413,7 @@ function updateKPIs(){
 
 /* ===== Charts ===== */
 function updateCharts(){
-  // Leads por Plataforma
-  const mp={};
-  filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
+  const mp={}; filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
   const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
   if(leadsChart) leadsChart.destroy();
   leadsChart=new Chart($('chartLeads').getContext('2d'),{
@@ -472,7 +422,6 @@ function updateCharts(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 
-  // ROI por Location — ignora “All locations”
   const byLoc={};
   filtered.forEach(r=>{
     const n = norm(r.Location);
@@ -490,7 +439,6 @@ function updateCharts(){
     options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
   });
 
-  // Profit por Location — ignora zero e “All locations”
   const agg={}, pairs=[];
   filtered.forEach(r=>{
     const n=norm(r.Location); if(n==='all locations'||n==='all location') return;
