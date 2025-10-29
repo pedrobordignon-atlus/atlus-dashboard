@@ -19,15 +19,17 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;
-      background:
-        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
-        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
-        var(--navy);
-      color:var(--text);
-      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      position: relative;   /* <- necessário p/ marca d'água ficar atrás */
-    }
+  margin:0;
+  background:
+    radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+    radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+    url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,  /* ← marca d’água */
+    var(--navy);
+  /* tamanhos das camadas de fundo, na mesma ordem */
+  background-size: auto, auto, 780px auto, auto;
+  color:var(--text);
+  font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
 
     /* ===== Marca d'água (centralizada, atrás do conteúdo) ===== */
     body::before{
