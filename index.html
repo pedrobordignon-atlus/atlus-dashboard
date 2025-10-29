@@ -817,10 +817,12 @@ const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGd
 const BONUS_DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vQOju0Fvn-Qe3oaTEZQiEm23CYOYtE6EChD6TNiW3y-MlUsHQcLPbrFPcgycz_x_Q_aEoO-XXlJpbnZ/pub?gid=2024260664&single=true&output=csv";
 
 window.addEventListener('DOMContentLoaded',()=>{
-  $('csvUrl').value=DEFAULT_LINK;
+  $('csvUrl').value = DEFAULT_LINK;
+  $bt('btCsvUrl').value = BONUS_DEFAULT_LINK;   // ✅ sempre preenche
+
   const v = new URLSearchParams(location.search).get('view');
   if(v==='atlus'){ loadFromUrl(DEFAULT_LINK); }
-  if(v==='bonus'){ $bt('btCsvUrl').value = BONUS_DEFAULT_LINK; btLoad(BONUS_DEFAULT_LINK); }
+  if(v==='bonus'){ btLoad(BONUS_DEFAULT_LINK); }  // ✅ auto-carrega o bônus
 
   $('autoRefresh').dispatchEvent(new Event('change'));
   setUpdated();
