@@ -374,19 +374,53 @@
     </div>
   </section>
 
-  <!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
-  <section id="view-subs" class="stack" style="display:none">
-    <div class="backRow">
-      <button class="btn link" onclick="openView('home')">← Back to Home</button>
-    </div>
+ <!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
+<section id="view-subs" class="stack" style="display:none">
+  <div class="backRow">
+    <button class="btn link" onclick="openView('home')">← Back to Home</button>
+  </div>
 
-    <div class="panel">
-      <div class="noteTitle">📄 Subscriptions / ARV</div>
-      <div class="note">
-        Paste the <b>CSV link</b> and click <b>Reload</b>. Campos suportados:
-        <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
-      </div>
+  <!-- Painel de instrução -->
+  <div class="panel">
+    <div class="noteTitle">📄 Subscriptions / ARV</div>
+    <div class="note">
+      Paste the <b>CSV link</b> and click <b>Reload</b>. Campos suportados:
+      <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
     </div>
+  </div>
+
+  <!-- KPIs (Subscriptions / ARV) -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Subscriptions</div>
+      <div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Active</div>
+      <div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total ARV</div>
+      <div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Balance</div>
+      <div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div>
+    </div>
+  </div>
+
+  <!-- Charts por Sales Rep -->
+  <div class="grid-2">
+    <div class="panel">
+      <div style="margin-bottom:8px;font-weight:700">ARV por Sales Rep</div>
+      <canvas id="svcChartArvByRep"></canvas>
+    </div>
+    <div class="panel">
+      <div style="margin-bottom:8px;font-weight:700"># Subscriptions por Sales Rep</div>
+      <canvas id="svcChartCountByRep"></canvas>
+    </div>
+  </div>
+</section>
 
     <!-- Admin: input + botão -->
     <div class="panel admin-only">
@@ -988,7 +1022,71 @@ function $svc(id){ return document.getElementById(id); }
 
 /* ---------- Default CSV (o link que você passou) ---------- */
 const SVC_DEFAULT_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQp8vyChNgnzBaebfXtffk5G-wJBdcblAnj6RZtu695mOnaV8dxXdrf8TSmkXSlSzBnkVvxZ5EncESS/pub?gid=0&single=true&output=csv";
+/* ---------- State (para KPIs/Charts) ---------- */
+let SVC_ALL = [];
+let svcArvChart = null;
+let svcCountChart = null;
 
+/* ---------- Aggregation + KPIs + Charts ---------- */
+function svcApply() {
+  const list = SVC_ALL || [];
+
+  // KPIs (totais)
+  const totalCount   = list.length;
+  const totalActive  = list.filter(r => /^y/i.test(String(r.Active||'')) || /^active/i.test(String(r.Status||''))).length;
+  const totalARV     = list.reduce((a,b)=> a + (+b.ARV||0), 0);
+  const totalBalance = list.reduce((a,b)=> a + (+b.Balance||0), 0);
+
+  const setTxt = (id, v) => { const el = $svc(id); if(el) el.textContent = v; };
+  setTxt('svcKpiCount',   isFinite(totalCount) ? totalCount.toLocaleString('en-US') : '—');
+  setTxt('svcKpiActive',  isFinite(totalActive) ? totalActive.toLocaleString('en-US') : '—');
+  setTxt('svcKpiARV',     fmtUSD(totalARV));
+  setTxt('svcKpiBalance', fmtUSD(totalBalance));
+
+  // Agrupar por Sales Rep
+  const byRep = {};
+  list.forEach(r=>{
+    const rep = (r.SalesRep && String(r.SalesRep).trim()) || '(No Rep)';
+    if(!byRep[rep]) byRep[rep] = { arv:0, count:0 };
+    byRep[rep].arv   += (+r.ARV||0);
+    byRep[rep].count += 1;
+  });
+
+  const labels = Object.keys(byRep).sort((a,b)=> a.localeCompare(b));
+  const dataARV = labels.map(k => +byRep[k].arv.toFixed(2));
+  const dataCnt = labels.map(k => byRep[k].count);
+
+  // Chart: ARV por Rep (bar)
+  const c1 = document.getElementById('svcChartArvByRep');
+  if (c1) {
+    if (svcArvChart) svcArvChart.destroy();
+    svcArvChart = new Chart(c1.getContext('2d'), {
+      type:'bar',
+      data:{ labels, datasets:[{ label:'ARV ($)', data:dataARV, borderWidth:1 }] },
+      options:{
+        responsive:true,
+        plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>fmtUSD(ctx.parsed.y) } } },
+        scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>fmtUSD(v) } } }
+      }
+    });
+  }
+
+  // Chart: # Subs por Rep (horizontal bar)
+  const c2 = document.getElementById('svcChartCountByRep');
+  if (c2) {
+    if (svcCountChart) svcCountChart.destroy();
+    svcCountChart = new Chart(c2.getContext('2d'), {
+      type:'bar',
+      data:{ labels, datasets:[{ label:'Subscriptions', data:dataCnt, borderWidth:1 }] },
+      options:{
+        indexAxis:'y',
+        responsive:true,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{ beginAtZero:true } }
+      }
+    });
+  }
+}
 /* ---------- CSV utils (bust cache) ---------- */
 function svcWithBust(url){ const s = url.includes('?') ? '&' : '?'; return url + s + 't=' + Date.now(); }
 
@@ -1111,7 +1209,9 @@ function svcLoad(url){
     .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
     .then(text=>{
       const parsed = svcParseCSV(text);
-      svcRender(parsed.rows);
+      SVC_ALL = parsed.rows || [];
+      svcRender(SVC_ALL);   // tabela
+      svcApply();           // KPIs + gráficos
       setUpdated();
     })
     .catch(err=>{
