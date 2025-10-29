@@ -18,57 +18,27 @@
 
     *{box-sizing:border-box}
     html,body{height:100%}
-    /* === C1-B: Atlus background (modern + visible tech grid) === */
-body{
-  margin:0;
-  /* Base + Atlus hero image + soft color glows */
-  background:
-    radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.12), transparent 70%),
-    radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.14), transparent 70%),
-    url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
-    var(--navy);
-  background-size: auto, auto, 780px auto, auto;
-  background-attachment: fixed, fixed, fixed, fixed;
-  color:var(--text);
-  font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  position: relative;
-  overflow-x: hidden;
-}
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.10), transparent 70%),
+        radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.12), transparent 70%),
+        url('./Atlus_logo_files/atlus-bg.png') no-repeat center 200px,
+        var(--navy);
+      background-size: auto, auto, 780px auto, auto;
+      color:var(--text);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      position: relative;
+    }
 
-/* Watermark (favicon) — stays subtle behind content */
-body::before{
-  content:"";
-  position:fixed;
-  top:50%;
-  left:50%;
-  width:680px;
-  height:680px;
-  transform:translate(-50%,-50%);
-  background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-  background-size:contain;
-  opacity:0.08;           /* a bit stronger than before for visibility */
-  pointer-events:none;
-  z-index:0;              /* below header/main (which are z-index:1) */
-}
-
-/* Tech grid overlay (visible C1-B) */
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  /* two perpendicular line layers to form the grid */
-  background-image:
-    linear-gradient(rgba(255,184,28,0.10) 1px, transparent 1px),         /* horizontal lines (gold) */
-    linear-gradient(90deg, rgba(0,119,200,0.12) 1px, transparent 1px);   /* vertical lines (blue) */
-  background-size: 46px 46px, 46px 46px;  /* grid cell size */
-  background-position: 0 0, 0 0;
-  opacity:0.35;            /* C1-B: more visible */
-  pointer-events:none;
-  z-index:0;               /* stays behind content */
-}
-
-/* Ensure content sits above overlays */
-header, main { position: relative; z-index: 1; }
+    /* optional watermark */
+    body::before{
+      content:"";
+      position:fixed; top:50%; left:50%;
+      width:680px; height:680px; transform:translate(-50%,-50%);
+      background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+      background-size:contain; opacity:.10; pointer-events:none; z-index:-1;
+    }
     header, main { position: relative; z-index: 1; }
 
     /* Header */
@@ -81,6 +51,7 @@ header, main { position: relative; z-index: 1; }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
     .logo{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
     .logo img{height:100%;width:auto;object-fit:contain}
+    .header-actions{display:flex;align-items:center;gap:8px}
 
     /* UI */
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
@@ -117,8 +88,15 @@ header, main { position: relative; z-index: 1; }
     .note{border-left:3px solid var(--blue);padding-left:12px}
     .stack{display:grid;gap:12px}
     .backRow{display:flex;align-items:center;gap:8px}
-    /* hide the bottom "Reload" button (legacy) */
+
+    /* hide old bottom Reload */
     #reloadBtn { display:none !important; }
+
+    /* admin visibility helpers */
+    .adminOnly{ display:none; }
+    .adminVisible .adminOnly{ display:block; }
+    .adminInline{ display:none; }
+    .adminVisible .adminInline{ display:inline-flex; }
   </style>
 </head>
 <body>
@@ -130,7 +108,11 @@ header, main { position: relative; z-index: 1; }
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
   </div>
-  <div class="muted" id="lastUpdated">Last updated: —</div>
+  <div class="header-actions">
+    <div class="muted" id="lastUpdated">Last updated: —</div>
+    <!-- Admin gate -->
+    <button class="btn link" id="adminGateBtn" title="Admin / Dev">Admin</button>
+  </div>
 </header>
 
 <main class="container">
@@ -140,10 +122,10 @@ header, main { position: relative; z-index: 1; }
     <div class="hero">
       <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
       <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
-      <!-- NEW: add quick buttons for both dashboards -->
-      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center">
         <button class="btn primary" onclick="openView('atlus')">Open Atlus Performance Dashboard</button>
-        <button class="btn" onclick="openView('bonus')">Open Bonus & Tech Dashboard</button>
+        <button class="btn" onclick="openView('bonus')">Open Bonus & Tech</button>
+        <button class="btn adminInline" onclick="openView('admin')">Open Admin</button>
       </div>
     </div>
 
@@ -154,26 +136,23 @@ header, main { position: relative; z-index: 1; }
         <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
-
-      <!-- NEW: Bonus & Tech card -->
       <div class="card">
-        <div class="pill">New</div>
-        <h3 style="margin:2px 0 0">Bonus & Tech Dashboard</h3>
-        <div class="muted">Bonus by tech, status and notes for the current pay period.</div>
+        <div class="pill">Ops</div>
+        <h3 style="margin:2px 0 0">Bonus & Tech</h3>
+        <div class="muted">Current pay period overview, status and sums.</div>
         <div><button class="btn" onclick="openView('bonus')">Open</button></div>
       </div>
-
-      <div class="card" style="align-content:start">
-        <div class="pill">Future dashboard</div>
-        <h3 style="margin:2px 0 0">Coming soon</h3>
-        <div><button class="btn link" disabled>Soon</button></div>
+      <div class="card adminOnly">
+        <div class="pill">Admin</div>
+        <h3 style="margin:2px 0 0">Admin / Dev</h3>
+        <div class="muted">Protected settings (CSV links).</div>
+        <div><button class="btn" onclick="openView('admin')">Open</button></div>
       </div>
     </div>
   </section>
 
   <!-- ATLUS -->
   <section id="view-atlus" class="stack" style="display:none">
-
     <div class="backRow">
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
     </div>
@@ -186,7 +165,6 @@ header, main { position: relative; z-index: 1; }
         <b>Important:</b> <i>Thumbtack spend is paid at the company level (Atlus overall)</i>, so its 
         <b>locations</b> will appear as <b>“All locations”</b> by design.
       </div>
-
       <div class="note" style="margin-top:8px">
         <b>Tip:</b> If you don’t see the data yet, click 
         <a href="#" onclick="document.getElementById('reloadBtn').click(); return false;">
@@ -196,7 +174,6 @@ header, main { position: relative; z-index: 1; }
       </div>
     </div>
 
-    <!-- Single RELOAD button (moved up) -->
     <div class="panel" style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
       <button class="btn primary" id="reloadBtn">Reload</button>
     </div>
@@ -262,7 +239,7 @@ header, main { position: relative; z-index: 1; }
     </div>
   </section>
 
-  <!-- ========== BONUS & TECH DASHBOARD ========== -->
+  <!-- ===== BONUS & TECH ===== -->
   <section id="view-bonus" class="stack" style="display:none">
     <div class="backRow">
       <button class="btn link" onclick="openView('home')">← Back to Home</button>
@@ -271,8 +248,7 @@ header, main { position: relative; z-index: 1; }
     <div class="panel">
       <div class="noteTitle">🧰 Bonus & Tech Dashboard (current pay period)</div>
       <div class="note">
-        This panel reads <b>only the active sheet</b> of the guide (current pay period). Paste the
-        <b>CSV link of the guide</b> below and click <b>Reload</b>.
+        For non-admin users, the source link is protected and fixed by the Ops admin. Data below reflects the active pay period.
       </div>
     </div>
 
@@ -311,53 +287,92 @@ header, main { position: relative; z-index: 1; }
 
     <!-- Data source -->
     <div class="panel">
-      <div class="row">
+      <!-- Non-admin sees only a protected badge -->
+      <div id="btSourceLocked" class="row">
+        <div class="muted">Source link: <b>Protected</b> (admin only)</div>
+        <div class="muted">Using fixed Ops link.</div>
+      </div>
+      <!-- Admin-only controls to change CSV -->
+      <div id="btSourceRow" class="row adminOnly">
         <div><label class="muted">Guide CSV link (active sheet)</label><input id="btCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
       </div>
       <div id="btStatusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
     </div>
 
-    <!-- Table (simple list) -->
+    <!-- Table -->
     <div class="panel">
       <div style="margin-bottom:8px;font-weight:700">Jobs</div>
       <div id="btTable" style="display:grid;gap:8px"></div>
     </div>
   </section>
 
+  <!-- ===== ADMIN / DEV (password protected) ===== -->
+  <section id="view-admin" class="stack adminOnly" style="display:none">
+    <div class="backRow">
+      <button class="btn link" onclick="openView('home')">← Back to Home</button>
+    </div>
+
+    <div class="panel">
+      <div class="noteTitle">🔒 Admin / Dev</div>
+      <div class="note">
+        Change protected CSV links here. This affects <b>your current browser</b> (session/local). To update for everyone,
+        replace the fixed link in the codebase when a new period starts.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <div style="min-width:380px;flex:1">
+          <label class="muted">Bonus & Tech – CSV (active sheet)</label>
+          <input id="adminBtCsv" class="input" placeholder="https://docs.google.com/.../output=csv">
+        </div>
+        <div style="display:grid;align-content:end;gap:8px">
+          <button class="btn" id="adminBtUse">Use for this session</button>
+          <button class="btn" id="adminBtSave">Save locally</button>
+          <button class="btn" id="adminBtClear">Clear local override</button>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:8px">
+        Current (effective) link: <span id="adminBtEffective" style="font-weight:600">—</span>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <script>
-/* ===== View router ===== */
+/* ===== View router + Admin gate ===== */
+const ADMIN_PASS = '32832126';
+
 function openView(which){
-  // Close any open native dropdowns by blurring the focused element
+  // Close any open native dropdowns
   if (document.activeElement && typeof document.activeElement.blur === 'function') {
     document.activeElement.blur();
   }
-  // Also proactively blur all selects (prevents “ghost” options overlay)
   document.querySelectorAll('select').forEach(el => el.blur());
 
-  // Switch views
   document.getElementById('view-home').style.display  = (which === 'home')  ? 'block' : 'none';
   document.getElementById('view-atlus').style.display = (which === 'atlus') ? 'block' : 'none';
   const vb = document.getElementById('view-bonus'); if(vb){ vb.style.display = (which === 'bonus') ? 'block' : 'none'; }
+  const va = document.getElementById('view-admin'); if(va){ va.style.display = (which === 'admin') ? 'block' : 'none'; }
 
   document.getElementById('headerTitle').textContent =
     (which === 'home')  ? 'Atlus Dashboards' :
     (which === 'atlus') ? 'Atlus Performance Dashboard' :
-    'Bonus & Tech Dashboard';
+    (which === 'bonus') ? 'Bonus & Tech Dashboard' :
+    'Admin / Dev';
 
-  // Normalize URL and scroll to top to avoid leftover overlays
   history.replaceState(null, '', location.pathname + '?view=' + which);
   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
+
 (function initViewFromURL(){
   const p = new URLSearchParams(location.search);
   const v = p.get('view');
-  openView(v === 'atlus' ? 'atlus' : (v === 'bonus' ? 'bonus' : 'home'));
+  openView(v === 'atlus' ? 'atlus' : (v === 'bonus' ? 'bonus' : (v === 'admin' ? 'admin' : 'home')));
 })();
 
-/* ===== Helpers ===== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
 function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='#a7bfd9'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
@@ -365,6 +380,32 @@ function chips(msgs){const c=$('statusChips'); c.innerHTML=''; msgs.forEach(m=>c
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—'}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
 function norm(s){return String(s||'').toLowerCase().trim()}
+
+/* ===== Admin state ===== */
+function isAdmin(){ return sessionStorage.getItem('isAdmin') === '1'; }
+function setAdminUI(){
+  document.body.classList.toggle('adminVisible', isAdmin());
+  // If not admin and admin view is open, go home
+  if(!isAdmin() && document.getElementById('view-admin').style.display === 'block'){
+    openView('home');
+  }
+}
+$('adminGateBtn').addEventListener('click', ()=>{
+  if(isAdmin()){
+    // toggle admin view quickly
+    openView('admin');
+    return;
+  }
+  const pwd = prompt('Enter admin password:');
+  if(pwd === ADMIN_PASS){
+    sessionStorage.setItem('isAdmin','1');
+    setAdminUI();
+    alert('Admin unlocked for this session.');
+    openView('admin');
+  }else if(pwd!==null){
+    alert('Incorrect password.');
+  }
+});
 
 /* ===== Number / sanitize ===== */
 function toNumber(x){
@@ -376,7 +417,7 @@ function toNumber(x){
   return isFinite(n)?n:0;
 }
 
-/* ===== CSV parsing ===== */
+/* ===== CSV parsing (Atlus) ===== */
 function detectColumns(headers){
   const h=headers.map(x=>String(x||'').toLowerCase());
   const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
@@ -471,11 +512,11 @@ function uniqSortedClean(arr, excludeAllLocations){
 }
 function sum(arr,k){ let t=0; for(let i=0;i<arr.length;i++){ t += (+arr[i][k]||0) } return t }
 
-/* ===== State ===== */
+/* ===== State (Atlus) ===== */
 let original=[], filtered=[];
 let leadsChart=null, roiChart=null, profitChart=null;
 
-/* ===== Filters ===== */
+/* ===== Filters (Atlus) ===== */
 function daysInMonth(name){
   const d = new Date(name+' 01'); if(isNaN(d)) return 30;
   const y=d.getFullYear(), m=d.getMonth(); return new Date(y, m+1, 0).getDate();
@@ -489,7 +530,7 @@ function fillFilters(data){
   const fixLabel = (t) => {
     const l = String(t||'').trim();
     return (l.toLowerCase() === 'pendig') ? 'Pending' : l;
-    };
+  };
 
   const fill = (id, arr, label)=>{
     const s=$(id); s.innerHTML='';
@@ -511,7 +552,7 @@ function applyFilters(){
   updateKPIs(); updateCharts();
 }
 
-/* ===== KPIs ===== */
+/* ===== KPIs (Atlus) ===== */
 function updateKPIs(){
   const leads = sum(filtered,'Leads'),
         spend = sum(filtered,'Spend'),
@@ -549,7 +590,7 @@ function updateKPIs(){
   $('kpiGood').textContent      = (goodPct==null)?'—':((goodPct*100).toFixed(1)+'%');
 }
 
-/* ===== Charts ===== */
+/* ===== Charts (Atlus) ===== */
 function updateCharts(){
   const mp={}; filtered.forEach(r=>{ mp[r.Platform]=(mp[r.Platform]||0)+(r.Leads||0) });
   const l1=Object.keys(mp), d1=l1.map(k=>mp[k]);
@@ -593,7 +634,7 @@ function updateCharts(){
   });
 }
 
-/* ===== Networking ===== */
+/* ===== Networking (Atlus) ===== */
 function normalizeUrl(u){
   if(!u)return'';
   if(/tqx=out:csv/.test(u))return u;
@@ -620,7 +661,7 @@ function fetchCsvText(url){
   });
 }
 
-/* ===== Load & wire ===== */
+/* ===== Load & wire (Atlus) ===== */
 function loadFromUrl(url){
   const normUrl=normalizeUrl(url.trim());
   if(!normUrl){ chips(['Paste a valid CSV link']); return; }
@@ -656,20 +697,7 @@ function loadFromFile(file){
   }});
 }
 
-/* Events */
-$('reloadBtn').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
-$('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
-$('autoRefresh').addEventListener('change',e=>{
-  if(e.target.checked){
-    if(!window.__auto){ window.__auto=setInterval(()=> loadFromUrl($('csvUrl').value), 5*60*1000); }
-  }else{
-    if(window.__auto){ clearInterval(window.__auto); window.__auto=null; }
-  }
-});
-$('clearFilters').addEventListener('click',()=>{ $('monthFilter').value=''; $('locationFilter').value=''; $('platformFilter').value=''; applyFilters(); });
-['monthFilter','locationFilter','platformFilter'].forEach(id=> $(id).addEventListener('change',applyFilters));
-
-/* ====== Bonus & Tech Dashboard (NEW) ====== */
+/* ===== Bonus & Tech ===== */
 function $bt(id){ return document.getElementById(id); }
 function btChip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='#a7bfd9'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
 function btChips(msgs){ const c=$bt('btStatusChips'); c.innerHTML=''; msgs.forEach(m=>c.appendChild(btChip(m))); }
@@ -782,6 +810,18 @@ function btNormalizeUrl(u){
   return u;
 }
 function btWithBust(url){ const s=url.includes('?')?'&':'?'; return url+s+'t='+(Date.now()); }
+
+/* Fixed default for everyone (Ops sets this in code) */
+const BONUS_FIXED_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vQOju0Fvn-Qe3oaTEZQiEm23CYOYtE6EChD6TNiW3y-MlUsHQcLPbrFPcgycz_x_Q_aEoO-XXlJpbnZ/pub?gid=2024260664&single=true&output=csv";
+
+/* Optional admin overrides (session/local - only on your browser) */
+function getBonusEffectiveLink(){
+  const sess = sessionStorage.getItem('bonusCsvOverride') || '';
+  const local = localStorage.getItem('bonusCsvOverride') || '';
+  const eff = sess || local || BONUS_FIXED_LINK;
+  return eff;
+}
+
 function btLoad(url){
   const norm = btNormalizeUrl(url.trim());
   if(!norm){ btChips(['Paste a valid CSV link']); return; }
@@ -803,30 +843,104 @@ function btLoad(url){
     .catch(err=>{ btChips(['Failed to load CSV: '+err.message]); console.error(err); });
 }
 
+/* Events (Bonus) */
 ['btOwner','btStatus'].forEach(id=> $bt(id).addEventListener('change', btApply));
 $bt('btJobSearch').addEventListener('input', btApply);
 $bt('btClear').addEventListener('click', ()=>{
   $bt('btOwner').value=''; $bt('btStatus').value=''; $bt('btJobSearch').value='';
   btApply();
 });
-$bt('btReload').addEventListener('click', ()=> btLoad($bt('btCsvUrl').value));
+const btReloadBtn = $bt('btReload');
+if(btReloadBtn){
+  btReloadBtn.addEventListener('click', ()=> btLoad($bt('btCsvUrl').value));
+}
 
-/* Default CSVs */
+/* ===== Default CSVs ===== */
 const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
-/* NEW: default for Bonus & Tech (current month) */
-const BONUS_DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vQOju0Fvn-Qe3oaTEZQiEm23CYOYtE6EChD6TNiW3y-MlUsHQcLPbrFPcgycz_x_Q_aEoO-XXlJpbnZ/pub?gid=2024260664&single=true&output=csv";
 
 window.addEventListener('DOMContentLoaded',()=>{
-  $('csvUrl').value = DEFAULT_LINK;
-  $bt('btCsvUrl').value = BONUS_DEFAULT_LINK;   // ✅ sempre preenche
+  // admin UI
+  setAdminUI();
 
+  // Atlus default
+  $('csvUrl').value=DEFAULT_LINK;
   const v = new URLSearchParams(location.search).get('view');
   if(v==='atlus'){ loadFromUrl(DEFAULT_LINK); }
-  if(v==='bonus'){ btLoad(BONUS_DEFAULT_LINK); }  // ✅ auto-carrega o bônus
 
+  // Bonus default – everyone uses effective (admin override>local>fixed)
+  const eff = getBonusEffectiveLink();
+  const btInput = $bt('btCsvUrl');
+  if(btInput) btInput.value = eff;
+  if(v==='bonus'){ btLoad(eff); }
+
+  // Admin screen current effective link text
+  const effSpan = $('adminBtEffective');
+  if(effSpan) effSpan.textContent = eff;
+
+  // Admin controls
+  const adminBtUse = $('adminBtUse');
+  const adminBtSave = $('adminBtSave');
+  const adminBtClear = $('adminBtClear');
+  const adminBtCsv = $('adminBtCsv');
+
+  if(adminBtUse){
+    adminBtUse.addEventListener('click', ()=>{
+      if(!isAdmin()) return alert('Admin required.');
+      const link = (adminBtCsv.value||'').trim();
+      if(!link) return alert('Paste a CSV link.');
+      sessionStorage.setItem('bonusCsvOverride', link);
+      // do not touch localStorage here
+      const eff = getBonusEffectiveLink();
+      $('adminBtEffective').textContent = eff;
+      const bti = $bt('btCsvUrl'); if(bti) bti.value = eff;
+      if(new URLSearchParams(location.search).get('view')==='bonus'){ btLoad(eff); }
+      alert('Session override applied.');
+    });
+  }
+  if(adminBtSave){
+    adminBtSave.addEventListener('click', ()=>{
+      if(!isAdmin()) return alert('Admin required.');
+      const link = (adminBtCsv.value||'').trim();
+      if(!link) return alert('Paste a CSV link.');
+      localStorage.setItem('bonusCsvOverride', link);
+      const eff = getBonusEffectiveLink();
+      $('adminBtEffective').textContent = eff;
+      const bti = $bt('btCsvUrl'); if(bti) bti.value = eff;
+      if(new URLSearchParams(location.search).get('view')==='bonus'){ btLoad(eff); }
+      alert('Local override saved on this browser.');
+    });
+  }
+  if(adminBtClear){
+    adminBtClear.addEventListener('click', ()=>{
+      if(!isAdmin()) return alert('Admin required.');
+      sessionStorage.removeItem('bonusCsvOverride');
+      localStorage.removeItem('bonusCsvOverride');
+      const eff = getBonusEffectiveLink();
+      $('adminBtEffective').textContent = eff;
+      const bti = $bt('btCsvUrl'); if(bti) bti.value = eff;
+      if(new URLSearchParams(location.search).get('view')==='bonus'){ btLoad(eff); }
+      alert('Overrides cleared (this browser).');
+    });
+  }
+
+  // auto refresh for Atlus
   $('autoRefresh').dispatchEvent(new Event('change'));
   setUpdated();
 });
+
+/* Auto refresh (Atlus) */
+$('autoRefresh').addEventListener('change',e=>{
+  if(e.target.checked){
+    if(!window.__auto){ window.__auto=setInterval(()=> loadFromUrl($('csvUrl').value), 5*60*1000); }
+  }else{
+    if(window.__auto){ clearInterval(window.__auto); window.__auto=null; }
+  }
+});
+
+/* Reload button (top) for Atlus */
+document.getElementById('reloadBtn').addEventListener('click',()=>loadFromUrl($('csvUrl').value));
+$('csvFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(f)loadFromFile(f); });
+['monthFilter','locationFilter','platformFilter'].forEach(id=> $(id).addEventListener('change',applyFilters));
 </script>
 </body>
 </html>
