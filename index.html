@@ -40,21 +40,37 @@
     }
     .brand{display:flex;align-items:center;gap:12px;font-weight:700}
 
-    /* SUBSTITUIR estes dois blocos */
-.logo{
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  background:transparent; border:none; box-shadow:none;
-  border-radius:0;          /* não arredonda o contêiner */
-  overflow:visible;         /* não recorta a imagem */
+    /* ====== ALTERADO APENAS AQUI ====== */
+    .logo{
+      width:40px; height:40px;
+      display:flex; align-items:center; justify-content:center;
+      background:transparent; border:none; box-shadow:none;
+      border-radius:0;           /* sem arredondar o contêiner */
+      overflow:visible;          /* não recortar a imagem */
+    }
+    .logo img{
+      display:block;
+      height:100%; width:auto;   /* preserva proporção, usa a altura do header */
+      object-fit:contain;        /* sem recorte */
+      border-radius:0;           /* sem arredondar a imagem */
+      vertical-align:middle;
+      filter:none;               /* garante cores originais */
+    }
+    /* ========== TOP LOGO BAR (novo) ========== */
+.top-logo{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:10px 0;
+  background:rgba(10,27,43,.85);
+  border-bottom:1px solid var(--border);
 }
-.logo img{
+.top-logo img{
+  height:44px;      /* ajuste se quiser maior/menor */
+  width:auto;
   display:block;
-  height:100%; width:auto;  /* mesma proporção da imagem colorida */
-  object-fit:contain;       /* sem recorte */
-  border-radius:0;          /* não arredonda a imagem */
-  filter:none;              /* garante cores originais */
 }
+    /* ====== /FIM DAS MUDANÇAS ====== */
 
     /* Botões / inputs básicos */
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0a2236;color:var(--text);cursor:pointer}
@@ -97,13 +113,17 @@
   </style>
 </head>
 <body>
-
+<div class="top-logo">
+  <img src="Atlus_logo_files/favicon.png" alt="Atlus logo">
+</div>
 <header>
   <div class="brand">
     <div class="logo">
       <img
-        src="Atlus_logo_files/favicon.png"   <!-- mesmo arquivo da logo colorida -->
+        src="Atlus_logo_files/favicon.png"
         alt="Atlus"
+        width="40" height="40"
+        onerror="this.src='favicon.png';"
       >
     </div>
     <div class="title" id="headerTitle">Atlus Dashboards</div>
