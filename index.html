@@ -381,18 +381,6 @@
       <canvas id="svcChartPlans"></canvas>
     </div>
 
-    <!-- Linha 3: Timelines lado a lado -->
-    <div class="grid-2">
-      <div class="panel chart-500">
-        <div style="margin-bottom:8px;font-weight:700">Date Sold — timeline</div>
-        <canvas id="svcChartSoldTimeline"></canvas>
-      </div>
-      <div class="panel chart-500">
-        <div style="margin-bottom:8px;font-weight:700">Initial Service — timeline</div>
-        <canvas id="svcChartInitTimeline"></canvas>
-      </div>
-    </div>
-
     <!-- Linha 4: ARV / Count por Sales Rep lado a lado -->
     <div class="grid-2">
       <div class="panel chart-460">
@@ -1064,7 +1052,7 @@ function svcRenderKpis(agg){
   $svc('svcKpiBalance').textContent = fmtUSD(agg.balance||0);
 }
 
-let svcArvChart=null, svcCountChart=null, svcActiveChart=null, svcPlansChart=null, svcSoldChart=null, svcInitChart=null;
+let svcArvChart=null, svcCountChart=null, svcActiveChart=null, svcPlansChart=null;
 
 function monthKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
 function prettyMonth(key){
@@ -1110,34 +1098,6 @@ function svcRenderCharts(agg, rows){
       responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
       scales:{ x:{ ticks:{ maxRotation:30, autoSkip:true } }, y:{ beginAtZero:true } }
     }
-  });
-
-  /* ---------- Timelines (Sold / Initial Service por mês) ---------- */
-  const soldByMonth={}, initByMonth={};
-  (rows||[]).forEach(r=>{
-    const ds = svcParseDate(r?.DateSold);
-    const di = svcParseDate(r?.InitialServiceDate);
-    if(ds){ const k=monthKey(ds); soldByMonth[k]=(soldByMonth[k]||0)+1; }
-    if(di){ const k=monthKey(di); initByMonth[k]=(initByMonth[k]||0)+1; }
-  });
-  const allKeys = Array.from(new Set([...Object.keys(soldByMonth),...Object.keys(initByMonth)]))
-                    .sort((a,b)=> a.localeCompare(b));
-  const soldSeries = allKeys.map(k=> soldByMonth[k]||0);
-  const initSeries = allKeys.map(k=> initByMonth[k]||0);
-  const labels = allKeys.map(prettyMonth);
-
-  if(svcSoldChart) svcSoldChart.destroy();
-  svcSoldChart = new Chart($('svcChartSoldTimeline').getContext('2d'),{
-    type:'line',
-    data:{ labels, datasets:[{ label:'Sold', data:soldSeries, borderColor:'var(--sky)', backgroundColor:'rgba(56,189,248,.35)', tension:.35, pointRadius:0, borderWidth:3, fill:false }]},
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{ y:{ beginAtZero:true } } }
-  });
-
-  if(svcInitChart) svcInitChart.destroy();
-  svcInitChart = new Chart($('svcChartInitTimeline').getContext('2d'),{
-    type:'line',
-    data:{ labels, datasets:[{ label:'Initial Service', data:initSeries, borderColor:'var(--green)', backgroundColor:'rgba(25,195,125,.35)', tension:.35, pointRadius:0, borderWidth:3, fill:false }]},
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{ y:{ beginAtZero:true } } }
   });
 
   /* ---------- ARV / Count por Sales Rep ---------- */
