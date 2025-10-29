@@ -31,16 +31,24 @@
       position: relative;
     }
 
-    /* marca d’água opcional com o favicon */
-    body::before{
-      content:"";
-      position:fixed; top:50%; left:50%;
-      width:680px; height:680px; transform:translate(-50%,-50%);
-      background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
-      background-size:contain; opacity:.10; pointer-events:none; z-index:-1;
-    }
-    header, main { position: relative; z-index: 1; }
+    /* marca d’água com o favicon */
+body::before{
+  content:"";
+  position:fixed;
+  top:50%;
+  left:50%;
+  width:680px;
+  height:680px;
+  transform:translate(-50%,-50%);
+  background:url('./Atlus_logo_files/favicon.png') no-repeat center center;
+  background-size:contain;
+  opacity:0.06;           /* bem fraquinho */
+  pointer-events:none;
+  z-index:0;              /* ← fica acima do fundo do body, abaixo do conteúdo */
+}
 
+/* garante que o conteúdo fique acima da marca d’água */
+header, main { position: relative; z-index: 1; }
     /* Header */
     header{
       position:sticky; top:0; z-index:50;
