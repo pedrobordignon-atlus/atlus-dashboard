@@ -285,7 +285,7 @@ body.admin .if-guest{ display:none; }
 
     <!-- Data source (bottom) -->
     <div class="panel admin-only">
-      <div class="row">
+      
         <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
         <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
         <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
@@ -343,17 +343,19 @@ body.admin .if-guest{ display:none; }
     </div>
 
     <!-- Data source -->
-    <div class="panel admin-only">
-      <div class="row">
-        <div><label class="muted">Guide CSV link (active sheet)</label><input id="btCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
-      </div>
-      <!-- Public reload button (for non-admin users) -->
+    <!-- Data source -->
+<div class="panel admin-only">
+  <div class="row">
+    <div><label class="muted">Guide CSV link (active sheet)</label><input id="btCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+    <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
+  </div>
+  <div id="btStatusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+</div>
+
+<!-- Public reload button (for non-admin users) -->
 <div class="panel if-guest" style="display:flex; justify-content:flex-end; gap:10px; align-items:center;">
   <button class="btn primary" id="btReloadPublic">Reload</button>
 </div>
-      <div id="btStatusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-    </div>
 
     <!-- Table (simple list) -->
     <div class="panel">
@@ -861,7 +863,12 @@ $bt('btClear').addEventListener('click', ()=>{
   btApply();
 });
 $bt('btReload').addEventListener('click', ()=> btLoad($bt('btCsvUrl').value));
-
+const btReloadPub = document.getElementById('btReloadPublic');
+if(btReloadPub){
+  btReloadPub.addEventListener('click', ()=>{
+    btLoad($bt('btCsvUrl').value);
+  });
+}
 /* Default CSVs */
 const DEFAULT_LINK="https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 /* NEW: default for Bonus & Tech (current month) */
