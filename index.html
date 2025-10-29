@@ -126,6 +126,11 @@
       width: 320px; background: var(--panel); border:1px solid var(--border);
       border-radius: 16px; padding: 16px; display: grid; gap: 10px;
     }
+
+    /* ===== Charts sizing ===== */
+    .chart-360{ height:360px; }
+    .chart-280{ height:280px; }
+    .panel canvas{ width:100% !important; height:100% !important; }
   </style>
 </head>
 <body>
@@ -246,11 +251,11 @@
 
     <!-- Charts -->
     <div class="grid-2">
-      <div class="panel"><div style="margin-bottom:8px;font-weight:700">Leads per Platform</div><canvas id="chartLeads"></canvas></div>
-      <div class="panel"><div style="margin-bottom:8px;font-weight:700">ROI per Location</div><canvas id="chartROI"></canvas></div>
+      <div class="panel chart-360"><div style="margin-bottom:8px;font-weight:700">Leads per Platform</div><canvas id="chartLeads"></canvas></div>
+      <div class="panel chart-360"><div style="margin-bottom:8px;font-weight:700">ROI per Location</div><canvas id="chartROI"></canvas></div>
     </div>
 
-    <div class="panel"><div style="margin-bottom:8px;font-weight:700">Profit per Location</div><canvas id="chartProfit"></canvas></div>
+    <div class="panel chart-360"><div style="margin-bottom:8px;font-weight:700">Profit per Location</div><canvas id="chartProfit"></canvas></div>
 
     <!-- Data source (bottom) -->
     <div class="panel admin-only">
@@ -275,7 +280,6 @@
       </div>
     </div>
 
-    <!-- “Reload” para visitantes — agora logo abaixo do aviso principal -->
     <div class="panel if-guest">
       <div class="muted">
         Want to refresh the data? Click
@@ -324,13 +328,7 @@
     <!-- Título + notas -->
     <div class="panel">
       <div class="noteTitle">📄 Subscriptions / ARV</div>
-
-      <!-- NOTA DINÂMICA (preenchida via JS) -->
-      <div class="note" id="svcCycleNote">
-        Loading cycle…
-      </div>
-
-      <!-- Colunas suportadas (fixo) -->
+      <div class="note" id="svcCycleNote">Loading cycle…</div>
       <div class="note" style="margin-top:8px">
         <b>Supported columns:</b>
         Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV.
@@ -361,47 +359,47 @@
 
     <!-- KPIs -->
     <div class="kpis">
-      <div class="kpi">
-        <div class="label">Subscriptions</div>
-        <div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div>
-      </div>
-      <div class="kpi">
-        <div class="label">Active</div>
-        <div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div>
-      </div>
-      <div class="kpi">
-        <div class="label">Total ARV</div>
-        <div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div>
-      </div>
-      <div class="kpi">
-        <div class="label">Total Balance</div>
-        <div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div>
-      </div>
+      <div class="kpi"><div class="label">Subscriptions</div><div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div></div>
+      <div class="kpi"><div class="label">Active</div><div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div></div>
+      <div class="kpi"><div class="label">Total ARV</div><div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div></div>
+      <div class="kpi"><div class="label">Total Balance</div><div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div></div>
     </div>
 
-    <!-- Novo gráfico: Active vs Inactive -->
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
-      <canvas id="svcChartActive"></canvas>
-    </div>
-
-    <!-- Charts por Sales Rep -->
+    <!-- NOVOS GRÁFICOS -->
     <div class="grid-2">
-      <div class="panel">
+      <div class="panel chart-360">
+        <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
+        <canvas id="svcChartActivePie"></canvas>
+      </div>
+      <div class="panel chart-360">
+        <div style="margin-bottom:8px;font-weight:700">Top Subscriptions (by count)</div>
+        <canvas id="svcChartTopPlans"></canvas>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel chart-360">
+        <div style="margin-bottom:8px;font-weight:700">Date Sold — timeline</div>
+        <canvas id="svcChartSoldTimeline"></canvas>
+      </div>
+      <div class="panel chart-360">
+        <div style="margin-bottom:8px;font-weight:700">Initial Service — timeline</div>
+        <canvas id="svcChartInitTimeline"></canvas>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel chart-360">
         <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
         <canvas id="svcChartArvByRep"></canvas>
       </div>
-      <div class="panel">
+      <div class="panel chart-360">
         <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
         <canvas id="svcChartCountByRep"></canvas>
       </div>
     </div>
 
-    <!-- Tabela (oculta para “limpar” a view) -->
-    <div class="panel" style="display:none">
-      <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
-      <div id="svcTable" style="display:grid;gap:8px"></div>
-    </div>
+    <!-- Tabela removida para deixar a tela limpa -->
   </section>
 
 </main>
@@ -631,7 +629,7 @@
     leadsChart=new Chart($('chartLeads').getContext('2d'),{
       type:'bar',
       data:{labels:l1,datasets:[{label:'Leads',data:d1,backgroundColor:'rgba(0,119,200,.6)',borderColor:'#0077c8',borderWidth:1}]},
-      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     });
 
     const byLoc={};
@@ -648,7 +646,7 @@
     roiChart=new Chart($('chartROI').getContext('2d'),{
       type:'bar',
       data:{labels:l2,datasets:[{label:'ROI (%)',data:d2,backgroundColor:'rgba(25,195,125,.6)',borderColor:'#19c37d',borderWidth:1}]},
-      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
     });
 
     const agg={}, pairs=[];
@@ -663,7 +661,7 @@
     profitChart=new Chart($('chartProfit').getContext('2d'),{
       type:'bar',
       data:{labels:pLabels,datasets:[{label:'Profit ($)',data:pData,borderColor:'#ffb81c',backgroundColor:'rgba(255,184,28,.30)'}]},
-      options:{responsive:true,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
     });
   }
 
@@ -1036,6 +1034,20 @@ function svcUpdateCycleNote(rows){
 }
 /* ===================== (end Cycle Note) ===================== */
 
+/* ===== Helpers p/ gráficos novos ===== */
+function svcParseDateLoose(str){ const d = svcParseDate(str); return d && !isNaN(d) ? d : null; }
+function svcFmtMonth(d){ return d ? (d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0')) : ''; }
+function countBy(list, keyFn){
+  const map = new Map();
+  for(const r of list){
+    const k = keyFn(r);
+    if(!k) continue;
+    map.set(k, (map.get(k)||0)+1);
+  }
+  return map;
+}
+function topEntries(map, n=10){ return [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,n); }
+
 function svcComputeAggregates(list){
   const total = list.length;
   const active = list.filter(r=>/^y(es)?$/i.test(r.Active)).length;
@@ -1058,88 +1070,67 @@ function svcRenderKpis(agg){
   $svc('svcKpiBalance').textContent = fmtUSD(agg.balance||0);
 }
 
-/* === alterado: agora com o gráfico de Active vs Inactive === */
-let svcArvChart=null, svcCountChart=null, svcActiveChart=null;
+let svcArvChart=null, svcCountChart=null, svcActivePie=null, svcSoldLine=null, svcInitLine=null, svcTopPlans=null;
 
-function svcRenderCharts(agg){
-  // ARV por Sales Rep
+function svcRenderCharts(agg, rows){
+  // Active vs Inactive
+  const activeCount   = rows.filter(r => /^y(es)?$/i.test(r.Active)).length;
+  const inactiveCount = rows.length - activeCount;
+  if(svcActivePie) svcActivePie.destroy();
+  svcActivePie = new Chart($('svcChartActivePie').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels: ['Active','Inactive'], datasets: [{ data: [activeCount, inactiveCount] }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}} }
+  });
+
+  // Top Subscriptions
+  const plansMap = countBy(rows, r => String(r.Subscription||'').trim());
+  const plansTop = topEntries(plansMap, 8);
+  if(svcTopPlans) svcTopPlans.destroy();
+  svcTopPlans = new Chart($('svcChartTopPlans').getContext('2d'), {
+    type: 'bar',
+    data: { labels: plansTop.map(([k])=>k||'—'), datasets: [{ label:'# Subs', data: plansTop.map(([,v])=>v) }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+  });
+
+  // Timelines (mês)
+  const soldMap = countBy(rows, r => { const d = svcParseDateLoose(r.DateSold); return d ? svcFmtMonth(d) : ''; });
+  const initMap = countBy(rows, r => { const d = svcParseDateLoose(r.InitialServiceDate); return d ? svcFmtMonth(d) : ''; });
+  const months = [...new Set([...soldMap.keys(), ...initMap.keys()].filter(Boolean))].sort();
+  const soldData = months.map(m => soldMap.get(m)||0);
+  const initData = months.map(m => initMap.get(m)||0);
+
+  if(svcSoldLine) svcSoldLine.destroy();
+  svcSoldLine = new Chart($('svcChartSoldTimeline').getContext('2d'), {
+    type: 'line',
+    data: { labels: months, datasets: [{ label:'Sold', data: soldData, tension:0.25 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}} }
+  });
+
+  if(svcInitLine) svcInitLine.destroy();
+  svcInitLine = new Chart($('svcChartInitTimeline').getContext('2d'), {
+    type: 'line',
+    data: { labels: months, datasets: [{ label:'Initial Service', data: initData, tension:0.25 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}} }
+  });
+
+  // ARV / Count por Rep
   const reps = Object.keys(agg.byRep).sort((a,b)=> (agg.byRep[b].arv - agg.byRep[a].arv));
   const arvData = reps.map(k=> +(agg.byRep[k].arv||0).toFixed(2));
+  const cntData = reps.map(k=> agg.byRep[k].count||0);
 
   if(svcArvChart) svcArvChart.destroy();
   svcArvChart = new Chart($('svcChartArvByRep').getContext('2d'),{
     type:'bar',
-    data:{labels:reps,datasets:[{label:'ARV ($)',data:arvData,borderColor:'#ffb81c',backgroundColor:'rgba(255,184,28,.30)'}]},
-    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.x)}}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
+    data:{labels:reps,datasets:[{label:'ARV ($)',data:arvData}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>fmtUSD(v)}}}}
   });
-
-  // # Subs por Sales Rep
-  const cntData = reps.map(k=> agg.byRep[k].count||0);
 
   if(svcCountChart) svcCountChart.destroy();
   svcCountChart = new Chart($('svcChartCountByRep').getContext('2d'),{
     type:'bar',
-    data:{labels:reps,datasets:[{label:'# Subs',data:cntData,backgroundColor:'rgba(0,119,200,.6)',borderColor:'#0077c8'}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-  });
-
-  // Active vs Inactive (doughnut)
-  const active = agg.active;
-  const inactive = Math.max(0, (agg.total||0) - active);
-  const actEl = document.getElementById('svcChartActive');
-  if (actEl){
-    if(svcActiveChart) svcActiveChart.destroy();
-    svcActiveChart = new Chart(actEl.getContext('2d'),{
-      type:'doughnut',
-      data:{
-        labels:['Active','Inactive'],
-        datasets:[{ data:[active, inactive] }]
-      },
-      options:{
-        responsive:true,
-        plugins:{ legend:{ position:'bottom' } }
-      }
-    });
-  }
-}
-
-function svcRender(list){
-  const T = $svc('svcTable'); if(!T) return;
-  T.innerHTML = '';
-
-  const header = document.createElement('div');
-  header.style.display='grid';
-  header.style.gridTemplateColumns='0.85fr 1.4fr 1fr 0.6fr 0.9fr 0.9fr 0.9fr 0.7fr 0.8fr 0.9fr';
-  header.style.gap='10px';
-  header.style.padding='8px 10px';
-  header.style.color='var(--text-dim)';
-  header.innerHTML = `
-    <div>Customer ID</div><div>Customer</div><div>Subscription</div><div>Active</div>
-    <div>Sales Rep</div><div>Date Sold</div><div>Initial Service</div><div>Status</div>
-    <div>Balance</div><div>ARV</div>`;
-  T.appendChild(header);
-
-  list.forEach(r=>{
-    const row = document.createElement('div');
-    row.style.display='grid';
-    row.style.gridTemplateColumns='0.85fr 1.4fr 1fr 0.6fr 0.9fr 0.9fr 0.9fr 0.7fr 0.8fr 0.9fr';
-    row.style.gap='10px';
-    row.style.padding='10px';
-    row.style.border='1px solid var(--border)';
-    row.style.borderRadius='12px';
-    row.style.background='#081b2b';
-    row.innerHTML = `
-      <div>${r.CustomerID || '-'}</div>
-      <div><b>${r.Customer || '-'}</b></div>
-      <div>${r.Subscription || '-'}</div>
-      <div>${r.Active || '-'}</div>
-      <div>${r.SalesRep || '-'}</div>
-      <div>${r.DateSold || '-'}</div>
-      <div>${r.InitialServiceDate || '-'}</div>
-      <div>${r.Status || '-'}</div>
-      <div>${fmtUSD(r.Balance || 0)}</div>
-      <div>${fmtUSD(r.ARV || 0)}</div>`;
-    T.appendChild(row);
+    data:{labels:reps,datasets:[{label:'# Subs',data:cntData}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
   });
 }
 
@@ -1150,14 +1141,10 @@ function svcLoad(url){
     .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
     .then(text=>{
       const parsed = svcParseCSV(text);
-      // nota dinâmica
       svcUpdateCycleNote(parsed.rows);
-      // KPIs + gráficos
       const agg = svcComputeAggregates(parsed.rows);
       svcRenderKpis(agg);
-      svcRenderCharts(agg);
-      // tabela NÃO é mais renderizada para manter a view limpa
-      // svcRender(parsed.rows);
+      svcRenderCharts(agg, parsed.rows);
       setUpdated();
     })
     .catch(err=>{
