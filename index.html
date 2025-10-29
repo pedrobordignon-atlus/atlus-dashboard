@@ -142,7 +142,14 @@
     grid-template-columns:1fr !important;
   }
 }
+/* --- ajustes finos de layout --- */
+.container{ gap:32px; }                 /* mais respiro entre seções */
+.stack-charts{ gap:32px; }              /* mais espaço entre gráficos */
+.panel{ padding:24px 26px 20px; }       /* título não fica colado na borda */
 
+/* alturas mais equilibradas (menos “tijolão”) */
+.chart-340 canvas{ height:340px !important; }
+.chart-360 canvas{ height:360px !important; }
   </style>
 </head>
 <body>
@@ -393,30 +400,31 @@
 
   <!-- CHARTS EMPILHADOS: 1 por linha -->
 <div class="stack-charts">
-  <!-- Linha 1: Donut -->
-  <div class="panel chart-380">
+  <!-- Donut: um pouco menor -->
+  <div class="panel chart-340">
     <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
     <canvas id="svcChartActive"></canvas>
   </div>
 
-  <!-- Linha 2: Top Plans -->
-  <div class="panel chart-460">
+  <!-- Top Plans: médio -->
+  <div class="panel chart-420">
     <div style="margin-bottom:8px;font-weight:700">Top Plans (by # of subscriptions)</div>
     <canvas id="svcChartPlans"></canvas>
   </div>
 
-  <!-- Linha 3: ARV por Sales Rep -->
-  <div class="panel chart-420">
+  <!-- ARV por Sales Rep: compacto horizontal -->
+  <div class="panel chart-360">
     <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
     <canvas id="svcChartArvByRep"></canvas>
   </div>
 
-  <!-- Linha 4: # Subs por Sales Rep -->
-  <div class="panel chart-420">
+  <!-- # Subs por Sales Rep: compacto -->
+  <div class="panel chart-360">
     <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
     <canvas id="svcChartCountByRep"></canvas>
   </div>
 </div>
+
 
     <!-- Tabela oculta (apenas se quiser voltar depois) -->
     <div class="panel" style="display:none">
