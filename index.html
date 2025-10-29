@@ -26,7 +26,25 @@
         var(--navy);
       color:var(--text);
       font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      position: relative;   /* <- necessário p/ marca d'água ficar atrás */
     }
+
+    /* ===== Marca d'água (centralizada, atrás do conteúdo) ===== */
+    body::before{
+      content:"";
+      position:fixed;
+      top:50%;
+      left:50%;
+      width:780px;
+      height:780px;
+      transform:translate(-50%,-50%);
+      background:url('./Atlus_logo_files/atlus-bg.png') no-repeat center center;
+      background-size:contain;
+      opacity:.12;          /* ajuste a intensidade aqui */
+      pointer-events:none;
+      z-index:-1;           /* fica ATRÁS de todo o conteúdo */
+    }
+    header, main{ position:relative; z-index:1; } /* garante conteúdo por cima */
 
     /* Header */
     header{
@@ -69,15 +87,15 @@
 
     /* Home */
     .hero{
-  padding:22px;
-  background:rgba(10,27,43,.55);
-  border:1px solid var(--border);
-  border-radius:16px;
-  text-align:center;                /* ← centraliza título */
-  display:flex;                     /* ← centraliza o bloco */
-  flex-direction:column;
-  align-items:center;
-}
+      padding:22px;
+      background:rgba(10,27,43,.55);
+      border:1px solid var(--border);
+      border-radius:16px;
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
     .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
     .card{background:#081b2b;border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:10px}
     .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);display:inline-block}
@@ -255,7 +273,7 @@ function openView(which){
 /* ===== Helpers ===== */
 function $(id){return document.getElementById(id);}
 function setUpdated(){ $('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit'}) }
-function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='var(--text-dim)'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
+function chip(t){ const s=document.createElement('span'); s.style.border='1px solid var(--border)'; s.style.background='#09192a'; s.style.color='#a7bfd9'; s.style.padding='6px 10px'; s.style.borderRadius='999px'; s.style.fontSize='12px'; s.textContent=t; return s; }
 function chips(msgs){const c=$('statusChips'); c.innerHTML=''; msgs.forEach(m=>c.appendChild(chip(m)))}
 function fmtUSD(v){return isFinite(v)?v.toLocaleString('en-US',{style:'currency',currency:'USD'}):'—'}
 function fmtInt(v){return isFinite(v)?v.toLocaleString('en-US'):'—'}
@@ -272,10 +290,6 @@ function toNumber(x){
 }
 
 /* ===== CSV parsing ===== */
-function detectColumns(headers){
-  const h=headers.map(x=>String(x||'').toLowerCase());
-  const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<h.length;j++){ } } return -1; };
-}
 function detectColumns(headers){
   const h=headers.map(x=>String(x||'').toLowerCase());
   const find = keys => { for(let i=0;i<h.length;i++){ for(let j=0;j<keys.length;j++){ if(h[i].includes(keys[j])) return i; } } return -1; };
