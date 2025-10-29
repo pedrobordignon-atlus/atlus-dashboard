@@ -31,7 +31,7 @@
       position: relative;
     }
 
-    /* marca d’água opcional com o favicon */
+    /* optional watermark with the favicon */
     body::before{
       content:"";
       position:fixed; top:50%; left:50%;
@@ -87,8 +87,8 @@
     .note{border-left:3px solid var(--blue);padding-left:12px}
     .stack{display:grid;gap:12px}
     .backRow{display:flex;align-items:center;gap:8px}
-    /* some o botão "Reload" de BAIXO (antigo) */
-#reloadBtn { display:none !important; }
+    /* hide the bottom "Reload" button (legacy) */
+    #reloadBtn { display:none !important; }
   </style>
 </head>
 <body>
@@ -110,8 +110,10 @@
     <div class="hero">
       <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
       <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
-      <div style="margin-top:10px">
+      <!-- NEW: add quick buttons for both dashboards -->
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
         <button class="btn primary" onclick="openView('atlus')">Open Atlus Performance Dashboard</button>
+        <button class="btn" onclick="openView('bonus')">Open Bonus & Tech Dashboard</button>
       </div>
     </div>
 
@@ -122,11 +124,15 @@
         <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
         <div><button class="btn" onclick="openView('atlus')">Open</button></div>
       </div>
-      <div class="card" style="align-content:start">
-        <div class="pill">Future dashboard</div>
-        <h3 style="margin:2px 0 0">Coming soon</h3>
-        <div><button class="btn link" disabled>Soon</button></div>
+
+      <!-- NEW: Bonus & Tech card -->
+      <div class="card">
+        <div class="pill">New</div>
+        <h3 style="margin:2px 0 0">Bonus & Tech Dashboard</h3>
+        <div class="muted">Bonus by tech, status and notes for the current pay period.</div>
+        <div><button class="btn" onclick="openView('bonus')">Open</button></div>
       </div>
+
       <div class="card" style="align-content:start">
         <div class="pill">Future dashboard</div>
         <h3 style="margin:2px 0 0">Coming soon</h3>
@@ -145,22 +151,22 @@
     <div class="panel">
       <div class="noteTitle">👋 Hello, Atlus coworker, glad to see you here!</div>
       <div class="note">
-  This dashboard shows leads from the platforms we currently pay for:
-  <b>LSAs + Thumbtack</b>.<br>
-  <b>Important:</b> <i>Thumbtack spend is paid at the company level (Atlus overall)</i>, so its 
-  <b>locations</b> will appear as <b>“All locations”</b> by design.
-</div>
+        This dashboard shows leads from the platforms we currently pay for:
+        <b>LSAs + Thumbtack</b>.<br>
+        <b>Important:</b> <i>Thumbtack spend is paid at the company level (Atlus overall)</i>, so its 
+        <b>locations</b> will appear as <b>“All locations”</b> by design.
+      </div>
 
-<!-- ✅ ADICIONE AQUI -->
-<div class="note" style="margin-top:8px">
-  <b>Tip:</b> If you don’t see the data yet, click 
-  <a href="#" onclick="document.getElementById('reloadBtn').click(); return false;">
-    <u>Reload</u>
-  </a>
-  to load it.
-</div>
+      <div class="note" style="margin-top:8px">
+        <b>Tip:</b> If you don’t see the data yet, click 
+        <a href="#" onclick="document.getElementById('reloadBtn').click(); return false;">
+          <u>Reload</u>
+        </a>
+        to load it.
+      </div>
+    </div>
 
-    <!-- ✅ Botão RELOAD ÚNICO (movido para cima) -->
+    <!-- Single RELOAD button (moved up) -->
     <div class="panel" style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
       <button class="btn primary" id="reloadBtn">Reload</button>
     </div>
@@ -214,17 +220,16 @@
       <canvas id="chartProfit"></canvas>
     </div>
 
-    <!-- Data source (embaixo) — sem o botão aqui -->
-   <!-- Data source (embaixo) -->
-<div class="panel">
-  <div class="row">
-    <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-    <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
-    <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
-    <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
-  </div>
-  <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-</div>
+    <!-- Data source (bottom) -->
+    <div class="panel">
+      <div class="row">
+        <div><label class="muted">Live CSV link</label><input id="csvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
+        <div style="max-width:300px"><label class="muted">or CSV upload</label><input id="csvFile" type="file" class="input" accept=".csv"></div>
+        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="reloadBtn" class="btn primary">Reload</button></div>
+        <div style="max-width:220px"><label class="muted">&nbsp;</label><label class="muted" style="display:flex;gap:8px;align-items:center"><input id="autoRefresh" type="checkbox" checked> Live (auto-refresh 5 min)</label></div>
+      </div>
+      <div id="statusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
   </section>
 
   <!-- ========== BONUS & TECH DASHBOARD ========== -->
