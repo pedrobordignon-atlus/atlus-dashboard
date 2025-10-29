@@ -115,20 +115,34 @@
       border-radius: 16px; padding: 16px; display: grid; gap: 10px;
     }
 
-    /* ---------- Espaço extra para os gráficos (layout B) ---------- */
-    .panel.chart-420{ height:420px; }
-    .panel.chart-500{ height:500px; }
-    .panel.chart-460{ height:460px; }
-    .panel > canvas{ width:100% !important; height:100% !important; display:block; }
-    
-    /* Alturas para gráficos (Chart.js respeita o height do canvas) */
-.chart-320 canvas{ height:320px !important; }
-.chart-380 canvas{ height:380px !important; }
-.chart-420 canvas{ height:420px !important; }
-.chart-480 canvas{ height:480px !important; }
+   /* ---------- Espaço para gráficos (layout empilhado e sem aperto) ---------- */
+.panel.chart-320{ height:320px; }
+.panel.chart-380{ height:380px; }
+.panel.chart-420{ height:420px; }
+.panel.chart-460{ height:460px; }
+.panel.chart-480{ height:480px; }
 
-/* Canvas ocupa toda a largura do card */
-.panel canvas{ display:block; width:100% !important; }
+/* Canvas ocupa corretamente toda a área */
+.panel > canvas{
+  width:100% !important;
+  height:100% !important;
+  display:block;
+}
+
+/* Empilhamento vertical com respiro */
+.stack-charts{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:28px;              /* espaço entre gráficos */
+}
+
+/* grid-2 nunca espremido no mobile */
+@media(max-width:1100px){
+  .grid-2{
+    grid-template-columns:1fr !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -377,25 +391,27 @@
       </div>
     </div>
 
-    <!-- Layout B -->
-    <!-- Linha 1: Donut sozinho -->
-    <div class="panel chart-380">
-  <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
-  <canvas id="svcChartActive"></canvas>
-</div>
+  <!-- CHARTS EMPILHADOS: 1 por linha -->
+<div class="stack-charts">
+  <!-- Linha 1: Donut -->
+  <div class="panel chart-380">
+    <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
+    <canvas id="svcChartActive"></canvas>
+  </div>
 
-    <!-- Linha 2: Top Plans sozinho -->
-    <div class="panel chart-460">
-      <div style="margin-bottom:8px;font-weight:700">Top Plans (by # of subscriptions)</div>
-      <canvas id="svcChartPlans"></canvas>
-    </div>
+  <!-- Linha 2: Top Plans -->
+  <div class="panel chart-460">
+    <div style="margin-bottom:8px;font-weight:700">Top Plans (by # of subscriptions)</div>
+    <canvas id="svcChartPlans"></canvas>
+  </div>
 
-    <!-- Linha 4: ARV / Count por Sales Rep lado a lado -->
-   <div class="grid-2">
+  <!-- Linha 3: ARV por Sales Rep -->
   <div class="panel chart-420">
     <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
     <canvas id="svcChartArvByRep"></canvas>
   </div>
+
+  <!-- Linha 4: # Subs por Sales Rep -->
   <div class="panel chart-420">
     <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
     <canvas id="svcChartCountByRep"></canvas>
