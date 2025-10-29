@@ -315,50 +315,80 @@
   </section>
 
   <!-- ========== SUBSCRIPTIONS / ARV DASHBOARD ========== -->
-  <section id="view-subs" class="stack" style="display:none">
-    <div class="backRow"><button class="btn link" onclick="openView('home')">← Back to Home</button></div>
+<section id="view-subs" class="stack" style="display:none">
+  <div class="backRow">
+    <button class="btn link" onclick="openView('home')">← Back to Home</button>
+  </div>
 
+  <!-- Public: refresh hint (now ABOVE KPIs) -->
+  <div class="panel if-guest" style="margin-bottom:0">
+    <div class="muted">
+      Need to refresh the data? Click
+      <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
+    </div>
+  </div>
+
+  <!-- Header / Note (EN only, no 'Paste the CSV link') -->
+  <div class="panel" style="margin-top:0">
+    <div class="noteTitle">📄 Subscriptions / ARV</div>
+    <div class="note">
+      <b>Supported columns:</b>
+      <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Subscriptions</div>
+      <div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Active</div>
+      <div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total ARV</div>
+      <div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Balance</div>
+      <div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div>
+    </div>
+  </div>
+
+  <!-- Charts by Sales Rep -->
+  <div class="grid-2">
     <div class="panel">
-      <div class="noteTitle">📄 Subscriptions / ARV</div>
-      <div class="note">
-        Paste the <b>CSV link</b> and click <b>Reload</b>. Campos suportados:
-        <b>Customer ID, Customer, Subscription, Active, Sales Rep, Date Sold, Initial Service Date, Status, Balance, ARV</b>.
+      <div style="margin-bottom:8px;font-weight:700">ARV by Sales Rep</div>
+      <canvas id="svcChartArvByRep"></canvas>
+    </div>
+    <div class="panel">
+      <div style="margin-bottom:8px;font-weight:700"># Subscriptions by Sales Rep</div>
+      <canvas id="svcChartCountByRep"></canvas>
+    </div>
+  </div>
+
+  <!-- Admin: input + button -->
+  <div class="panel admin-only">
+    <div class="row">
+      <div>
+        <label class="muted">Subscriptions CSV link</label>
+        <input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv">
+      </div>
+      <div style="max-width:160px">
+        <label class="muted">&nbsp;</label>
+        <button id="svcReload" class="btn primary">Reload</button>
       </div>
     </div>
+  </div>
 
-    <!-- KPIs -->
-    <div class="kpis">
-      <div class="kpi"><div class="label">Subscriptions</div><div class="value"><span class="dot blue"></span><span id="svcKpiCount">—</span></div></div>
-      <div class="kpi"><div class="label">Active</div><div class="value"><span class="dot green"></span><span id="svcKpiActive">—</span></div></div>
-      <div class="kpi"><div class="label">Total ARV</div><div class="value"><span class="dot gold"></span><span id="svcKpiARV">—</span></div></div>
-      <div class="kpi"><div class="label">Total Balance</div><div class="value"><span class="dot blue"></span><span id="svcKpiBalance">—</span></div></div>
-    </div>
-
-    <!-- Charts por Sales Rep -->
-    <div class="grid-2">
-      <div class="panel"><div style="margin-bottom:8px;font-weight:700">ARV por Sales Rep</div><canvas id="svcChartArvByRep"></canvas></div>
-      <div class="panel"><div style="margin-bottom:8px;font-weight:700"># Subscriptions por Sales Rep</div><canvas id="svcChartCountByRep"></canvas></div>
-    </div>
-
-    <!-- Admin: input + botão -->
-    <div class="panel admin-only">
-      <div class="row">
-        <div><label class="muted">Subscriptions CSV link</label><input id="svcCsvUrl" class="input" placeholder="https://docs.google.com/.../output=csv"></div>
-        <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="svcReload" class="btn primary">Reload</button></div>
-      </div>
-    </div>
-
-    <!-- Público: link reload -->
-    <div class="panel if-guest">
-      <div class="muted">Want to refresh the data? Click <a href="#" id="svcReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.</div>
-    </div>
-
-    <!-- Tabela -->
-    <div class="panel">
-      <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
-      <div id="svcTable" style="display:grid;gap:8px"></div>
-    </div>
-  </section>
+  <!-- Table -->
+  <div class="panel">
+    <div style="margin-bottom:8px;font-weight:700">Subscriptions</div>
+    <div id="svcTable" style="display:grid;gap:8px"></div>
+  </div>
+</section>
 
 </main>
 
