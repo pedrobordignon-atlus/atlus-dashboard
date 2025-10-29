@@ -69,8 +69,8 @@
     .muted{color:var(--text-dim)}
     .input, select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#08192a;color:var(--text)}
 
-    .container{max-width:1220px;margin:0 auto;padding:24px;display:grid;gap:22px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+    .container{max-width:1400px;margin:0 auto;padding:24px;display:grid;gap:28px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px 20px}
     .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
     .hero{padding:22px;background:rgba(10,27,43,.55);border:1px solid var(--border);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center}
@@ -90,12 +90,12 @@
     .filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:12px}
     @media(max-width:1100px){ .filters{grid-template-columns:1fr} }
 
-    .grid-2{display:grid;grid-template-columns:2fr 1.4fr;gap:18px}
+    .grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;align-items:start}
     @media(max-width:1100px){.grid-2{grid-template-columns:1fr}}
 
     .noteTitle{font-weight:700;margin-bottom:6px}
     .note{border-left:3px solid var(--blue);padding-left:12px}
-    .stack{display:grid;gap:12px}
+    .stack{display:grid;gap:18px}
     .backRow{display:flex;align-items:center;gap:8px}
     #reloadBtn { display:none !important; }
 
@@ -120,6 +120,15 @@
     .panel.chart-500{ height:500px; }
     .panel.chart-460{ height:460px; }
     .panel > canvas{ width:100% !important; height:100% !important; display:block; }
+    
+    /* Alturas para gráficos (Chart.js respeita o height do canvas) */
+.chart-320 canvas{ height:320px !important; }
+.chart-380 canvas{ height:380px !important; }
+.chart-420 canvas{ height:420px !important; }
+.chart-480 canvas{ height:480px !important; }
+
+/* Canvas ocupa toda a largura do card */
+.panel canvas{ display:block; width:100% !important; }
   </style>
 </head>
 <body>
@@ -370,10 +379,10 @@
 
     <!-- Layout B -->
     <!-- Linha 1: Donut sozinho -->
-    <div class="panel chart-420">
-      <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
-      <canvas id="svcChartActive"></canvas>
-    </div>
+    <div class="panel chart-380">
+  <div style="margin-bottom:8px;font-weight:700">Active vs Inactive</div>
+  <canvas id="svcChartActive"></canvas>
+</div>
 
     <!-- Linha 2: Top Plans sozinho -->
     <div class="panel chart-460">
@@ -382,16 +391,16 @@
     </div>
 
     <!-- Linha 4: ARV / Count por Sales Rep lado a lado -->
-    <div class="grid-2">
-      <div class="panel chart-460">
-        <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
-        <canvas id="svcChartArvByRep"></canvas>
-      </div>
-      <div class="panel chart-460">
-        <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
-        <canvas id="svcChartCountByRep"></canvas>
-      </div>
-    </div>
+   <div class="grid-2">
+  <div class="panel chart-420">
+    <div style="margin-bottom:8px;font-weight:700">ARV per Sales Rep</div>
+    <canvas id="svcChartArvByRep"></canvas>
+  </div>
+  <div class="panel chart-420">
+    <div style="margin-bottom:8px;font-weight:700"># Subscriptions per Sales Rep</div>
+    <canvas id="svcChartCountByRep"></canvas>
+  </div>
+</div>
 
     <!-- Tabela oculta (apenas se quiser voltar depois) -->
     <div class="panel" style="display:none">
