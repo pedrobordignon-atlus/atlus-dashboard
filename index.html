@@ -353,8 +353,13 @@ body.admin .if-guest{ display:none; }
 </div>
 
 <!-- Public reload button (for non-admin users) -->
-<div class="panel if-guest" style="display:flex; justify-content:flex-end; gap:10px; align-items:center;">
-  <button class="btn primary" id="btReloadPublic">Reload</button>
+<div class="panel if-guest">
+  <div class="muted">
+    Want to refresh the data? Click 
+    <a href="#" id="btReloadPublic" style="color:#dbeafe;text-decoration:underline">
+      Reload
+    </a>.
+  </div>
 </div>
 
     <!-- Table (simple list) -->
