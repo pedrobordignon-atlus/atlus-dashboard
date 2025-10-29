@@ -268,10 +268,20 @@
   <section id="view-bonus" class="stack" style="display:none">
     <div class="backRow"><button class="btn link" onclick="openView('home')">← Back to Home</button></div>
 
-    <div class="panel">
-      <div class="noteTitle">🧰 Bonus & Tech Dashboard (current pay period)</div>
-      <div class="note">This panel reads <b>only the active sheet</b> of the guide (current pay period). Paste the <b>CSV link</b> below and click <b>Reload</b>.</div>
-    </div>
+   <div class="panel">
+  <div class="noteTitle">🧰 Bonus & Tech Dashboard (Current pay period)</div>
+  <div class="note">
+    This panel reads <b>only the active sheet</b> of the guide (Current pay period).
+  </div>
+</div>
+
+<!-- “Reload” para visitantes — agora logo abaixo do aviso principal -->
+<div class="panel if-guest">
+  <div class="muted">
+    Want to refresh the data? Click
+    <a href="#" id="btReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.
+  </div>
+</div>
 
     <div class="panel filters">
       <div><label class="muted">Tech / Owner</label><select id="btOwner"></select></div>
@@ -297,10 +307,6 @@
         <div style="max-width:160px"><label class="muted">&nbsp;</label><button id="btReload" class="btn primary">Reload</button></div>
       </div>
       <div id="btStatusChips" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-    </div>
-
-    <div class="panel if-guest">
-      <div class="muted">Want to refresh the data? Click <a href="#" id="btReloadPublic" style="color:#dbeafe;text-decoration:underline">Reload</a>.</div>
     </div>
 
     <div class="panel">
