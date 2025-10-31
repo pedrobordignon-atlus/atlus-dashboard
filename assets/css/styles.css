@@ -28,7 +28,7 @@ body{
   width: 680px;
   height: 680px;
   background: url('../../atlus-bg.png') no-repeat center bottom / contain;
-  opacity: 0.04;                /* MAIS transparente */
+  opacity: 0.06;                /* MAIS transparente */
   pointer-events: none;
   z-index: 0;
 }
