@@ -20,18 +20,26 @@ body {
   overflow-x: hidden;
 }
 
-/* Marca d’água suave */
-body::after {
+/* Logo de fundo aparece apenas na HOME */
+#view-home::after {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('../../atlus-bg.png') no-repeat center bottom 120px / 680px auto;
-  opacity: 0.02;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  height: 680px;
+  background: url('../../atlus-bg.png') no-repeat center bottom / contain;
+  opacity: 0.05; /* transparência */
   pointer-events: none;
   z-index: 0;
+}
+
+/* garante que as outras views fiquem limpas */
+#view-atlus::after,
+#view-bonus::after,
+#view-subs::after {
+  content: none;
 }
 body::before{
   content:""; position:fixed; top:50%; left:50%;
