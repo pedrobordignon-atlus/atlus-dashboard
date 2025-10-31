@@ -17,13 +17,61 @@ function btDetectColumns(headers){
 }
 let BT_ALL = [], BT_VIEW = [];
 
+/* ======== NOVO: helpers para o nome da aba ========= */
+let BT_SHEET_LABEL = null;
+
+function setBtSheetName(name){
+  const label = (name && String(name).trim()) || 'Current pay period';
+  BT_SHEET_LABEL = label;
+  const el1 = $bt('btSheetName');
+  const el2 = $bt('btSheetName2');
+  if (el1) el1.textContent = label;
+  if (el2) el2.textContent = label;
+}
+
+function getSheetNameFromURL(url){
+  // Se a URL tiver &sheet=<nome>, usamos isso
+  const m = String(url||'').match(/[?&]sheet=([^&]+)/i);
+  return m ? decodeURIComponent(m[1]).replace(/_/g,' ') : null;
+}
+
+function guessSheetNameFromParsed(parsed){
+  // Tenta encontrar colunas típicas que indiquem a aba/período
+  // Ex.: Period, Pay Period, Sheet, Aba, Tab, Month, Cycle
+  const headers = (parsed.headers || []).map(h => String(h||''));
+  const headersLower = headers.map(h => h.toLowerCase());
+  const candidates = ['period','pay period','sheet','aba','tab','month','cycle'];
+
+  let idx = -1;
+  for (let i=0; i<headersLower.length; i++){
+    const h = headersLower[i];
+    if (candidates.some(c => h === c || h.includes(c))) { idx = i; break; }
+  }
+  if (idx < 0) return null;
+
+  // Pega o valor da primeira linha de dados "crus" (raw)
+  const firstRaw = parsed.rawFirstRow || null;
+  if (!firstRaw) return null;
+
+  const headerKey = headers[idx]; // nome original do cabeçalho
+  const val = firstRaw[headerKey];
+  return (val && String(val).trim()) || null;
+}
+/* =================================================== */
+
 function btParseCSV(text){
   const res = Papa.parse(text, { skipEmptyLines:true });
   const rows = res.data || [];
-  if(rows.length < 2) return { rows:[] };
+  if(rows.length < 2) return { rows:[], headers:[], rawFirstRow:null };
 
   const headers = rows[0].map(c=>String(c||''));
   const col = btDetectColumns(headers);
+
+  // Mapa header->valor da primeira linha de dados CRUA (para inferir nome de aba)
+  const rawFirstRow = {};
+  for (let i=0; i<headers.length; i++){
+    rawFirstRow[headers[i]] = (rows[1] && rows[1][i]!=null) ? rows[1][i] : '';
+  }
 
   const out=[];
   for(let i=1;i<rows.length;i++){
@@ -41,8 +89,10 @@ function btParseCSV(text){
       Notes: String(get(col.notes)).trim()
     });
   }
-  return { rows: out };
+  // Agora retornamos headers e rawFirstRow também
+  return { rows: out, headers, rawFirstRow };
 }
+
 function btFillFilters(data){
   const owners = [...new Set(data.map(r=>r.Owner).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   const s=$bt('btOwner'); if(!s) return;
@@ -107,19 +157,36 @@ function btWithBust(url){ const s=url.includes('?')?'&':'?'; return url+s+'t='+(
 window.btLoad = function(url){
   const norm = btNormalizeUrl((url||'').trim());
   if(!norm){ btChips(['Paste a valid CSV link']); return; }
+
+  // === NOVO: tenta pegar o nome da aba pela URL antes de carregar os dados ===
+  BT_SHEET_LABEL = null;
+  const fromUrl = getSheetNameFromURL(norm);
+  if (fromUrl) setBtSheetName(fromUrl); else setBtSheetName('Current pay period');
+
   btChips(['Loading…']);
   fetch(btWithBust(norm))
     .then(r=>{ if(r.ok) return r.text(); throw new Error('HTTP '+r.status); })
     .then(text=>{
       const parsed = btParseCSV(text);
       if(!parsed.rows.length){ btChips(['Empty CSV or headers not recognized']); return; }
+
+      // === NOVO: se não veio pela URL, tenta inferir pelo conteúdo ===
+      if (!fromUrl) {
+        const guessed = guessSheetNameFromParsed(parsed);
+        if (guessed) setBtSheetName(guessed);
+      }
+
       BT_ALL = parsed.rows;
       btFillFilters(BT_ALL);
       $bt('btOwner').value=''; $bt('btStatus').value=''; $bt('btJobSearch').value='';
       btApply();
       btChips(['CSV loaded: '+BT_ALL.length+' rows']); setUpdated();
     })
-    .catch(err=>{ btChips(['Failed to load CSV: '+err.message]); console.error(err); });
+    .catch(err=>{ 
+      if (!fromUrl) setBtSheetName('Current pay period'); 
+      btChips(['Failed to load CSV: '+err.message]); 
+      console.error(err); 
+    });
 };
 
 // Eventos
@@ -128,4 +195,3 @@ $bt('btJobSearch')?.addEventListener('input', btApply);
 $bt('btClear')?.addEventListener('click', ()=>{ $bt('btOwner').value=''; $bt('btStatus').value=''; $bt('btJobSearch').value=''; btApply(); });
 $bt('btReload')?.addEventListener('click', ()=> window.btLoad($bt('btCsvUrl').value));
 document.getElementById('btReloadPublic')?.addEventListener('click', (e)=>{ e.preventDefault(); window.btLoad($bt('btCsvUrl').value); });
-
