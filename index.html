@@ -43,23 +43,18 @@
 <main class="container">
   <!-- HOME -->
   <section id="view-home" class="stack" style="display:none">
-    <div class="hero">
-      <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
-      <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
-      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-        <button class="btn primary" onclick="openView('atlus')">Open Atlus Performance Dashboard</button>
-        <button class="btn" onclick="openView('bonus')">Open Bonus & Tech Dashboard</button>
-        <button class="btn" onclick="openView('subs')">Open Subscriptions / ARV</button>
-      </div>
-    </div>
+  <div class="hero">
+    <h1 style="margin:0">Welcome to <span style="color:#dbeafe">Atlus Dashboards</span></h1>
+    <div class="muted">Choose a dashboard below. You can come back here anytime.</div>
+  </div>
 
-    <div class="cards">
-      <div class="card">
-        <div class="pill">Featured</div>
-        <h3 style="margin:2px 0 0">Atlus Performance Dashboard</h3>
-        <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
-        <div><button class="btn" onclick="openView('atlus')">Open</button></div>
-      </div>
+  <div class="cards">
+    <div class="card">
+      <div class="pill">Featured</div>
+      <h3 style="margin:2px 0 0">Atlus Performance Dashboard</h3>
+      <div class="muted">Leads, Spend, ROI, Profit + performance KPIs for LSA & Thumbtack.</div>
+      <div><button class="btn" onclick="openView('atlus')">Open</button></div>
+    </div>
 
       <div class="card">
         <div class="pill">New</div>
@@ -238,6 +233,53 @@
       <div id="svcTable" style="display:grid;gap:8px"></div>
     </div>
   </section>
+  <!-- ===== Feedback Widget ===== -->
+<button id="feedbackBtn" class="fab" aria-label="Open feedback form">Feedback</button>
+
+<div id="feedbackModal" class="fb-modal" aria-hidden="true">
+  <div class="fb-card" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+    <div class="fb-head">
+      <h3 id="fbTitle">Send Feedback</h3>
+      <button id="fbClose" class="fb-close" aria-label="Close">×</button>
+    </div>
+
+    <form id="feedbackForm" class="fb-form">
+      <label>
+        Your name (optional)
+        <input type="text" id="fbName" class="input" placeholder="Jane Doe"/>
+      </label>
+
+      <label>
+        Your email (optional)
+        <input type="email" id="fbEmail" class="input" placeholder="jane@email.com"/>
+      </label>
+
+      <label>
+        Rate your experience
+        <select id="fbRating" class="input">
+          <option value="5">⭐️⭐️⭐️⭐️⭐️ Excellent</option>
+          <option value="4">⭐️⭐️⭐️⭐️ Good</option>
+          <option value="3">⭐️⭐️⭐️ Okay</option>
+          <option value="2">⭐️⭐️ Needs work</option>
+          <option value="1">⭐️ Poor</option>
+        </select>
+      </label>
+
+      <label>
+        Message
+        <textarea id="fbMessage" class="input" rows="5" placeholder="Tell us what’s great or what to improve…" required></textarea>
+      </label>
+
+      <div class="fb-actions">
+        <button type="button" class="btn" id="fbCancel">Cancel</button>
+        <button type="submit" class="btn primary">Send</button>
+      </div>
+
+      <div id="fbStatus" class="muted" style="min-height:18px;"></div>
+    </form>
+  </div>
+</div>
+<!-- ===== /Feedback Widget ===== -->
 </main>
 
 <!-- App scripts -->
