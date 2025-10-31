@@ -10,7 +10,7 @@ body {
   background:
     radial-gradient(900px 600px at 12% 10%, rgba(0,119,200,.12), transparent 70%),
     radial-gradient(900px 600px at 88% 12%, rgba(255,184,28,.14), transparent 70%),
-    background: url('../../atlus-bg.png') no-repeat center bottom 120px / 680px auto,
+    url('../../atlus-bg.png') no-repeat center bottom 120px / 680px auto fixed,
     var(--navy);
 
   background-blend-mode: normal; /* mantém cores originais */
@@ -179,4 +179,3 @@ body.admin .if-guest{ display:none; }
 .fb-form{ display: grid; gap: 10px; }
 .fb-form label{ display: grid; gap: 6px; font-size: 14px; color: var(--text-dim); }
 .fb-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top: 4px; }
-
