@@ -23,6 +23,7 @@
   <div style="display:flex; align-items:center; gap:8px">
     <button class="btn link if-guest" id="openAdminLogin">Admin</button>
     <button class="btn link if-admin" id="logoutBtn">Logout</button>
+    <button class="btn link if-admin" id="openFeedbackList">Feedback</button> <!-- NOVO -->
     <div class="muted" id="lastUpdated">Last updated: —</div>
   </div>
 </header>
@@ -233,53 +234,49 @@
       <div id="svcTable" style="display:grid;gap:8px"></div>
     </div>
   </section>
-  <!-- ===== Feedback Widget ===== -->
-<button id="feedbackBtn" class="fab" aria-label="Open feedback form">Feedback</button>
-
-<div id="feedbackModal" class="fb-modal" aria-hidden="true">
-  <div class="fb-card" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
-    <div class="fb-head">
-      <h3 id="fbTitle">Send Feedback</h3>
-      <button id="fbClose" class="fb-close" aria-label="Close">×</button>
+<!-- Feedback Modal (sem email) -->
+<div id="feedbackBox" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45);z-index:1000;">
+  <div class="panel" style="width:680px;max-width:95vw;border-radius:16px;padding:16px;display:grid;gap:12px;background:var(--panel);border:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-weight:700">Send Feedback</div>
+      <button id="fbClose" class="btn link" style="padding:6px 10px">✕</button>
     </div>
 
-    <form id="feedbackForm" class="fb-form">
-      <label>
-        Your name (optional)
-        <input type="text" id="fbName" class="input" placeholder="Jane Doe"/>
-      </label>
+    <label>Your name (optional)</label>
+    <input id="fbName" class="input" placeholder="Your name">
 
-      <label>
-        Your email (optional)
-        <input type="email" id="fbEmail" class="input" placeholder="jane@email.com"/>
-      </label>
+    <label>Rate your experience</label>
+    <select id="fbRating" class="input">
+      <option>⭐⭐⭐⭐⭐ Excellent</option>
+      <option>⭐⭐⭐⭐ Good</option>
+      <option>⭐⭐⭐ Okay</option>
+      <option>⭐⭐ Needs improvement</option>
+      <option>⭐ Poor</option>
+    </select>
 
-      <label>
-        Rate your experience
-        <select id="fbRating" class="input">
-          <option value="5">⭐️⭐️⭐️⭐️⭐️ Excellent</option>
-          <option value="4">⭐️⭐️⭐️⭐️ Good</option>
-          <option value="3">⭐️⭐️⭐️ Okay</option>
-          <option value="2">⭐️⭐️ Needs work</option>
-          <option value="1">⭐️ Poor</option>
-        </select>
-      </label>
+    <label>Message</label>
+    <textarea id="fbMessage" class="input" rows="6" placeholder="Tell us what you think…"></textarea>
 
-      <label>
-        Message
-        <textarea id="fbMessage" class="input" rows="5" placeholder="Tell us what’s great or what to improve…" required></textarea>
-      </label>
-
-      <div class="fb-actions">
-        <button type="button" class="btn" id="fbCancel">Cancel</button>
-        <button type="submit" class="btn primary">Send</button>
-      </div>
-
-      <div id="fbStatus" class="muted" style="min-height:18px;"></div>
-    </form>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn link" id="fbCancel">Cancel</button>
+      <button class="btn primary" id="fbSend">Send</button>
+    </div>
   </div>
 </div>
-<!-- ===== /Feedback Widget ===== -->
+<!-- Feedback List (Admin only) -->
+<div id="feedbackListBox" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45);z-index:1000;">
+  <div class="panel" style="width:880px;max-width:96vw;max-height:90vh;overflow:auto;border-radius:16px;padding:16px;display:grid;gap:12px;background:var(--panel);border:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="font-weight:700">Feedback (admin)</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="fbExport">Export CSV</button>
+        <button class="btn link" id="fbClearAll" title="Delete all">Clear</button>
+        <button class="btn link" id="fbListClose">✕</button>
+      </div>
+    </div>
+    <div id="fbList" style="display:grid;gap:10px"></div>
+  </div>
+</div>
 </main>
 
 <!-- App scripts -->
