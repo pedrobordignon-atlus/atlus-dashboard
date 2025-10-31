@@ -20,7 +20,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Logo de fundo aparece apenas na HOME */
+/* Logo de fundo visível apenas na Home */
 #view-home::after {
   content: "";
   position: fixed;
@@ -30,7 +30,7 @@ body {
   width: 680px;
   height: 680px;
   background: url('../../atlus-bg.png') no-repeat center bottom / contain;
-  opacity: 0.05; /* transparência */
+  opacity: 0.05;
   pointer-events: none;
   z-index: 0;
 }
