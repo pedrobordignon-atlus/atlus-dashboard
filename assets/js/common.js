@@ -47,4 +47,59 @@ function mobTicks(showDesktop=true, showMobile=true){
 window.DEFAULT_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7EMxEc6BGdAxnSphrzKpW03Bv6zz96bNiIz58PZCjwDHvW3XhKbXNuC0bZll9gg/pub?gid=1004742443&single=true&output=csv";
 window.BONUS_DEFAULT_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOju0Fvn-Qe3oaTEZQiEm23CYOYtE6EChD6TNiW3y-MlUsHQcLPbrFPcgycz_x_Q_aEoO-XXlJpbnZ/pub?gid=2024260664&single=true&output=csv";
 window.SVC_DEFAULT_LINK   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQp8vyChNgnzBaebfXtffk5G-wJBdcblAnj6RZtu695mOnaV8dxXdrf8TSmkXSlSzBnkVvxZ5EncESS/pub?gid=0&single=true&output=csv";
+// ===== Feedback Widget (mailto) =====
+(function(){
+  const modal   = document.getElementById('feedbackModal');
+  const openBtn = document.getElementById('feedbackBtn');
+  const closeBtn= document.getElementById('fbClose');
+  const cancel  = document.getElementById('fbCancel');
+  const form    = document.getElementById('feedbackForm');
+  const status  = document.getElementById('fbStatus');
+
+  if(!modal || !openBtn || !form) return;
+
+  const open = ()=>{ modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); };
+  const close= ()=>{ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); status.textContent=''; };
+
+  openBtn.addEventListener('click', open);
+  closeBtn?.addEventListener('click', close);
+  cancel?.addEventListener('click', close);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) close(); });
+
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    status.textContent = 'Preparing email…';
+
+    const name   = (document.getElementById('fbName')?.value || '').trim();
+    const email  = (document.getElementById('fbEmail')?.value || '').trim();
+    const rating = (document.getElementById('fbRating')?.value || '5');
+    const msg    = (document.getElementById('fbMessage')?.value || '').trim();
+    if(!msg){ status.textContent = 'Please write a short message.'; return; }
+
+    // destino: seu e-mail
+    const DEST = 'pedro.bordignon@atluspestsolutions.com';
+
+    const page = (new URLSearchParams(location.search).get('view') || 'home');
+    const when = new Date().toLocaleString();
+    const body =
+`Rating: ${rating}/5
+Name: ${name || '-'}
+Email: ${email || '-'}
+
+Message:
+${msg}
+
+---
+Page: ${page}
+URL: ${location.href}
+Time: ${when}`;
+
+    const subject = `Dashboard Feedback (${page})`;
+    const mailto = `mailto:${encodeURIComponent(DEST)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto;
+    status.textContent = 'Opening your email app…';
+    setTimeout(close, 800);
+  });
+})();
 
