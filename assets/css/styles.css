@@ -1,1 +1,70 @@
+:root {
+  --navy: #0a1b2b;
+  --panel: #0f2436;
+  --border: #15354f;
+  --text: #e9f1fb;
+  --text-dim: #a7bfd9;
+  --purple: #7c5cff;
+  --blue: #0077c8;
+  --gold: #ffb81c;
+}
+
+/* Layout geral */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+}
+
+/* Topo */
+nav {
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Painéis */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Títulos */
+.chart-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Layout responsivo */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Canvas alturas fixas */
+.chart-420 canvas { height: 420px !important; width: 100% !important; display: block; }
+.panel > canvas { width: 100% !important; display: block; }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .panel { margin: 8px; }
+}
 
